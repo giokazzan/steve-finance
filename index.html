@@ -376,6 +376,18 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
         <div class="tip-txt" id="home-tip">Pagar un poco extra cada mes a tu deuda de mayor interés puede ahorrarte miles de pesos y meses de pago. Pregúntale a Steve cómo aplicarlo a tu situación.</div>
         <button class="tip-btn" onclick="navTo('chat');setTimeout(()=>addUserMsg('¿Cómo puedo aplicar el tip de pagar extra a mi deuda?'),300)">Aplicar este tip ↗</button>
       </div>
+      <div class="sec-t">📅 Próximos pagos</div>
+      <div id="home-pagos" style="margin-bottom:16px">
+        <div style="color:var(--txt2);font-size:13px;text-align:center;padding:16px">
+          Cuéntale a Steve tus gastos para ver tu calendario de pagos aquí
+        </div>
+      </div>
+      <div class="sec-t">Gastos registrados</div>
+      <div id="home-gastos-lista" style="margin-bottom:16px">
+        <div style="color:var(--txt2);font-size:13px;text-align:center;padding:16px">
+          Aún sin gastos registrados
+        </div>
+      </div>
       <div class="sec-t">Ranking</div>
       <div class="lb" id="home-lb">
         <div class="lb-row"><span class="lb-pos" style="color:var(--am)">1</span><div class="lb-av" style="background:var(--aml);color:var(--amd)">—</div><span class="lb-name">Próximamente</span><span class="lb-xp">—</span></div>
@@ -749,6 +761,53 @@ function renderHome() {
   document.getElementById('lb-my-av').textContent = initial;
   document.getElementById('lb-my-name').textContent = name.split(' ')[0] + ' (tú)';
   document.getElementById('lb-my-xp').textContent = (p.xp_total || 0) + ' XP';
+  
+  // Renderizar tabla de pagos y lista de gastos
+  renderPagos();
+  renderGastosLista();
+}
+
+function renderPagos() {
+  const el = document.getElementById('home-pagos');
+  if (!el) return;
+  const today = new Date().getDate();
+  const pagos = [];
+  (STATE.expenses || []).filter(e => e.due_date).forEach(e => {
+    const d = e.due_date >= today ? e.due_date - today : (30 - today + e.due_date);
+    pagos.push({ name: e.name, amount: Number(e.amount), due_date: e.due_date, days: d, color: d<=3?'#E24B4A':d<=7?'#BA7517':'#1D9E75', label: d<=3?'Urgente':d<=7?'Esta semana':'Este mes' });
+  });
+  (STATE.debts || []).filter(d => d.due_date).forEach(d => {
+    const days = d.due_date >= today ? d.due_date - today : (30 - today + d.due_date);
+    pagos.push({ name: d.name + ' (pago mínimo)', amount: Number(d.minimum_payment), due_date: d.due_date, days, color: days<=3?'#E24B4A':days<=7?'#BA7517':'#1D9E75', label: days<=3?'Urgente':days<=7?'Esta semana':'Este mes' });
+  });
+  if (pagos.length === 0) {
+    el.innerHTML = '<div style="color:var(--txt2);font-size:13px;text-align:center;padding:16px">Cuéntale a Steve tus gastos para ver tu calendario aquí</div>';
+    return;
+  }
+  pagos.sort((a,b) => a.days - b.days);
+  el.innerHTML = pagos.map(p => `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg2);border-radius:12px;margin-bottom:8px;border-left:3px solid ${p.color}"><div><div style="font-size:14px;font-weight:600;color:var(--txt)">${p.name}</div><div style="font-size:12px;color:${p.color}">${p.label} · Día ${p.due_date}</div></div><div style="text-align:right"><div style="font-size:15px;font-weight:700;color:var(--txt)">$${p.amount.toLocaleString()}</div><div style="font-size:11px;color:var(--txt2)">${p.days===0?'Hoy':'en '+p.days+' días'}</div></div></div>`).join('');
+}
+
+function renderGastosLista() {
+  const el = document.getElementById('home-gastos-lista');
+  if (!el) return;
+  const expenses = STATE.expenses || [];
+  const debts = STATE.debts || [];
+  if (expenses.length === 0 && debts.length === 0) {
+    el.innerHTML = '<div style="color:var(--txt2);font-size:13px;text-align:center;padding:16px">Aún sin gastos registrados</div>';
+    return;
+  }
+  const catIcon = { 'fijo_esencial':'🏠', 'fijo_no_esencial':'📱', 'variable_esencial':'🛒', 'variable_no_esencial':'🎮' };
+  const sorted = [...expenses].sort((a,b) => (a.priority||3)-(b.priority||3));
+  const total = sorted.reduce((s,e) => s+Number(e.amount), 0);
+  let html = `<div style="font-size:12px;color:var(--txt2);margin-bottom:8px">Total: <strong style="color:var(--txt)">$${total.toLocaleString()}/mes</strong></div>`;
+  html += sorted.map(e => `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg2);border-radius:10px;margin-bottom:6px"><div><div style="font-size:13px;font-weight:600;color:var(--txt)">${catIcon[e.category]||'📋'} ${e.name}</div><div style="font-size:11px;color:var(--txt2)">${e.category||'gasto'}${e.due_date?' · Día '+e.due_date:''}</div></div><div style="font-size:14px;font-weight:700;color:var(--txt)">$${Number(e.amount).toLocaleString()}</div></div>`).join('');
+  if (debts.length > 0) {
+    const totalDebt = debts.reduce((s,d) => s+Number(d.total_amount), 0);
+    html += `<div style="font-size:12px;color:#E24B4A;margin:10px 0 6px">💳 Deudas · $${totalDebt.toLocaleString()} total</div>`;
+    html += debts.map(d => `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg2);border-radius:10px;margin-bottom:6px;border-left:3px solid #E24B4A"><div><div style="font-size:13px;font-weight:600;color:var(--txt)">${d.name}</div><div style="font-size:11px;color:var(--txt2)">Mínimo $${Number(d.minimum_payment).toLocaleString()}${d.interest_rate?' · '+d.interest_rate+'% anual':''}${d.due_date?' · Corte día '+d.due_date:''}</div></div><div style="text-align:right"><div style="font-size:14px;font-weight:700;color:#E24B4A">$${Number(d.total_amount).toLocaleString()}</div><div style="font-size:11px;color:var(--txt2)">saldo</div></div></div>`).join('');
+  }
+  el.innerHTML = html;
 }
 
 function updateXPDisplay(xp, level) {
@@ -1203,15 +1262,24 @@ function buildGastosChart(f) {
     vals = [rent, minPay, food, transport, services, libre].map(v => Math.max(0, Math.round(v / income * 100)));
   }
 
+  const hasIncome = (Number(f?.income_monthly) || 0) > 0;
+  // Si no hay ingreso, usar montos absolutos en lugar de porcentajes
+  const displayVals = hasIncome ? vals : (STATE.expenses || []).slice(0,6).map(e => Number(e.amount));
+  const displayLabels = hasIncome ? labels : (STATE.expenses || []).slice(0,6).map(e => e.name);
+  const suffix = hasIncome ? '%' : ' MXN';
+  
+  const chartData = displayVals.length > 0 ? displayVals : [1];
+  const chartLabels = displayLabels.length > 0 ? displayLabels : ['Sin datos aún'];
+
   STATE.chartInstances['gastos'] = new Chart(c, {
     type: 'doughnut',
-    data: { labels, datasets: [{ data: vals, backgroundColor: ['#D85A30','#E24B4A','#BA7517','#378ADD','#9FE1CB','#1D9E75'], borderWidth: 3, borderColor: '#fff', hoverOffset: 6 }] },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + c.label + ': ' + c.parsed + '%' } } }, animation: { duration: 900 } }
+    data: { labels: chartLabels, datasets: [{ data: chartData, backgroundColor: ['#D85A30','#E24B4A','#BA7517','#378ADD','#9FE1CB','#1D9E75','#9B59B6'], borderWidth: 3, borderColor: '#fff', hoverOffset: 6 }] },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.label + ': $' + ctx.parsed.toLocaleString() + (hasIncome ? ' (' + ctx.parsed + '%)' : '') } } }, animation: { duration: 900 } }
   });
 
   const legEl = document.getElementById('leg-gastos');
-  const cols = ['#D85A30','#E24B4A','#BA7517','#378ADD','#9FE1CB','#1D9E75'];
-  legEl.innerHTML = labels.map((l, i) => `<div class="leg-item"><span class="leg-sq" style="background:${cols[i]}"></span><span class="leg-name">${l}</span><span class="leg-val">${vals[i]}%</span></div>`).join('');
+  const cols = ['#D85A30','#E24B4A','#BA7517','#378ADD','#9FE1CB','#1D9E75','#9B59B6'];
+  legEl.innerHTML = chartLabels.map((l, i) => `<div class="leg-item"><span class="leg-sq" style="background:${cols[i%cols.length]}"></span><span class="leg-name">${l}</span><span class="leg-val">${hasIncome ? chartData[i]+'%' : '$'+(chartData[i]||0).toLocaleString()}</span></div>`).join('');
 
   // Calcular insight dinámico basado en gastos reales
   const totalExp = STATE.expenses.reduce((s, e) => s + Number(e.amount), 0);
