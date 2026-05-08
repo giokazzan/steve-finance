@@ -982,6 +982,8 @@ async function callSteve(userText) {
       // Si Steve guardó datos financieros, recargar estado completo
       if (data.reload_data) {
         try {
+          // Pequeño delay para que Supabase termine de guardar
+          await new Promise(r => setTimeout(r, 800));
           await loadUserData();
           renderAll();
         } catch(e) { console.error('reload error:', e); }
