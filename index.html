@@ -358,6 +358,9 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
         <div class="bar-track"><div class="bar-fill" id="home-lvl-bar" style="width:0%;background:#fff"></div></div>
         <div class="bar-labels"><span id="home-xp-cur">0 XP</span><span id="home-xp-next">200 XP</span></div>
       </div>
+      <div id="health-score-panel" style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px;margin-bottom:16px">
+        <div style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:8px">Cargando salud financiera...</div>
+      </div>
       <div class="kpi-grid">
         <div class="kpi"><div class="kpi-l">Salud financiera</div><div class="kpi-v a" id="kpi-health">—</div><div class="kpi-s">Tu score hoy</div></div>
         <div class="kpi"><div class="kpi-l">Racha activa</div><div class="kpi-v g" id="kpi-streak">— días</div><div class="kpi-s">Consecutivos</div></div>
@@ -765,28 +768,9 @@ function renderHome() {
   // Renderizar tabla de pagos y lista de gastos
   renderPagos();
   renderGastosLista();
+  renderHealthScore();
 }
 
-function renderPagos() {
-  const el = document.getElementById('home-pagos');
-  if (!el) return;
-  const today = new Date().getDate();
-  const pagos = [];
-  (STATE.expenses || []).filter(e => e.due_date).forEach(e => {
-    const d = e.due_date >= today ? e.due_date - today : (30 - today + e.due_date);
-    pagos.push({ name: e.name, amount: Number(e.amount), due_date: e.due_date, days: d, color: d<=3?'#E24B4A':d<=7?'#BA7517':'#1D9E75', label: d<=3?'Urgente':d<=7?'Esta semana':'Este mes' });
-  });
-  (STATE.debts || []).filter(d => d.due_date).forEach(d => {
-    const days = d.due_date >= today ? d.due_date - today : (30 - today + d.due_date);
-    pagos.push({ name: d.name + ' (pago mínimo)', amount: Number(d.minimum_payment), due_date: d.due_date, days, color: days<=3?'#E24B4A':days<=7?'#BA7517':'#1D9E75', label: days<=3?'Urgente':days<=7?'Esta semana':'Este mes' });
-  });
-  if (pagos.length === 0) {
-    el.innerHTML = '<div style="color:var(--txt2);font-size:13px;text-align:center;padding:16px">Cuéntale a Steve tus gastos para ver tu calendario aquí</div>';
-    return;
-  }
-  pagos.sort((a,b) => a.days - b.days);
-  el.innerHTML = pagos.map(p => `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg2);border-radius:12px;margin-bottom:8px;border-left:3px solid ${p.color}"><div><div style="font-size:14px;font-weight:600;color:var(--txt)">${p.name}</div><div style="font-size:12px;color:${p.color}">${p.label} · Día ${p.due_date}</div></div><div style="text-align:right"><div style="font-size:15px;font-weight:700;color:var(--txt)">$${p.amount.toLocaleString()}</div><div style="font-size:11px;color:var(--txt2)">${p.days===0?'Hoy':'en '+p.days+' días'}</div></div></div>`).join('');
-}
 
 function renderGastosLista() {
   const el = document.getElementById('home-gastos-lista');
@@ -1117,6 +1101,213 @@ async function stopRec() {
 // ══════════════════════════════════════════════
 // MISSIONS
 // ══════════════════════════════════════════════
+
+// ── SALUD FINANCIERA ─────────────────────────
+// Fórmula modular: 4 factores, fácil de ajustar
+function calcHealthScore() {
+  const income  = Number(STATE.financial?.income_monthly) || 0;
+  const expenses = (STATE.expenses || []).reduce((s,e) => s + Number(e.amount), 0);
+  const debts    = STATE.debts || [];
+  const minPay   = debts.reduce((s,d) => s + Number(d.minimum_payment), 0);
+  const maxRate  = debts.length ? Math.max(...debts.map(d => Number(d.interest_rate)||0)) : 0;
+  const totalDebt = debts.reduce((s,d) => s + Number(d.total_amount), 0);
+  const free     = income - expenses - minPay;
+
+  if (income === 0) return null; // no calcular sin ingreso
+
+  // Factor 1: gastos vs ingreso (30 pts)
+  const expRatio = (expenses + minPay) / income;
+  const f1 = expRatio < 0.50 ? 30 : expRatio < 0.70 ? 15 : 0;
+
+  // Factor 2: deuda vs ingreso anual (30 pts)
+  const debtRatio = totalDebt / (income * 12);
+  const f2 = debtRatio < 0.20 ? 30 : debtRatio < 0.36 ? 20 : debtRatio < 0.60 ? 10 : 0;
+
+  // Factor 3: tasa de interés más alta (20 pts)
+  const f3 = maxRate === 0 ? 20 : maxRate < 15 ? 20 : maxRate < 30 ? 10 : 0;
+
+  // Factor 4: dinero libre (20 pts)
+  const freeRatio = free / income;
+  const f4 = freeRatio > 0.20 ? 20 : freeRatio > 0.10 ? 10 : 0;
+
+  const score = f1 + f2 + f3 + f4;
+
+  return {
+    score,
+    label: score >= 80 ? 'Excelente' : score >= 60 ? 'Bueno' : score >= 40 ? 'Regular' : score >= 20 ? 'En riesgo' : 'Crítico',
+    color: score >= 80 ? '#1D9E75' : score >= 60 ? '#1D9E75' : score >= 40 ? '#BA7517' : '#E24B4A',
+    factors: [
+      {
+        name: 'Gastos fijos vs lo que ganas',
+        pts: f1, max: 30,
+        pct: Math.round(expRatio * 100),
+        estado: f1 >= 25 ? 'Excelente' : f1 >= 15 ? 'Regular' : 'Atención',
+        detail: `Tus compromisos fijos se llevan el ${Math.round(expRatio*100)}% de tu ingreso. Lo saludable es menos del 50%.`,
+        accion: f1 < 30 ? 'Intenta reducir algún gasto fijo no esencial.' : '¡Vas muy bien en este rubro!'
+      },
+      {
+        name: 'Tamaño total de tus deudas',
+        pts: f2, max: 30,
+        pct: Math.round(debtRatio * 100),
+        estado: f2 >= 25 ? 'Excelente' : f2 >= 15 ? 'Regular' : 'Atención',
+        detail: totalDebt > 0 ? `Tu deuda total ($${totalDebt.toLocaleString()}) es el ${Math.round(debtRatio*100)}% de tu ingreso anual. Lo aceptable es menos del 36%.` : 'Sin deudas registradas aún.',
+        accion: f2 < 20 ? 'Prioriza liquidar la deuda más costosa primero.' : 'Tu nivel de deuda es manejable.'
+      },
+      {
+        name: 'Costo de tus deudas (intereses)',
+        pts: f3, max: 20,
+        pct: maxRate,
+        estado: f3 >= 18 ? 'Excelente' : f3 >= 10 ? 'Regular' : 'Atención',
+        detail: maxRate > 0 ? `Tu tasa más alta es ${maxRate}% anual. Por cada $10,000 de saldo pagas $${Math.round(maxRate*100)} solo en intereses al año.` : 'Sin deudas con tasa registrada aún.',
+        accion: f3 < 20 ? 'Paga más del mínimo en la tarjeta con mayor tasa.' : 'Tus tasas son bajas. Bien manejado.'
+      },
+      {
+        name: 'Dinero libre cada mes',
+        pts: f4, max: 20,
+        pct: Math.max(0, Math.round(freeRatio * 100)),
+        estado: f4 >= 18 ? 'Excelente' : f4 >= 10 ? 'Regular' : 'Atención',
+        detail: `Te sobran $${Math.max(0,free).toLocaleString()} al mes (${Math.max(0,Math.round(freeRatio*100))}% de tu ingreso). Lo recomendado es al menos el 10%.`,
+        accion: f4 < 20 ? 'Destina parte de este dinero libre a liquidar deudas.' : '¡Excelente liquidez mensual!'
+      }
+    ],
+    income, expenses, minPay, free, totalDebt, maxRate
+  };
+}
+
+function getHealthEmoji(estado) {
+  return { 'Excelente':'✓', 'Bueno':'✓', 'Regular':'!', 'Atención':'!' }[estado] || '!';
+}
+
+// ── RENDER SALUD FINANCIERA ───────────────────
+function renderHealthScore() {
+  const el = document.getElementById('health-score-panel');
+  if (!el) return;
+  const h = calcHealthScore();
+  if (!h) {
+    el.innerHTML = '<div style="padding:16px;font-size:13px;color:var(--color-text-secondary);text-align:center">Comparte tus ingresos con Steve para ver tu salud financiera completa</div>';
+    return;
+  }
+
+  const barColor = (pts, max) => pts/max >= .75 ? '#1D9E75' : pts/max >= .40 ? '#BA7517' : '#E24B4A';
+  const badgeBg  = (e) => ({Excelente:'#D1ECE1',Bueno:'#D1ECE1',Regular:'#FFF3CD',Atención:'#FDEAEA'})[e]||'#FDEAEA';
+  const badgeTx  = (e) => ({Excelente:'#0F6E56',Bueno:'#0F6E56',Regular:'#854F0B',Atención:'#A32D2D'})[e]||'#A32D2D';
+
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px">
+      <div style="width:80px;height:80px;border-radius:50%;border:3px solid ${h.color};display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
+        <span style="font-size:28px;font-weight:500;color:${h.color};line-height:1">${h.score}</span>
+        <span style="font-size:10px;color:var(--color-text-secondary)">de 100</span>
+      </div>
+      <div>
+        <div style="font-size:15px;font-weight:500;color:${h.color};margin-bottom:4px">${h.label}</div>
+        <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:8px">${h.score >= 70 ? 'Vas muy bien. Steve te ayuda a mantenerlo.' : h.score >= 40 ? 'Hay margen de mejora. Steve tiene un plan.' : 'Situación de alerta. Actúa pronto con Steve.'}</div>
+        <button onclick="sendPrompt('Steve, dame un plan concreto para mejorar mi salud financiera')" style="font-size:11px;padding:4px 12px;border-radius:12px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);cursor:pointer">Ver mi plan de mejora ↗</button>
+      </div>
+    </div>
+    ${h.factors.map(f => `
+      <div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:13px;font-weight:500;color:var(--color-text-primary)">${f.name}</span>
+          <span style="font-size:11px;padding:2px 8px;border-radius:10px;background:${badgeBg(f.estado)};color:${badgeTx(f.estado)}">${f.estado}</span>
+        </div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:5px;line-height:1.4">${f.detail}</div>
+        <div style="height:7px;background:var(--color-background-secondary);border-radius:4px;overflow:hidden;margin-bottom:4px">
+          <div style="height:100%;width:${Math.round(f.pts/f.max*100)}%;background:${barColor(f.pts,f.max)};border-radius:4px;transition:width .8s"></div>
+        </div>
+        <div style="font-size:11px;color:var(--color-text-secondary);font-style:italic">${f.accion}</div>
+      </div>
+    `).join('')}
+  `;
+}
+
+// ── RENDER PRÓXIMOS PAGOS ─────────────────────
+function renderPagos() {
+  const el = document.getElementById('home-pagos');
+  if (!el) return;
+  const today = new Date().getDate();
+
+  const pagos = [];
+  (STATE.expenses || []).filter(e => e.due_date).forEach(e => {
+    const d = e.due_date >= today ? e.due_date - today : 30 - today + e.due_date;
+    pagos.push({ name: e.name, amount: Number(e.amount), due_date: e.due_date, days: d,
+      color: d<=3?'#E24B4A':d<=7?'#BA7517':'#1D9E75',
+      urgencia: d<=3?'Urgente':d<=7?'Esta semana':'Este mes',
+      type: 'gasto' });
+  });
+  (STATE.debts || []).filter(d => d.due_date).forEach(d => {
+    const days = d.due_date >= today ? d.due_date - today : 30 - today + d.due_date;
+    pagos.push({ name: d.name + ' (pago mínimo)', amount: Number(d.minimum_payment),
+      due_date: d.due_date, days,
+      color: days<=3?'#E24B4A':days<=7?'#BA7517':'#1D9E75',
+      urgencia: days<=3?'Urgente':days<=7?'Esta semana':'Este mes',
+      type: 'deuda', rate: d.interest_rate });
+  });
+
+  if (!pagos.length) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:16px">Cuéntale a Steve tus gastos con fechas para ver tu calendario aquí</div>';
+    return;
+  }
+
+  pagos.sort((a,b) => a.days - b.days);
+  el.innerHTML = pagos.map(p => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:8px;border-left:3px solid ${p.color}">
+      <div style="display:flex;align-items:flex-start;gap:8px">
+        <div style="width:8px;height:8px;border-radius:50%;background:${p.color};flex-shrink:0;margin-top:4px"></div>
+        <div>
+          <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">${p.name}</div>
+          <div style="font-size:11px;color:${p.color}">${p.urgencia} · Día ${p.due_date}${p.rate?' · '+p.rate+'% anual':''}</div>
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;margin-left:12px">
+        <div style="font-size:14px;font-weight:500;color:var(--color-text-primary)">$${p.amount.toLocaleString()}</div>
+        <div style="font-size:11px;color:var(--color-text-secondary)">${p.days===0?'Hoy':'en '+p.days+' días'}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── RENDER LISTA DE GASTOS ────────────────────
+function renderGastosLista() {
+  const el = document.getElementById('home-gastos-lista');
+  if (!el) return;
+  const expenses = STATE.expenses || [];
+  const debts = STATE.debts || [];
+  if (!expenses.length && !debts.length) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:16px">Aún sin gastos registrados</div>';
+    return;
+  }
+  const icon = {'fijo_esencial':'🏠','fijo_no_esencial':'📱','variable_esencial':'🛒','variable_no_esencial':'🎮'};
+  const sorted = [...expenses].sort((a,b)=>(a.priority||3)-(b.priority||3));
+  const total = sorted.reduce((s,e)=>s+Number(e.amount),0);
+  let html = `<div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:8px">Total registrado: <strong style="color:var(--color-text-primary)">$${total.toLocaleString()}/mes</strong></div>`;
+  html += sorted.map(e=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:6px">
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">${icon[e.category]||'📋'} ${e.name}</div>
+        <div style="font-size:11px;color:var(--color-text-secondary)">${e.category||'gasto'}${e.due_date?' · Día '+e.due_date:''}</div>
+      </div>
+      <div style="font-size:14px;font-weight:500;color:var(--color-text-primary)">$${Number(e.amount).toLocaleString()}</div>
+    </div>
+  `).join('');
+  if (debts.length) {
+    const td = debts.reduce((s,d)=>s+Number(d.total_amount),0);
+    html += `<div style="font-size:12px;color:#E24B4A;margin:10px 0 6px">💳 Deudas activas · Saldo total: $${td.toLocaleString()}</div>`;
+    html += debts.map(d=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:6px;border-left:3px solid #E24B4A">
+        <div>
+          <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">${d.name}</div>
+          <div style="font-size:11px;color:var(--color-text-secondary)">Mínimo $${Number(d.minimum_payment).toLocaleString()}${d.interest_rate?' · '+d.interest_rate+'% anual':''}${d.due_date?' · Corte día '+d.due_date:''}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:14px;font-weight:500;color:#E24B4A">$${Number(d.total_amount).toLocaleString()}</div>
+          <div style="font-size:11px;color:var(--color-text-secondary)">saldo</div>
+        </div>
+      </div>
+    `).join('');
+  }
+  el.innerHTML = html;
+}
+
 function renderMissions() {
   const active = STATE.missions.filter(m => m.status === 'active');
   const done   = STATE.missions.filter(m => m.status === 'completed');
