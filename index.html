@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#1D9E75">
+<title>Steve — Tu asesor financiero</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --g:#1D9E75;--gl:#E1F5EE;--gd:#085041;--gm:#0F6E56;
+  --p:#7F77DD;--pl:#EEEDFE;--pd:#3C3489;--pm:#534AB7;
+  --co:#D85A30;--col:#FAECE7;--cod:#712B13;
+  --am:#BA7517;--aml:#FAEEDA;--amd:#633806;
+  --bl:#E6F1FB;--bld:#0C447C;
+  --red:#E24B4A;
+  --bg:#ffffff;--bg2:#F5F5F3;
+  --txt:#1a1a1a;--txt2:#6B6B68;
+  --bdr:rgba(0,0,0,.1);--bdr2:rgba(0,0,0,.18);
+  --r:12px;--r2:16px;
+}
+html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg2);overflow-x:hidden}
+.app{width:100%;max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;display:flex;flex-direction:column}
+
+/* ── AUTH ── */
+#auth-screen{display:flex;flex-direction:column;min-height:100vh;background:var(--bg)}
+.auth-hero{background:var(--g);padding:60px 24px 40px;text-align:center}
+.auth-logo{width:64px;height:64px;border-radius:18px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;font-weight:700;color:#fff}
+.auth-title{font-size:28px;font-weight:700;color:#fff;margin-bottom:6px}
+.auth-sub{font-size:15px;color:rgba(255,255,255,.8)}
+.auth-body{padding:28px 24px;flex:1}
+.auth-tabs{display:flex;background:var(--bg2);border-radius:10px;padding:3px;margin-bottom:24px}
+.auth-tab{flex:1;padding:9px;text-align:center;font-size:14px;font-weight:500;color:var(--txt2);border:none;background:transparent;border-radius:8px;cursor:pointer;transition:all .2s;font-family:inherit}
+.auth-tab.on{background:var(--bg);color:var(--txt);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.auth-field{margin-bottom:14px}
+.auth-label{font-size:12px;font-weight:500;color:var(--txt2);margin-bottom:5px;display:block}
+.auth-inp{width:100%;padding:12px 14px;border:1px solid var(--bdr);border-radius:10px;font-size:16px;color:var(--txt);background:var(--bg);font-family:inherit;outline:none;transition:border-color .2s}
+.auth-inp:focus{border-color:var(--g)}
+.auth-btn{width:100%;padding:14px;border-radius:12px;font-size:16px;font-weight:600;border:none;cursor:pointer;margin-top:6px;font-family:inherit;transition:all .2s}
+.auth-btn.primary{background:var(--g);color:#fff}
+.auth-btn.primary:active{transform:scale(.98)}
+.auth-msg{font-size:13px;text-align:center;margin-top:12px;min-height:18px}
+.auth-msg.err{color:var(--co)}
+.auth-msg.ok{color:var(--g)}
+
+/* ── MAIN APP ── */
+#main-app{display:none;flex-direction:column;min-height:100vh}
+.screen{display:none;flex:1;flex-direction:column;min-height:calc(100vh - 56px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.screen.active{display:flex;flex-direction:column}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;border-bottom:1px solid var(--bdr);background:var(--bg);position:sticky;top:0;z-index:10;flex-shrink:0}
+.tb-l{display:flex;align-items:center;gap:10px}
+.av{width:36px;height:36px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0}
+.tb-name{font-size:15px;font-weight:600;color:var(--txt)}
+.tb-sub{font-size:11px;color:var(--txt2);margin-top:1px}
+.xp-pill{background:var(--pl);border-radius:12px;padding:5px 10px;font-size:12px;font-weight:600;color:var(--pd);display:flex;align-items:center;gap:4px;flex-shrink:0}
+
+/* ── BOTTOM NAV ── */
+.nav{display:flex;border-top:1px solid var(--bdr);background:var(--bg);padding-bottom:env(safe-area-inset-bottom);flex-shrink:0;position:sticky;bottom:0;z-index:10}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px 10px;gap:3px;border:none;background:transparent;cursor:pointer;font-family:inherit}
+.nb svg{width:22px;height:22px;stroke:var(--txt2);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s}
+.nb span{font-size:10px;color:var(--txt2);transition:color .2s}
+.nb.on svg{stroke:var(--g)}
+.nb.on span{color:var(--g);font-weight:600}
+
+/* ── SCROLL CONTENT ── */
+.content{padding:14px 16px;flex:1}
+
+/* ── CARDS ── */
+.card{background:var(--bg);border:1px solid var(--bdr);border-radius:var(--r2);padding:14px;margin-bottom:12px}
+.card-t{font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+
+/* ── LEVEL CARD ── */
+.level-card{border-radius:var(--r2);padding:14px 16px;margin-bottom:12px;background:var(--g);position:relative;overflow:hidden}
+.lc-bg1{position:absolute;right:-16px;top:-16px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.07)}
+.lc-bg2{position:absolute;right:20px;bottom:-20px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.05)}
+.lc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.lc-lvl{font-size:10px;font-weight:600;color:#9FE1CB;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px}
+.lc-name{font-size:18px;font-weight:700;color:#fff}
+.lc-sub{font-size:11px;color:#9FE1CB;margin-top:2px}
+.lc-badge{background:rgba(255,255,255,.18);border-radius:8px;padding:4px 10px;font-size:10px;font-weight:600;color:#fff;flex-shrink:0}
+.bar-track{height:7px;background:rgba(255,255,255,.2);border-radius:4px;overflow:hidden;margin:8px 0 4px}
+.bar-fill{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.bar-labels{display:flex;justify-content:space-between;font-size:10px;color:#9FE1CB}
+
+/* ── KPI GRID ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.kpi{background:var(--bg2);border-radius:var(--r);padding:11px 12px}
+.kpi-l{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;font-weight:500}
+.kpi-v{font-size:19px;font-weight:700;line-height:1.1;word-break:break-word;color:var(--txt)}
+.kpi-v.g{color:var(--g)}.kpi-v.r{color:var(--co)}.kpi-v.a{color:var(--am)}
+.kpi-s{font-size:10px;color:var(--txt2);margin-top:2px}
+
+/* ── STREAK ── */
+.streak-row{display:flex;gap:4px;justify-content:space-between;margin-bottom:12px}
+.sd{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.sd-c{width:100%;max-width:38px;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;border:1px solid var(--bdr);color:var(--txt2);background:var(--bg2)}
+.sd-c.done{background:var(--g);color:#fff;border-color:var(--g)}
+.sd-c.today{background:var(--pl);color:var(--pm);border-color:var(--p)}
+.sd-l{font-size:9px;color:var(--txt2)}
+
+/* ── INSIGHTS ── */
+.ins-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.ins{padding:5px 11px;border-radius:12px;font-size:11px;font-weight:500}
+.ins.ok{background:var(--gl);color:var(--gd)}
+.ins.warn{background:var(--aml);color:var(--amd)}
+.ins.bad{background:var(--col);color:var(--cod)}
+
+/* ── LEADERBOARD ── */
+.lb{background:var(--bg);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;margin-bottom:12px}
+.lb-row{display:flex;align-items:center;gap:10px;padding:10px 13px;border-bottom:1px solid var(--bdr)}
+.lb-row:last-child{border-bottom:none}
+.lb-row.me{background:var(--gl)}
+.lb-pos{width:18px;font-size:12px;font-weight:600;color:var(--txt2);text-align:center;flex-shrink:0}
+.lb-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
+.lb-name{flex:1;font-size:13px;color:var(--txt);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-xp{font-size:12px;font-weight:600;color:var(--pm);flex-shrink:0}
+
+/* ── TIP CARD ── */
+.tip-card{background:var(--pl);border:1px solid #AFA9EC;border-radius:14px;padding:14px;margin-bottom:12px}
+.tip-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.tip-ico{width:30px;height:30px;border-radius:8px;background:var(--p);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tip-lbl{font-size:11px;font-weight:600;color:var(--pd);text-transform:uppercase;letter-spacing:.4px}
+.tip-badge{font-size:10px;color:var(--pm);background:#fff;border-radius:6px;padding:2px 8px;margin-left:auto;flex-shrink:0;font-weight:500}
+.tip-txt{font-size:13px;color:#26215C;line-height:1.55;margin-bottom:10px}
+.tip-btn{width:100%;padding:11px;border-radius:10px;background:var(--p);color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit}
+.tip-btn:active{transform:scale(.98)}
+
+/* ── CHAT ── */
+.chat-msgs-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.msg-s{display:flex;gap:8px;align-items:flex-end}
+.msg-u{display:flex;gap:8px;align-items:flex-end;flex-direction:row-reverse}
+.m-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.bs{background:var(--gl);border-radius:4px 14px 14px 14px;padding:10px 13px;font-size:14px;color:#085041;line-height:1.55;max-width:calc(100% - 46px)}
+.bu{background:var(--bg2);border-radius:14px 4px 14px 14px;padding:10px 13px;font-size:14px;color:var(--txt);line-height:1.55;max-width:calc(100% - 46px)}
+.msg-time{font-size:10px;color:var(--txt2);margin-top:3px;padding:0 2px}
+
+/* ── TYPING INDICATOR ── */
+.typing{display:flex;gap:4px;align-items:center;padding:10px 13px;background:var(--gl);border-radius:4px 14px 14px 14px;width:fit-content}
+.typing span{width:6px;height:6px;border-radius:50%;background:var(--gm);animation:bounce .9s infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+/* ── SESSION HEADER (chat) ── */
+.session-hdr{background:var(--bg2);border-radius:var(--r2);padding:12px 14px;margin:12px 16px 0;display:flex;gap:10px;align-items:flex-start}
+.sh-ico{width:30px;height:30px;border-radius:8px;background:var(--gl);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.sh-lbl{font-size:10px;font-weight:600;color:var(--g);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.sh-txt{font-size:12px;color:var(--txt);line-height:1.5}
+.sh-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.sh-tag{font-size:10px;background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:2px 8px;color:var(--txt2)}
+.sh-tag.a{background:var(--gl);border-color:#9FE1CB;color:var(--gd)}
+
+/* ── PURCHASE CARD (semáforo) ── */
+.purchase-card{border-radius:14px;overflow:hidden;margin:4px 0;max-width:calc(100% - 46px)}
+.pc-top{padding:12px 14px 10px;display:flex;align-items:center;gap:10px}
+.pc-sig{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pc-sig.green{background:var(--gl)}
+.pc-sig.yellow{background:var(--aml)}
+.pc-sig.red{background:var(--col)}
+.pc-v-title{font-size:14px;font-weight:600;color:var(--txt);margin-bottom:2px}
+.pc-v-sub{font-size:11px;color:var(--txt2)}
+.pc-details{padding:0 14px 10px;display:flex;flex-direction:column;gap:6px}
+.pc-row{display:flex;align-items:flex-start;gap:8px}
+.pc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.pc-row-txt{font-size:12px;color:var(--txt);flex:1;line-height:1.4}
+.pc-acts{display:flex;gap:6px;padding:8px 14px 12px;border-top:1px solid rgba(0,0,0,.06);flex-wrap:wrap}
+.pca{flex:1;padding:8px;border-radius:10px;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit;text-align:center;min-height:36px;transition:transform .15s}
+.pca:active{transform:scale(.96)}
+.pca.yes{background:var(--g);color:#fff}
+.pca.no{background:var(--bg2);color:var(--txt);border:1px solid var(--bdr)}
+.pca.wait{background:var(--aml);color:var(--amd)}
+.pc-green{background:var(--gl);border:1px solid #9FE1CB}
+.pc-yellow{background:#FFFDF5;border:1px solid #FAC775}
+.pc-red{background:#FFF8F6;border:1px solid #F5C4B3}
+
+/* ── AUDIO BUBBLE ── */
+.audio-bub{border-radius:4px 14px 14px 14px;padding:10px 13px;display:flex;align-items:center;gap:9px;max-width:calc(100% - 46px);background:var(--g)}
+.audio-bub.u{background:var(--bg2);border-radius:14px 4px 14px 14px}
+.play-btn{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;flex-shrink:0}
+.audio-bub.u .play-btn{background:rgba(0,0,0,.07)}
+.wv{display:flex;align-items:center;gap:2px;height:18px;flex:1}
+.wb{width:3px;border-radius:2px;background:rgba(255,255,255,.75)}
+.audio-bub.u .wb{background:var(--g)}
+.adur{font-size:10px;color:rgba(255,255,255,.8);min-width:26px;flex-shrink:0}
+.audio-bub.u .adur{color:var(--txt2)}
+.transcribed{background:var(--gl);border-radius:0 0 12px 12px;padding:6px 13px 9px;font-size:12px;color:var(--gm);max-width:calc(100% - 46px);margin-top:-6px;border-top:1px dashed rgba(29,158,117,.2)}
+.trans-lbl{font-size:9px;font-weight:600;color:var(--gm);opacity:.7;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+
+/* ── CHAT INPUT ── */
+.chat-bottom{border-top:1px solid var(--bdr);background:var(--bg);padding:8px 12px;padding-bottom:max(8px,env(safe-area-inset-bottom));flex-shrink:0}
+.chat-reps{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.rep{padding:8px 14px;border-radius:20px;font-size:12px;border:1px solid #5DCAA5;background:transparent;color:var(--gd);cursor:pointer;font-family:inherit;font-weight:500}
+.rep:active{background:var(--g);color:#fff;border-color:var(--g)}
+.chat-inp-row{display:flex;align-items:center;gap:7px}
+.chat-inp{flex:1;border:1px solid var(--bdr2);border-radius:22px;padding:10px 14px;font-size:16px;background:var(--bg2);color:var(--txt);font-family:inherit;outline:none;transition:border-color .2s;min-height:42px}
+.chat-inp:focus{border-color:var(--g)}
+.mic-btn{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg2);border:1px solid var(--bdr2);position:relative;transition:all .2s}
+.mic-btn.rec{background:var(--red);border-color:var(--red)}
+.mic-ring{position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--red);opacity:0}
+.mic-ring.on{animation:ringout 1s infinite}
+@keyframes ringout{0%{opacity:.5;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
+.send-btn{width:42px;height:42px;border-radius:50%;background:var(--g);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.send-btn:active{transform:scale(.9)}
+.rec-row{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 6px}
+.rec-txt{font-size:12px;color:var(--txt2)}
+.rec-timer{font-size:12px;font-weight:600;color:var(--red);font-variant-numeric:tabular-nums}
+.rec-bar{height:2px;background:var(--bg2);border-radius:1px;margin-bottom:6px;overflow:hidden}
+.rec-fill{height:100%;background:var(--red);width:0%;transition:width .15s linear}
+
+/* ── MISSIONS ── */
+.mission{background:var(--bg);border:1px solid var(--bdr);border-radius:14px;padding:12px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .2s;margin-bottom:8px;width:100%;text-align:left}
+.mission:active{transform:scale(.98)}
+.mission.done{opacity:.55}
+.m-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px}
+.m-body{flex:1;min-width:0}
+.m-title{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:2px}
+.m-sub{font-size:11px;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-tbar{height:3px;background:var(--bg2);border-radius:2px;margin-top:6px;overflow:hidden}
+.m-tfill{height:100%;border-radius:2px;transition:width .8s}
+.m-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.m-xp{font-size:11px;font-weight:600;color:var(--pm);background:var(--pl);border-radius:6px;padding:2px 8px;white-space:nowrap}
+.m-time{font-size:10px;color:var(--txt2)}
+.m-check{width:22px;height:22px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center}
+
+/* ── CHARTS ── */
+.chart-tabs-row{display:flex;gap:6px;padding:12px 16px 4px;overflow-x:auto;scrollbar-width:none}
+.chart-tabs-row::-webkit-scrollbar{display:none}
+.ctab{padding:7px 16px;border-radius:18px;font-size:12px;font-weight:500;border:1px solid var(--bdr2);background:transparent;color:var(--txt2);cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0}
+.ctab.on{background:var(--g);color:#fff;border-color:var(--g)}
+.ch-wrap{position:relative;width:100%;height:200px}
+.ch-wrap canvas{position:absolute;top:0;left:0;width:100%!important;height:100%!important}
+.leg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:10px}
+.leg-item{display:flex;align-items:center;gap:7px;background:var(--bg2);border-radius:8px;padding:7px 9px;min-width:0}
+.leg-sq{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.leg-name{font-size:11px;color:var(--txt);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.leg-val{font-size:11px;color:var(--txt2);margin-left:auto;flex-shrink:0}
+.prog-item{margin-bottom:11px}
+.prog-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.prog-lbl{font-size:12px;color:var(--txt);font-weight:500}
+.prog-amt{font-size:11px;color:var(--txt2)}
+.prog-track{height:9px;background:var(--bg2);border-radius:5px;overflow:hidden}
+.prog-fill{height:100%;border-radius:5px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.prog-sub{font-size:10px;color:var(--txt2);margin-top:3px}
+.total-pill{display:flex;justify-content:space-between;align-items:center;background:var(--gl);border-radius:10px;padding:10px 13px;margin-top:8px}
+.tp-l{font-size:12px;color:var(--gd);font-weight:600}
+.tp-v{font-size:13px;color:var(--gd);font-weight:600}
+
+/* ── PROFILE ── */
+.profile-hero{background:var(--g);border-radius:var(--r2);padding:18px 16px;margin-bottom:12px;text-align:center}
+.ph-av{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;margin:0 auto 10px}
+.ph-name{font-size:18px;font-weight:700;color:#fff;margin-bottom:2px}
+.ph-level{font-size:12px;color:#9FE1CB}
+.ph-stats{display:flex;justify-content:center;gap:20px;margin-top:12px;flex-wrap:wrap}
+.ph-stat{text-align:center}
+.ph-stat-v{font-size:16px;font-weight:700;color:#fff}
+.ph-stat-l{font-size:10px;color:#9FE1CB}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--bdr)}
+.setting-row:last-child{border-bottom:none}
+.setting-lbl{font-size:13px;color:var(--txt)}
+.setting-val{font-size:13px;color:var(--txt2)}
+.badge-grid{display:flex;gap:10px;flex-wrap:wrap}
+.badge{text-align:center;width:56px}
+.badge-ico{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 4px}
+.badge-lbl{font-size:10px;color:var(--txt2);line-height:1.3}
+
+/* ── SECTION TITLE ── */
+.sec-t{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:10px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(0,0,0,.85);color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;opacity:0;transition:all .3s;pointer-events:none;z-index:100;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── LOADER ── */
+#loader{position:fixed;inset:0;background:var(--g);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;transition:opacity .5s}
+#loader.fade{opacity:0;pointer-events:none}
+.loader-logo{width:70px;height:70px;border-radius:20px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;color:#fff;margin-bottom:16px}
+.loader-name{font-size:22px;font-weight:700;color:#fff;margin-bottom:6px}
+.loader-sub{font-size:14px;color:rgba(255,255,255,.7)}
+.loader-dots{display:flex;gap:6px;margin-top:20px}
+.loader-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5);animation:ldot 1.2s infinite}
+.loader-dot:nth-child(2){animation-delay:.2s}
+.loader-dot:nth-child(3){animation-delay:.4s}
+@keyframes ldot{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fade{animation:fadeUp .35s ease forwards}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">S</div>
+  <div class="loader-name">Steve</div>
+  <div class="loader-sub">Tu asesor financiero personal</div>
+  <div class="loader-dots">
+    <div class="loader-dot"></div>
+    <div class="loader-dot"></div>
+    <div class="loader-dot"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- AUTH -->
+<div id="auth-screen" style="display:none">
+  <div class="auth-hero">
+    <div class="auth-logo">S</div>
+    <div class="auth-title">Steve</div>
+    <div class="auth-sub">Tu dinero, finalmente ordenado</div>
+  </div>
+  <div class="auth-body">
+    <div class="auth-tabs">
+      <button class="auth-tab on" onclick="switchAuthTab('login',this)">Entrar</button>
+      <button class="auth-tab" onclick="switchAuthTab('register',this)">Crear cuenta</button>
+    </div>
+    <div id="login-form">
+      <div class="auth-field"><label class="auth-label">Correo electrónico</label><input class="auth-inp" id="login-email" type="email" placeholder="tu@correo.com" autocomplete="email"></div>
+      <div class="auth-field"><label class="auth-label">Contraseña</label><input class="auth-inp" id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="auth-btn primary" onclick="doLogin()">Entrar a Steve</button>
+    </div>
+    <div id="register-form" style="display:none">
+      <div class="auth-field"><label class="auth-label">Tu nombre</label><input class="auth-inp" id="reg-name" type="text" placeholder="¿Cómo te llamas?" autocomplete="given-name"></div>
+      <div class="auth-field"><label class="auth-label">Correo electrónico</label><input class="auth-inp" id="reg-email" type="email" placeholder="tu@correo.com" autocomplete="email"></div>
+      <div class="auth-field"><label class="auth-label">Contraseña</label><input class="auth-inp" id="reg-pass" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password"></div>
+      <button class="auth-btn primary" onclick="doRegister()">Crear mi cuenta gratis</button>
+    </div>
+    <div class="auth-msg" id="auth-msg"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="app" id="main-app">
+
+  <!-- ══ HOME ══ -->
+  <div class="screen active" id="s-home">
+    <div class="topbar">
+      <div class="tb-l">
+        <div class="av" id="home-av">?</div>
+        <div><div class="tb-name" id="home-name">Steve</div><div class="tb-sub" id="home-date">Cargando...</div></div>
+      </div>
+      <div class="xp-pill" id="home-xp">⭐ 0 XP</div>
+    </div>
+    <div class="content" style="padding-bottom:20px">
+      <div class="level-card" id="home-level-card">
+        <div class="lc-bg1"></div><div class="lc-bg2"></div>
+        <div class="lc-top">
+          <div><div class="lc-lvl" id="home-lvl-label">Nivel 1</div><div class="lc-name" id="home-lvl-name">Iniciando...</div><div class="lc-sub" id="home-lvl-sub">Cargando XP...</div></div>
+          <div class="lc-badge" id="home-lvl-badge">...</div>
+        </div>
+        <div class="bar-track"><div class="bar-fill" id="home-lvl-bar" style="width:0%;background:#fff"></div></div>
+        <div class="bar-labels"><span id="home-xp-cur">0 XP</span><span id="home-xp-next">200 XP</span></div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-l">Salud financiera</div><div class="kpi-v a" id="kpi-health">—</div><div class="kpi-s">Tu score hoy</div></div>
+        <div class="kpi"><div class="kpi-l">Racha activa</div><div class="kpi-v g" id="kpi-streak">— días</div><div class="kpi-s">Consecutivos</div></div>
+        <div class="kpi"><div class="kpi-l">Libre este mes</div><div class="kpi-v r" id="kpi-free">—</div><div class="kpi-s">Real disponible</div></div>
+        <div class="kpi"><div class="kpi-l">Misiones done</div><div class="kpi-v g" id="kpi-missions">—</div><div class="kpi-s">Esta semana</div></div>
+      </div>
+      <div class="ins-row" id="home-insights"></div>
+      <div class="sec-t">Tu racha esta semana</div>
+      <div class="streak-row" id="home-streak"></div>
+      <div class="tip-card">
+        <div class="tip-head">
+          <div class="tip-ico"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#fff" stroke-width="1.3"/><path d="M8 5v3.5M8 10.5v.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <span class="tip-lbl">Tip del día</span>
+          <span class="tip-badge">Gratis</span>
+        </div>
+        <div class="tip-txt" id="home-tip">Pagar un poco extra cada mes a tu deuda de mayor interés puede ahorrarte miles de pesos y meses de pago. Pregúntale a Steve cómo aplicarlo a tu situación.</div>
+        <button class="tip-btn" onclick="navTo('chat');setTimeout(()=>addUserMsg('¿Cómo puedo aplicar el tip de pagar extra a mi deuda?'),300)">Aplicar este tip ↗</button>
+      </div>
+      <div class="sec-t">Ranking</div>
+      <div class="lb" id="home-lb">
+        <div class="lb-row"><span class="lb-pos" style="color:var(--am)">1</span><div class="lb-av" style="background:var(--aml);color:var(--amd)">—</div><span class="lb-name">Próximamente</span><span class="lb-xp">—</span></div>
+        <div class="lb-row me"><span class="lb-pos" style="color:var(--gd)">—</span><div class="lb-av" style="background:var(--g);color:#fff" id="lb-my-av">?</div><span class="lb-name" style="color:var(--gd);font-weight:600" id="lb-my-name">Tú</span><span class="lb-xp" style="color:var(--gd)" id="lb-my-xp">0 XP</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CHAT ══ -->
+  <div class="screen" id="s-chat" style="display:none;flex-direction:column">
+    <div class="topbar">
+      <div class="tb-l">
+        <div class="av">S</div>
+        <div><div class="tb-name">Steve</div><div class="tb-sub" id="chat-status">En línea</div></div>
+      </div>
+      <div class="xp-pill" id="chat-xp">⭐ 0 XP</div>
+    </div>
+    <div class="session-hdr" id="session-hdr" style="display:none">
+      <div class="sh-ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#1D9E75" stroke-width="1.2"/><path d="M7 4v3l2 1" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+      <div>
+        <div class="sh-lbl">Continuando desde tu última sesión</div>
+        <div class="sh-txt" id="session-summary-txt">Cargando contexto...</div>
+        <div class="sh-tags" id="session-tags"></div>
+      </div>
+    </div>
+    <div class="chat-msgs-wrap" id="chat-msgs"></div>
+    <div class="chat-bottom">
+      <div class="chat-reps" id="chat-reps" style="display:none"></div>
+      <div id="rec-status" style="display:none">
+        <div class="rec-row"><span class="rec-txt" id="rec-lbl">Grabando...</span><span class="rec-timer" id="rec-timer">0:00</span></div>
+        <div class="rec-bar"><div class="rec-fill" id="rec-fill"></div></div>
+      </div>
+      <div class="chat-inp-row">
+        <input class="chat-inp" id="chat-inp" type="text" placeholder="Escríbele a Steve...">
+        <button class="mic-btn" id="mic-btn" onclick="toggleRec()">
+          <div class="mic-ring" id="mic-ring"></div>
+          <svg id="mic-svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <rect x="6" y="1" width="6" height="10" rx="3" stroke="#6B6B68" stroke-width="1.4"/>
+            <path d="M3 9a6 6 0 0012 0" stroke="#6B6B68" stroke-width="1.4" stroke-linecap="round"/>
+            <path d="M9 15v2" stroke="#6B6B68" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button class="send-btn" onclick="sendChatMsg()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M8 2l6 6-6 6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MISSIONS ══ -->
+  <div class="screen" id="s-missions" style="display:none">
+    <div class="topbar">
+      <div class="tb-l"><div class="av">S</div><div><div class="tb-name">Misiones</div><div class="tb-sub" id="missions-sub">Cargando...</div></div></div>
+      <div class="xp-pill" id="missions-xp">⭐ 0 XP</div>
+    </div>
+    <div class="content">
+      <div class="level-card" style="padding:12px 14px">
+        <div class="lc-bg1"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div><div class="lc-lvl" id="m-lvl-label">Nivel 1</div><div style="font-size:12px;color:#9FE1CB"><span id="m-xp-cur">0</span> / <span id="m-xp-next">200</span> XP</div></div>
+          <div class="lc-badge" id="m-lvl-badge">...</div>
+        </div>
+        <div class="bar-track"><div class="bar-fill" id="m-lvl-bar" style="width:0%;background:#fff"></div></div>
+      </div>
+      <div class="sec-t">Activas</div>
+      <div id="active-missions-list"></div>
+      <div class="sec-t" style="margin-top:4px">Completadas</div>
+      <div id="done-missions-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ CHARTS ══ -->
+  <div class="screen" id="s-charts" style="display:none">
+    <div class="topbar">
+      <div class="tb-l"><div class="av">S</div><div><div class="tb-name">Mi panorama</div><div class="tb-sub">Actualizado hoy</div></div></div>
+      <div class="xp-pill" id="charts-xp">⭐ 0 XP</div>
+    </div>
+    <div class="chart-tabs-row">
+      <button class="ctab on" onclick="showChart('gastos',this)">Gastos</button>
+      <button class="ctab" onclick="showChart('deudas',this)">Deudas</button>
+      <button class="ctab" onclick="showChart('proyeccion',this)">Proyección</button>
+    </div>
+    <div class="content">
+      <div id="cp-gastos">
+        <div class="card"><div class="card-t">A dónde va tu dinero</div>
+          <div class="ch-wrap"><canvas id="chart-gastos" role="img" aria-label="Pastel de gastos mensuales"></canvas></div>
+          <div class="leg-grid" id="leg-gastos"></div>
+        </div>
+        <div class="card" style="background:var(--gl);border-color:#9FE1CB">
+          <div class="card-t" style="color:var(--gd)">Steve detectó</div>
+          <div style="font-size:13px;color:var(--gd);line-height:1.5" id="gastos-insight">Cargando análisis...</div>
+          <button style="margin-top:10px;padding:9px 14px;border-radius:10px;background:var(--g);color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit" onclick="navTo('chat');setTimeout(()=>addUserMsg('¿Cómo puedo reducir mis gastos?'),300)">¿Cómo lo mejoro? ↗</button>
+        </div>
+      </div>
+      <div id="cp-deudas" style="display:none">
+        <div class="card"><div class="card-t">Tus deudas activas</div>
+          <div class="ch-wrap" style="height:170px"><canvas id="chart-deudas" role="img" aria-label="Barras de deudas"></canvas></div>
+        </div>
+        <div class="card" id="deudas-detail"><div class="card-t">Detalle</div></div>
+      </div>
+      <div id="cp-proyeccion" style="display:none">
+        <div class="card"><div class="card-t">Proyección 18 meses</div>
+          <div class="ch-wrap" style="height:210px"><canvas id="chart-linea" role="img" aria-label="Proyección de deudas"></canvas></div>
+          <div class="leg-grid" style="margin-top:10px">
+            <div class="leg-item"><span class="leg-sq" style="background:var(--co)"></span><span class="leg-name">Deuda principal</span></div>
+            <div class="leg-item"><span class="leg-sq" style="background:var(--bl)"></span><span class="leg-name">Resto de deudas</span></div>
+          </div>
+        </div>
+        <div class="kpi-grid" id="proy-kpis"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROFILE ══ -->
+  <div class="screen" id="s-profile" style="display:none">
+    <div class="topbar">
+      <div class="tb-l"><div class="av" id="prof-av">?</div><div><div class="tb-name">Mi perfil</div><div class="tb-sub" id="prof-level-sub">Nivel 1</div></div></div>
+      <div class="xp-pill" id="prof-xp">⭐ 0 XP</div>
+    </div>
+    <div class="content">
+      <div class="profile-hero">
+        <div class="ph-av" id="ph-av">?</div>
+        <div class="ph-name" id="ph-name">—</div>
+        <div class="ph-level" id="ph-level">Nivel 1 · Iniciando</div>
+        <div class="ph-stats">
+          <div class="ph-stat"><div class="ph-stat-v" id="ps-xp">0</div><div class="ph-stat-l">XP total</div></div>
+          <div class="ph-stat"><div class="ph-stat-v" id="ps-streak">0</div><div class="ph-stat-l">Días racha</div></div>
+          <div class="ph-stat"><div class="ph-stat-v" id="ps-missions">0</div><div class="ph-stat-l">Misiones</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-t">Mi plan financiero</div>
+        <div id="plan-bars"></div>
+      </div>
+      <div class="card">
+        <div class="card-t">Mi cuenta</div>
+        <div class="setting-row"><span class="setting-lbl">Plan actual</span><span class="setting-val" style="color:var(--g);font-weight:600">Gratuito · acceso completo</span></div>
+        <div class="setting-row" style="cursor:pointer" onclick="navTo('chat');setTimeout(()=>addUserMsg('¿Qué incluye el plan premium de Steve?'),300)"><span class="setting-lbl">Ver plan Premium</span><span class="setting-val" style="color:var(--pm)">$99 MXN/mes →</span></div>
+        <div class="setting-row"><span class="setting-lbl">Mensajes este mes</span><span class="setting-val" id="msgs-count">0 usados</span></div>
+        <div class="setting-row" style="cursor:pointer;color:var(--co)" onclick="doLogout()"><span class="setting-lbl" style="color:var(--co)">Cerrar sesión</span></div>
+      </div>
+      <div class="card">
+        <div class="card-t">Insignias</div>
+        <div class="badge-grid" id="badges-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ BOTTOM NAV ══ -->
+  <div class="nav">
+    <button class="nb on" id="nb-home" onclick="navTo('home')">
+      <svg viewBox="0 0 22 22"><path d="M3 9.5L11 3l8 6.5V19a1 1 0 01-1 1H14v-5h-4v5H4a1 1 0 01-1-1V9.5z"/></svg>
+      <span>Inicio</span>
+    </button>
+    <button class="nb" id="nb-chat" onclick="navTo('chat')">
+      <svg viewBox="0 0 22 22"><path d="M4 4h14a1 1 0 011 1v9a1 1 0 01-1 1H7l-4 3V5a1 1 0 011-1z"/></svg>
+      <span>Chat</span>
+    </button>
+    <button class="nb" id="nb-missions" onclick="navTo('missions')">
+      <svg viewBox="0 0 22 22"><circle cx="11" cy="11" r="8"/><path d="M8 11l2 2 4-4"/></svg>
+      <span>Misiones</span>
+    </button>
+    <button class="nb" id="nb-charts" onclick="navTo('charts')">
+      <svg viewBox="0 0 22 22"><rect x="3" y="13" width="4" height="6" rx="1"/><rect x="9" y="8" width="4" height="11" rx="1"/><rect x="15" y="4" width="4" height="15" rx="1"/></svg>
+      <span>Gráficas</span>
+    </button>
+    <button class="nb" id="nb-profile" onclick="navTo('profile')">
+      <svg viewBox="0 0 22 22"><circle cx="11" cy="7" r="4"/><path d="M3 19c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span>Perfil</span>
+    </button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// CONFIGURACIÓN
+// ══════════════════════════════════════════════
+const SUPABASE_URL = 'https://yeidzkanwbratjbritfu.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllaWR6a2Fud2JyYXRqYnJpdGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3NDY2NjcsImV4cCI6MjA5MzMyMjY2N30.gJv0lZZyIuEHAvvev708D7y0ZL8cOe_cwFYZu3NhH_k'; 
+const API_BASE = '/api';
+
+let sb;
+function initSupabase() {
+  if (typeof supabase !== 'undefined') {
+    try {
+      sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    } catch(e) {
+      console.error('Supabase init error:', e);
+    }
+  }
+}
+
+// ── ESTADO GLOBAL ──
+let STATE = {
+  user: null, profile: null, financial: null,
+  debts: [], expenses: [], memory: null, missions: [],
+  chatMessages: [], conversationId: null,
+  currentScreen: 'home', activeChartTab: 'gastos',
+  chartInstances: {}, isRecording: false, recSecs: 0, recInterval: null
+};
+
+const LEVEL_NAMES = ['','Iniciando','Explorador','Organizador','Estratega','Ahorrador','Inversor','Libre'];
+const LEVEL_XP    = [0,0,200,500,1000,2000,3500,5000];
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+// Init movido al final del body después de CDNs
+
+// ══════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════
+function switchAuthTab(tab, btn) {
+  document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('register-form').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('auth-msg').textContent = '';
+}
+
+async function doLogin() {
+  if (!sb) initSupabase();
+  if (!sb) { setAuthMsg('Error de conexión. Recarga la página.', 'err'); return; }
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  setAuthMsg('Entrando...', '');
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) setAuthMsg(error.message === 'Invalid login credentials' ? 'Correo o contraseña incorrectos' : error.message, 'err');
+}
+
+async function doRegister() {
+  if (!sb) initSupabase();
+  if (!sb) { setAuthMsg('Error de conexión. Recarga la página.', 'err'); return; }
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-pass').value;
+  if (!name) { setAuthMsg('Escribe tu nombre', 'err'); return; }
+  if (pass.length < 6) { setAuthMsg('La contraseña debe tener al menos 6 caracteres', 'err'); return; }
+  setAuthMsg('Creando tu cuenta...', '');
+  const { error } = await sb.auth.signUp({ email, password: pass, options: { data: { full_name: name } } });
+  if (error) setAuthMsg(error.message, 'err');
+  else setAuthMsg('¡Listo! Revisa tu correo para confirmar tu cuenta.', 'ok');
+}
+
+function setAuthMsg(msg, cls) {
+  const el = document.getElementById('auth-msg');
+  el.textContent = msg;
+  el.className = 'auth-msg ' + (cls || '');
+}
+
+function showAuth() {
+  document.getElementById('loader').classList.add('fade');
+  setTimeout(() => {
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('auth-screen').style.display = 'flex';
+  }, 500);
+}
+
+async function doLogout() {
+  if (sb) await sb.auth.signOut();
+}
+
+// ══════════════════════════════════════════════
+// LOAD USER DATA
+// ══════════════════════════════════════════════
+async function loadUserData() {
+  const uid = STATE.user.id;
+  try {
+    const [pR, fR, dR, mR, misR, expR] = await Promise.all([
+      sb.from('profiles').select('*').eq('id', uid).maybeSingle(),
+      sb.from('financial_data').select('*').eq('user_id', uid).maybeSingle(),
+      sb.from('debts').select('*').eq('user_id', uid).eq('is_active', true).order('priority', { ascending: true }),
+      sb.from('user_memory').select('*').eq('user_id', uid).maybeSingle(),
+      sb.from('user_missions').select('*, missions(*)').eq('user_id', uid).order('assigned_at', { ascending: true }),
+      sb.from('expenses').select('*').eq('user_id', uid).order('priority', { ascending: true })
+    ]);
+    STATE.profile   = pR.data  || { id: uid, full_name: '', xp_total: 0, level: 1, streak_days: 0, messages_this_month: 0, onboarding_complete: false, sessions_count: 0 };
+    STATE.financial = fR.data  || { income_monthly: 0, total_fixed_expenses: 0, health_score: 0, rent: 0, food: 0, transport: 0, services: 0 };
+    STATE.debts     = dR.data  || [];
+    STATE.memory    = mR.data  || {};
+    STATE.missions  = misR.data || [];
+    STATE.expenses  = expR.data || [];
+  } catch(e) {
+    console.error('loadUserData error:', e);
+    STATE.profile   = { id: uid, full_name: '', xp_total: 0, level: 1, streak_days: 0, messages_this_month: 0, onboarding_complete: false, sessions_count: 0 };
+    STATE.financial = { income_monthly: 0, total_fixed_expenses: 0, health_score: 0 };
+    STATE.debts     = [];
+    STATE.memory    = {};
+    STATE.missions  = [];
+    STATE.expenses  = [];
+  }
+}
+
+// ══════════════════════════════════════════════
+// SHOW APP
+// ══════════════════════════════════════════════
+function showApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'flex';
+  document.getElementById('loader').classList.add('fade');
+  setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+  renderAll();
+  // initChat se llama cuando el usuario navega a Chat (en navTo)
+  // Pre-cargar conversación en background sin mostrar
+  setTimeout(function() {
+    sb.from('conversations').insert({ user_id: STATE.user.id, messages: [] }).select().maybeSingle()
+      .then(function(r) { if (r.data) STATE.conversationId = r.data.id; })
+      .catch(function(e) { console.error('conv pre-load:', e); });
+  }, 1000);
+}
+
+function renderAll() {
+  renderHome();
+  renderMissions();
+  renderCharts();
+  renderProfile();
+}
+
+// ══════════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════════
+function renderHome() {
+  const p = STATE.profile;
+  const f = STATE.financial;
+  const d = STATE.debts;
+  const rawName = p.full_name || STATE.user?.user_metadata?.full_name || STATE.user?.email?.split('@')[0] || 'amigo';
+  const name = rawName;
+  const initial = name[0].toUpperCase();
+  const minPay = d.reduce((s, x) => s + (Number(x.minimum_payment) || 0), 0);
+  const freeCash = (Number(f.income_monthly) || 0) - (Number(f.total_fixed_expenses) || 0) - minPay;
+
+  document.getElementById('home-av').textContent = initial;
+  document.getElementById('home-name').textContent = 'Hola, ' + name.split(' ')[0];
+  const days = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const now = new Date();
+  document.getElementById('home-date').textContent = days[now.getDay()] + ' · ' + now.getDate() + ' ' + months[now.getMonth()];
+
+  updateXPDisplay(p.xp_total || 0, p.level || 1);
+
+  document.getElementById('kpi-health').textContent = (f.health_score || 0) + '/100';
+  document.getElementById('kpi-streak').textContent = (p.streak_days || 0) + ' días';
+  document.getElementById('kpi-free').textContent = '$' + Math.max(0, freeCash).toLocaleString();
+  const done = STATE.missions.filter(m => m.status === 'completed').length;
+  document.getElementById('kpi-missions').textContent = done + '/' + STATE.missions.length;
+
+  // Insights
+  const insights = [];
+  if (d.length > 0) {
+    const hiRate = Math.max(...d.map(x => x.interest_rate || 0));
+    if (hiRate > 30) insights.push({ t: 'Tasa alta: ' + hiRate + '% anual', cls: 'bad' });
+  }
+  const expRatio = f.income_monthly > 0 ? (f.total_fixed_expenses / f.income_monthly) * 100 : 0;
+  if (expRatio > 70) insights.push({ t: 'Gastos: ' + Math.round(expRatio) + '% ingreso', cls: 'warn' });
+  else insights.push({ t: 'Gastos: ' + Math.round(expRatio) + '% ingreso', cls: 'ok' });
+  if (p.streak_days > 0) insights.push({ t: p.streak_days + ' días de racha', cls: 'ok' });
+  const insEl = document.getElementById('home-insights');
+  insEl.innerHTML = insights.map(i => `<span class="ins ${i.cls}">${i.t}</span>`).join('');
+
+  // Streak
+  const stEl = document.getElementById('home-streak');
+  const dayLetters = ['L','M','M','J','V','S','D'];
+  const dayNames = ['Lun','Mar','Mié','Jue','Vie','Sáb','Hoy'];
+  const todayDay = (now.getDay() + 6) % 7;
+  stEl.innerHTML = dayLetters.map((l, i) => {
+    const cls = i < todayDay ? 'done' : i === todayDay ? 'today' : '';
+    return `<div class="sd"><div class="sd-c ${cls}">${l}</div><div class="sd-l">${dayNames[i]}</div></div>`;
+  }).join('');
+
+  // Leaderboard my row
+  document.getElementById('lb-my-av').textContent = initial;
+  document.getElementById('lb-my-name').textContent = name.split(' ')[0] + ' (tú)';
+  document.getElementById('lb-my-xp').textContent = (p.xp_total || 0) + ' XP';
+}
+
+function updateXPDisplay(xp, level) {
+  const lvlNames = ['','Iniciando','Explorador','Organizador','Estratega','Ahorrador','Inversor','Libre'];
+  const lvlXP    = [0,0,200,500,1000,2000,3500,5000,9999];
+  const curXP = lvlXP[level] || 0;
+  const nextXP = lvlXP[level + 1] || 9999;
+  const pct = nextXP > curXP ? Math.min(100, Math.round(((xp - curXP) / (nextXP - curXP)) * 100)) : 100;
+  const lvlName = lvlNames[level] || 'Experto';
+
+  document.querySelectorAll('.xp-pill').forEach(el => el.innerHTML = '⭐ ' + xp + ' XP');
+  const lvlBar = document.getElementById('home-lvl-bar');
+  if (lvlBar) setTimeout(() => lvlBar.style.width = pct + '%', 200);
+  const el = document.getElementById.bind(document);
+  if (el('home-lvl-label'))  el('home-lvl-label').textContent  = 'Nivel ' + level;
+  if (el('home-lvl-name'))   el('home-lvl-name').textContent   = lvlName;
+  if (el('home-lvl-sub'))    el('home-lvl-sub').textContent    = (nextXP - xp) + ' XP para el siguiente nivel';
+  if (el('home-lvl-badge'))  el('home-lvl-badge').textContent  = 'Nivel ' + (level + 1) + ' pronto';
+  if (el('home-xp-cur'))     el('home-xp-cur').textContent     = xp + ' XP';
+  if (el('home-xp-next'))    el('home-xp-next').textContent    = nextXP + ' XP';
+  if (el('m-lvl-label'))     el('m-lvl-label').textContent     = 'Nivel ' + level;
+  if (el('m-xp-cur'))        el('m-xp-cur').textContent        = xp;
+  if (el('m-xp-next'))       el('m-xp-next').textContent       = nextXP;
+  if (el('m-lvl-badge'))     el('m-lvl-badge').textContent     = (nextXP - xp) + ' XP restantes';
+  const mBar = document.getElementById('m-lvl-bar');
+  if (mBar) setTimeout(() => mBar.style.width = pct + '%', 200);
+}
+
+// ══════════════════════════════════════════════
+// CHAT
+// ══════════════════════════════════════════════
+async function initChat() {
+  // Limpiar chat completamente - DOM y STATE
+  const chatMsgs = document.getElementById('chat-msgs');
+  if (chatMsgs) chatMsgs.innerHTML = '';
+  STATE.chatMessages = [];  // Resetear historial de mensajes
+  
+  // Crear conversación nueva
+  try {
+    const { data } = await sb.from('conversations').insert({ user_id: STATE.user.id, messages: [] }).select().maybeSingle();
+    if (data) STATE.conversationId = data.id;
+  } catch(e) { console.error('conversations insert:', e); }
+
+  // Mensaje inicial fijo - empático y correcto
+  try {
+    const name = STATE.profile?.full_name?.split(' ')[0] || STATE.user?.user_metadata?.full_name?.split(' ')[0] || '';
+    
+    if (STATE.memory?.last_session_summary) {
+      const hdr = document.getElementById('session-hdr');
+      if (hdr) hdr.style.display = 'flex';
+      const txt = document.getElementById('session-summary-txt');
+      if (txt) txt.textContent = STATE.memory.last_session_summary;
+      const hook = STATE.memory.next_session_hook;
+      addSteveMsg(hook || ('Hola' + (name ? ' ' + name : '') + ', bienvenido de nuevo. ¿Seguimos donde lo dejamos?'));
+    } else {
+      // Saludo simple - solo conectar primero, el plan viene después
+      const greeting = name
+        ? 'Hola ' + name + ', qué gusto tenerte por aquí. Soy Steve, tu asesor financiero personal. ¿Cómo estás hoy?'
+        : 'Hola, qué gusto tenerte por aquí. Soy Steve, tu asesor financiero personal. ¿Cómo estás?';
+      addSteveMsg(greeting);
+    }
+    showQuickReplies(['Bien, ¿por dónde empezamos?', 'Hola Steve', 'Cuéntame más sobre ti']);
+  } catch(e) { 
+    console.error('initChat error:', e);
+    addSteveMsg('Hola, soy Steve. ¿Empezamos a organizar tus finanzas?');
+  }
+}
+
+function addSteveMsg(text) {
+  const wrap = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = 'msg-s fade';
+  div.innerHTML = `<div class="m-av" style="background:var(--g);color:#fff">S</div><div><div class="bs">${escHtml(text)}</div></div>`;
+  wrap.appendChild(div);
+  STATE.chatMessages.push({ role: 'assistant', content: text });
+  scrollChat();
+}
+
+function addUserMsg(text) {
+  hideQuickReplies();
+  const wrap = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = 'msg-u fade';
+  const init = (STATE.profile?.full_name || '?')[0].toUpperCase();
+  div.innerHTML = `<div class="m-av" style="background:var(--bg2);color:var(--txt);border:1px solid var(--bdr)">${init}</div><div><div class="bu">${escHtml(text)}</div></div>`;
+  wrap.appendChild(div);
+  STATE.chatMessages.push({ role: 'user', content: text });
+  scrollChat();
+  callSteve(text);
+}
+
+function showTyping() {
+  const wrap = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = 'msg-s'; div.id = 'typing-ind';
+  div.innerHTML = `<div class="m-av" style="background:var(--g);color:#fff">S</div><div class="typing"><span></span><span></span><span></span></div>`;
+  wrap.appendChild(div);
+  scrollChat();
+}
+
+function hideTyping() {
+  const el = document.getElementById('typing-ind');
+  if (el) el.remove();
+}
+
+function scrollChat() {
+  const wrap = document.getElementById('chat-msgs');
+  setTimeout(() => wrap.scrollTop = wrap.scrollHeight, 60);
+}
+
+function showQuickReplies(replies) {
+  const el = document.getElementById('chat-reps');
+  el.style.display = 'flex';
+  el.innerHTML = replies.map(r => `<button class="rep" onclick="addUserMsg('${r}')">${r}</button>`).join('');
+}
+
+function hideQuickReplies() {
+  document.getElementById('chat-reps').style.display = 'none';
+}
+
+async function callSteveFirst() {
+  showTyping();
+  document.getElementById('chat-status').textContent = 'Escribiendo...';
+  try {
+    const res = await fetch(API_BASE + '/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: '__INICIO_SESION__' }],
+        user_id: STATE.user.id,
+        conversation_id: STATE.conversationId,
+        is_first_message: true
+      })
+    });
+    const data = await res.json();
+    hideTyping();
+    document.getElementById('chat-status').textContent = 'En línea';
+    if (data.message) {
+      addSteveMsg(data.message);
+      showQuickReplies(['Sí, empecemos', 'Tengo una duda primero', 'Dime más sobre Steve']);
+    }
+  } catch(e) {
+    hideTyping();
+    document.getElementById('chat-status').textContent = 'En línea';
+    addSteveMsg('Hola, soy Steve. Voy a ayudarte a organizar tus finanzas de forma simple. ¿Empezamos?');
+    showQuickReplies(['Sí, empecemos', 'Tengo una duda primero']);
+  }
+}
+
+async function callSteve(userText) {
+  showTyping();
+  document.getElementById('chat-status').textContent = 'Escribiendo...';
+
+  try {
+    const res = await fetch(API_BASE + '/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: STATE.chatMessages,
+        user_id: STATE.user.id,
+        conversation_id: STATE.conversationId
+      })
+    });
+    const data = await res.json();
+    hideTyping();
+    document.getElementById('chat-status').textContent = 'En línea';
+
+    if (data.message) {
+      addSteveMsg(data.message);
+      if (data.purchase_card) renderPurchaseCard(data.purchase_card);
+      
+      // Si Steve guardó datos financieros, recargar estado completo
+      if (data.reload_data) {
+        try {
+          await loadUserData();
+          renderAll();
+        } catch(e) { console.error('reload error:', e); }
+      }
+      
+      if (data.update?.health_score) {
+        STATE.financial.health_score = data.update.health_score;
+        const kpiH = document.getElementById('kpi-health');
+        if (kpiH) kpiH.textContent = data.update.health_score + '/100';
+      }
+      
+      showQuickReplies(getSuggestedReplies(userText));
+    }
+  } catch (e) {
+    hideTyping();
+    document.getElementById('chat-status').textContent = 'En línea';
+    addSteveMsg('Tuve un problema de conexión. Intenta de nuevo en un momento.');
+  }
+}
+
+function getSuggestedReplies(lastMsg) {
+  const m = lastMsg.toLowerCase();
+  if (m.includes('comprar') || m.includes('quiero') || m.includes('cuesta'))
+    return ['¿Hay una mejor opción?', '¿Cuándo sería buen momento?', 'No voy a comprarlo'];
+  if (m.includes('tarjeta') || m.includes('deuda'))
+    return ['¿Cuánto ahorro si pago extra?', 'Muéstrame la estrategia completa', '¿Por cuál empiezo?'];
+  return ['Cuéntame más', 'Dame un reto de ahorro', '¿Cómo mejoro mi salud financiera?'];
+}
+
+function renderPurchaseCard(card) {
+  const wrap = document.getElementById('chat-msgs');
+  const colorMap = { green: 'var(--g)', yellow: 'var(--am)', red: 'var(--co)' };
+  const dotColorMap = { green: 'var(--g)', yellow: 'var(--am)', red: 'var(--co)', blue: 'var(--bl)' };
+  const signalIcon = card.signal === 'green'
+    ? `<path d="M7 10l2 2 4-4" stroke="${colorMap.green}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`
+    : card.signal === 'yellow'
+    ? `<path d="M10 6v4M10 12v.5" stroke="${colorMap.yellow}" stroke-width="1.5" stroke-linecap="round"/>`
+    : `<path d="M10 6v4M10 12v.5" stroke="${colorMap.red}" stroke-width="1.5" stroke-linecap="round"/>`;
+  const pts = (card.points || []).map(p =>
+    `<div class="pc-row"><div class="pc-dot" style="background:${dotColorMap[p.color]||'var(--txt2)'}"></div><div class="pc-row-txt">${escHtml(p.text)}</div></div>`
+  ).join('');
+  const acts = (card.actions || []).map((a, i) => {
+    const cls = i === 0 ? 'yes' : i === card.actions.length - 1 ? 'no' : 'wait';
+    return `<button class="pca ${cls}" onclick="purchaseAction('${escHtml(a)}')">${escHtml(a)}</button>`;
+  }).join('');
+  const div = document.createElement('div');
+  div.className = 'msg-s fade';
+  div.innerHTML = `<div style="width:28px;flex-shrink:0"></div>
+    <div class="purchase-card pc-${card.signal}">
+      <div class="pc-top">
+        <div class="pc-sig ${card.signal}">
+          <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="8" stroke="${colorMap[card.signal]}" stroke-width="1.5"/>
+            ${signalIcon}
+          </svg>
+        </div>
+        <div><div class="pc-v-title">${escHtml(card.title||'Veredicto')}</div><div class="pc-v-sub">$${(card.amount||0).toLocaleString()} · ${card.impact_pct||0}% de tu margen</div></div>
+      </div>
+      <div class="pc-details">${pts}</div>
+      <div class="pc-acts">${acts}</div>
+    </div>`;
+  wrap.appendChild(div);
+  scrollChat();
+}
+
+function purchaseAction(action) {
+  document.querySelectorAll('.pc-acts').forEach(el => { el.style.opacity = '.4'; el.style.pointerEvents = 'none'; });
+  addUserMsg(action);
+}
+
+function sendChatMsg() {
+  const inp = document.getElementById('chat-inp');
+  const val = (inp.value || '').trim();
+  if (!val) return;
+  inp.value = '';
+  addUserMsg(val);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('chat-inp');
+  if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMsg(); } });
+});
+
+// ── AUDIO RECORDING ──
+function toggleRec() {
+  if (!STATE.isRecording) startRec(); else stopRec();
+}
+
+function startRec() {
+  STATE.isRecording = true; STATE.recSecs = 0;
+  const btn = document.getElementById('mic-btn');
+  const ring = document.getElementById('mic-ring');
+  const svg = document.getElementById('mic-svg');
+  const recRow = document.getElementById('rec-status');
+  btn.classList.add('rec');
+  ring.classList.add('on');
+  svg.innerHTML = '<rect x="5" y="5" width="8" height="8" rx="1.5" fill="#fff"/>';
+  recRow.style.display = 'block';
+  document.getElementById('rec-lbl').textContent = 'Grabando...';
+  STATE.recInterval = setInterval(() => {
+    STATE.recSecs++;
+    const t = document.getElementById('rec-timer');
+    const f = document.getElementById('rec-fill');
+    if (t) t.textContent = '0:' + String(STATE.recSecs).padStart(2, '0');
+    if (f) f.style.width = Math.min(100, Math.round(STATE.recSecs / 60 * 100)) + '%';
+    if (STATE.recSecs > 2) document.getElementById('rec-lbl').textContent = 'Hablando...';
+    if (STATE.recSecs >= 60) stopRec();
+  }, 1000);
+}
+
+async function stopRec() {
+  STATE.isRecording = false;
+  clearInterval(STATE.recInterval);
+  const btn = document.getElementById('mic-btn');
+  const ring = document.getElementById('mic-ring');
+  const svg = document.getElementById('mic-svg');
+  btn.classList.remove('rec');
+  ring.classList.remove('on');
+  document.getElementById('rec-lbl').textContent = 'Procesando...';
+  svg.innerHTML = '<circle cx="9" cy="9" r="6" stroke="var(--p)" stroke-width="1.5" stroke-dasharray="20 18" style="animation:spin .8s linear infinite"/>';
+
+  // Intentar transcribir (si no hay API key de OpenAI, falla silenciosamente)
+  setTimeout(() => {
+    svg.innerHTML = '<rect x="6" y="1" width="6" height="10" rx="3" stroke="#6B6B68" stroke-width="1.4"/><path d="M3 9a6 6 0 0012 0" stroke="#6B6B68" stroke-width="1.4" stroke-linecap="round"/><path d="M9 15v2" stroke="#6B6B68" stroke-width="1.4" stroke-linecap="round"/>';
+    document.getElementById('rec-status').style.display = 'none';
+    showToast('Audio listo — activa Whisper para transcripción automática');
+  }, 1200);
+  STATE.recSecs = 0;
+}
+
+// ══════════════════════════════════════════════
+// MISSIONS
+// ══════════════════════════════════════════════
+function renderMissions() {
+  const active = STATE.missions.filter(m => m.status === 'active');
+  const done   = STATE.missions.filter(m => m.status === 'completed');
+
+  document.getElementById('missions-sub').textContent = active.length + ' activas · ' + done.length + ' completadas';
+
+  const alEl = document.getElementById('active-missions-list');
+  alEl.innerHTML = active.length ? active.map(m => missionHTML(m)).join('') : '<p style="font-size:13px;color:var(--txt2);text-align:center;padding:20px 0">Completa tu perfil para recibir misiones</p>';
+
+  const dlEl = document.getElementById('done-missions-list');
+  dlEl.innerHTML = done.length ? done.map(m => missionDoneHTML(m)).join('') : '<p style="font-size:13px;color:var(--txt2);padding:8px 0">Ninguna completada aún</p>';
+
+  updateXPDisplay(STATE.profile?.xp_total || 0, STATE.profile?.level || 1);
+}
+
+function missionHTML(m) {
+  const mis = m.missions || {};
+  const pct = m.progress_pct || 0;
+  const bgColor = mis.color || '#E1F5EE';
+  return `<button class="mission" id="um-${m.id}" onclick="completeMission('${m.id}','${(mis.title||'').replace(/'/g,"\\'")}',${mis.xp_reward||50})">
+    <div class="m-ico" style="background:${bgColor}">${mis.icon||'📋'}</div>
+    <div class="m-body">
+      <div class="m-title">${escHtml(mis.title||'Misión')}</div>
+      <div class="m-sub">${escHtml(mis.description||'')}</div>
+      <div class="m-tbar"><div class="m-tfill" style="width:${pct}%;background:var(--g)"></div></div>
+    </div>
+    <div class="m-right">
+      <span class="m-xp">+${mis.xp_reward||50} XP</span>
+      <span class="m-time">${m.expires_at ? daysLeft(m.expires_at) + ' días' : ''}</span>
+    </div>
+  </button>`;
+}
+
+function missionDoneHTML(m) {
+  const mis = m.missions || {};
+  return `<button class="mission done">
+    <div class="m-ico" style="background:var(--gl)">✓</div>
+    <div class="m-body">
+      <div class="m-title">${escHtml(mis.title||'Misión')}</div>
+      <div class="m-sub">+${m.xp_earned||mis.xp_reward||0} XP ganados</div>
+      <div class="m-tbar"><div class="m-tfill" style="width:100%;background:var(--g)"></div></div>
+    </div>
+    <div class="m-right"><div class="m-check"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="var(--g)" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div></div>
+  </button>`;
+}
+
+async function completeMission(umId, title, xp) {
+  const el = document.getElementById('um-' + umId);
+  if (!el || el.classList.contains('done')) return;
+  el.classList.add('done');
+
+  await sb.from('user_missions').update({ status: 'completed', completed_at: new Date().toISOString(), progress_pct: 100, xp_earned: xp }).eq('id', umId);
+  await sb.rpc('add_xp', { p_user_id: STATE.user.id, p_xp: xp });
+
+  STATE.profile.xp_total = (STATE.profile.xp_total || 0) + xp;
+  updateXPDisplay(STATE.profile.xp_total, STATE.profile.level || 1);
+  showToast('¡+' + xp + ' XP! Misión completada');
+  await loadUserData();
+  renderMissions();
+  navTo('chat');
+  setTimeout(() => addUserMsg('Completé la misión: ' + title), 400);
+}
+
+// ══════════════════════════════════════════════
+// CHARTS
+// ══════════════════════════════════════════════
+function renderCharts() {
+  if (STATE.currentScreen === 'charts') {
+    setTimeout(() => initCurrentChart(), 100);
+  }
+}
+
+function showChart(tab, btn) {
+  ['gastos','deudas','proyeccion'].forEach(t => {
+    const el = document.getElementById('cp-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('.ctab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  STATE.activeChartTab = tab;
+  setTimeout(() => { initCurrentChart(); animateBars(); }, 60);
+}
+
+function destroyChart(id) {
+  if (STATE.chartInstances[id]) { try { STATE.chartInstances[id].destroy(); } catch(e){} delete STATE.chartInstances[id]; }
+}
+
+function initCurrentChart() {
+  const f = STATE.financial;
+  const d = STATE.debts;
+  if (STATE.activeChartTab === 'gastos') buildGastosChart(f);
+  if (STATE.activeChartTab === 'deudas') buildDeudasChart(d);
+  if (STATE.activeChartTab === 'proyeccion') buildProyChart(d, f);
+}
+
+function buildGastosChart(f) {
+  destroyChart('gastos');
+  const c = document.getElementById('chart-gastos');
+  if (!c) return;
+  const income = Number(f?.income_monthly) || 1;
+  const minPay = STATE.debts.reduce((s, x) => s + (Number(x.minimum_payment) || 0), 0);
+
+  // Usar expenses si están disponibles, sino usar financial_data como fallback
+  let labels = [], vals = [], libre = 0;
+  
+  if (STATE.expenses && STATE.expenses.length > 0) {
+    // Agrupar expenses por categoría
+    const groups = {};
+    STATE.expenses.forEach(e => {
+      const cat = e.category || 'otro';
+      const catLabel = {
+        'fijo_esencial': e.name,
+        'fijo_no_esencial': e.name,
+        'variable_esencial': e.name,
+        'variable_no_esencial': e.name
+      }[cat] || e.name;
+      if (!groups[catLabel]) groups[catLabel] = 0;
+      groups[catLabel] += Number(e.amount) || 0;
+    });
+    
+    // Ordenar por monto descendente
+    const sorted = Object.entries(groups).sort((a, b) => b[1] - a[1]);
+    
+    // Tomar top 6 gastos + deudas + libre
+    const top = sorted.slice(0, 5);
+    const otrosSum = sorted.slice(5).reduce((s, g) => s + g[1], 0);
+    
+    const totalGastos = sorted.reduce((s, g) => s + g[1], 0);
+    libre = Math.max(0, income - totalGastos - minPay);
+    
+    labels = [...top.map(g => g[0])];
+    vals = [...top.map(g => Math.max(0, Math.round(g[1] / income * 100)))];
+    
+    if (otrosSum > 0) { labels.push('Otros'); vals.push(Math.round(otrosSum / income * 100)); }
+    if (minPay > 0) { labels.push('Deudas'); vals.push(Math.round(minPay / income * 100)); }
+    labels.push('Libre'); vals.push(Math.max(0, Math.round(libre / income * 100)));
+  } else {
+    // Fallback: usar financial_data
+    const rent = Number(f?.rent) || 0;
+    const food = Number(f?.food) || 0;
+    const transport = Number(f?.transport) || 0;
+    const services = Number(f?.services) || 0;
+    libre = Math.max(0, income - rent - food - transport - services - minPay);
+    labels = ['Renta','Deudas','Comida','Transporte','Servicios','Libre'];
+    vals = [rent, minPay, food, transport, services, libre].map(v => Math.max(0, Math.round(v / income * 100)));
+  }
+
+  STATE.chartInstances['gastos'] = new Chart(c, {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data: vals, backgroundColor: ['#D85A30','#E24B4A','#BA7517','#378ADD','#9FE1CB','#1D9E75'], borderWidth: 3, borderColor: '#fff', hoverOffset: 6 }] },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + c.label + ': ' + c.parsed + '%' } } }, animation: { duration: 900 } }
+  });
+
+  const legEl = document.getElementById('leg-gastos');
+  const cols = ['#D85A30','#E24B4A','#BA7517','#378ADD','#9FE1CB','#1D9E75'];
+  legEl.innerHTML = labels.map((l, i) => `<div class="leg-item"><span class="leg-sq" style="background:${cols[i]}"></span><span class="leg-name">${l}</span><span class="leg-val">${vals[i]}%</span></div>`).join('');
+
+  // Calcular insight dinámico basado en gastos reales
+  const totalExp = STATE.expenses.reduce((s, e) => s + Number(e.amount), 0);
+  const expRatio = income > 0 ? Math.round((totalExp + minPay) / income * 100) : 0;
+  const insightEl = document.getElementById('gastos-insight');
+  if (insightEl) {
+    if (expRatio > 90) {
+      insightEl.textContent = 'Tus gastos y deudas superan el 90% de tu ingreso. Hay un déficit real que necesita atención inmediata.';
+    } else if (expRatio > 70) {
+      insightEl.textContent = 'Tus gastos y deudas representan el ' + expRatio + '% de tu ingreso. El margen es muy ajustado. Steve puede ayudarte a liberar espacio.';
+    } else {
+      insightEl.textContent = 'Tu distribución de gastos es manejable (' + expRatio + '% del ingreso). El siguiente paso es optimizar deudas y crear un fondo de emergencia.';
+    }
+  }
+}
+
+function buildDeudasChart(debts) {
+  destroyChart('deudas');
+  const c = document.getElementById('chart-deudas');
+  if (!c || !debts.length) { if (c) { const ctx = c.getContext('2d'); ctx.font = '14px sans-serif'; ctx.fillStyle = '#6B6B68'; ctx.textAlign = 'center'; ctx.fillText('Sin deudas registradas', c.width/2, c.height/2); } return; }
+  const cols = ['#D85A30','#BA7517','#378ADD','#1D9E75','#7F77DD','#E24B4A'];
+  STATE.chartInstances['deudas'] = new Chart(c, {
+    type: 'bar',
+    data: { labels: debts.map(d => d.name), datasets: [{ data: debts.map(d => d.total_amount), backgroundColor: debts.map((_, i) => cols[i % cols.length]), borderRadius: 8, borderWidth: 0 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' $' + c.parsed.y.toLocaleString() } } }, scales: { y: { ticks: { callback: v => '$' + Math.round(v/1000) + 'k', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.04)' } }, x: { grid: { display: false }, ticks: { font: { size: 11 } } } }, animation: { duration: 900 } }
+  });
+
+  const detEl = document.getElementById('deudas-detail');
+  detEl.innerHTML = '<div class="card-t">Detalle por deuda</div>' + debts.map((d, i) => {
+    const maxD = Math.max(...debts.map(x => x.total_amount));
+    const pct = maxD > 0 ? Math.round(d.total_amount / maxD * 100) : 0;
+    return `<div class="prog-item"><div class="prog-head"><span class="prog-lbl">${escHtml(d.name)}</span><span class="prog-amt">$${Number(d.total_amount).toLocaleString()}</span></div><div class="prog-track"><div class="prog-fill" style="width:0%;background:${cols[i % cols.length]}" data-w="${pct}"></div></div><div class="prog-sub">${d.interest_rate}% anual</div></div>`;
+  }).join('') + `<div class="total-pill"><span class="tp-l">Prioridad: mayor interés primero</span><span class="tp-v">${debts[0]?.name||'—'}</span></div>`;
+  setTimeout(animateBars, 100);
+}
+
+function buildProyChart(debts, financial) {
+  destroyChart('linea');
+  const c = document.getElementById('chart-linea');
+  if (!c) return;
+  const topDebt = debts[0];
+  const otherDebts = debts.slice(1);
+  const months = ['Hoy','2m','4m','6m','8m','10m','12m','14m','16m','18m'];
+  const topStart = Number(topDebt?.total_amount) || 0;
+  const topPayExtra = Number(topDebt?.minimum_payment || 0) * 1.5;
+  const topData = months.map((_, i) => {
+    const val = topStart - (topPayExtra * i * 2);
+    return Math.max(0, Math.round(val));
+  });
+  const otherStart = otherDebts.reduce((s, d) => s + Number(d.total_amount), 0);
+  const otherData = months.map((_, i) => Math.max(0, Math.round(otherStart - otherStart * 0.03 * i * 2)));
+
+  STATE.chartInstances['linea'] = new Chart(c, {
+    type: 'line',
+    data: { labels: months, datasets: [
+      { label: topDebt?.name || 'Deuda principal', data: topData, borderColor: '#D85A30', backgroundColor: 'rgba(216,90,48,.08)', tension: .4, fill: true, pointRadius: 3, borderWidth: 2, pointBackgroundColor: '#D85A30' },
+      { label: 'Resto de deudas', data: otherData, borderColor: '#378ADD', backgroundColor: 'rgba(55,138,221,.05)', tension: .4, fill: true, pointRadius: 3, borderWidth: 2, borderDash: [4,3], pointBackgroundColor: '#378ADD' }
+    ]},
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' $' + c.parsed.y.toLocaleString() } } }, scales: { y: { ticks: { callback: v => '$' + Math.round(v/1000) + 'k', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.04)' } }, x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: false } } }, animation: { duration: 1000 } }
+  });
+
+  const minPay = debts.reduce((s, d) => s + (Number(d.minimum_payment) || 0), 0);
+  const freeCash = (Number(financial?.income_monthly) || 0) - (Number(financial?.total_fixed_expenses) || 0) - minPay;
+  const kpisEl = document.getElementById('proy-kpis');
+  kpisEl.innerHTML = `
+    <div class="kpi"><div class="kpi-l">Libre hoy</div><div class="kpi-v r">$${Math.max(0,freeCash).toLocaleString()}</div><div class="kpi-s">Actual</div></div>
+    <div class="kpi"><div class="kpi-l">Al liquidar</div><div class="kpi-v g">+$${Math.round((Number(topDebt?.minimum_payment)||0)).toLocaleString()}/mes</div><div class="kpi-s">Se libera</div></div>
+    <div class="kpi"><div class="kpi-l">Salud actual</div><div class="kpi-v a">${financial?.health_score||0}/100</div><div class="kpi-s">Score hoy</div></div>
+    <div class="kpi"><div class="kpi-l">Meta 6 meses</div><div class="kpi-v g">${Math.min(100,(financial?.health_score||0)+28)}/100</div><div class="kpi-s">Proyectado</div></div>`;
+}
+
+function animateBars() {
+  document.querySelectorAll('.prog-fill[data-w]').forEach(b => {
+    b.style.width = '0%';
+    setTimeout(() => b.style.width = b.dataset.w + '%', 100);
+  });
+}
+
+// ══════════════════════════════════════════════
+// PROFILE
+// ══════════════════════════════════════════════
+function renderProfile() {
+  const p = STATE.profile;
+  const f = STATE.financial;
+  const d = STATE.debts;
+  const name = p.full_name || STATE.user?.email?.split('@')[0] || '—';
+  const initial = name[0].toUpperCase();
+  const lvlNames = ['','Iniciando','Explorador','Organizador','Estratega','Ahorrador','Inversor','Libre'];
+  const lvlName = lvlNames[p.level || 1] || 'Experto';
+
+  document.getElementById('prof-av').textContent = initial;
+  document.getElementById('prof-level-sub').textContent = 'Nivel ' + (p.level||1) + ' · ' + lvlName;
+  document.getElementById('ph-av').textContent = initial;
+  document.getElementById('ph-name').textContent = name;
+  document.getElementById('ph-level').textContent = 'Nivel ' + (p.level||1) + ' · ' + lvlName;
+  document.getElementById('ps-xp').textContent = p.xp_total || 0;
+  document.getElementById('ps-streak').textContent = p.streak_days || 0;
+  document.getElementById('ps-missions').textContent = STATE.missions.filter(m => m.status === 'completed').length;
+  document.getElementById('msgs-count').textContent = (p.messages_this_month || 0) + ' usados';
+
+  const minPay = d.reduce((s, x) => s + (Number(x.minimum_payment) || 0), 0);
+  const freeCash = (Number(f?.income_monthly)||0) - (Number(f?.total_fixed_expenses)||0) - minPay;
+  const planEl = document.getElementById('plan-bars');
+  const items = [
+    { l: 'Salud financiera', a: (f?.health_score||0) + '/100', pct: f?.health_score||0, col: '#BA7517' },
+    { l: 'Deudas capturadas', a: d.length + ' activas', pct: Math.min(100, d.length * 33), col: '#1D9E75' },
+    { l: 'Disponible/mes', a: '$' + Math.max(0,freeCash).toLocaleString(), pct: Math.min(100, Math.round(freeCash / (Number(f?.income_monthly)||1) * 100)), col: '#378ADD' },
+  ];
+  planEl.innerHTML = items.map(i => `<div class="prog-item"><div class="prog-head"><span class="prog-lbl">${i.l}</span><span class="prog-amt">${i.a}</span></div><div class="prog-track"><div class="prog-fill" style="width:0%;background:${i.col}" data-w="${i.pct}"></div></div></div>`).join('');
+  setTimeout(animateBars, 200);
+
+  const badges = [
+    { ico: '🏆', lbl: 'Primer ingreso', done: (f?.income_monthly||0) > 0, bg: 'var(--gl)' },
+    { ico: '🔥', lbl: '5 días racha', done: (p.streak_days||0) >= 5, bg: 'var(--aml)' },
+    { ico: '📊', lbl: 'Ver gráfica', done: true, bg: 'var(--bl)' },
+    { ico: '💳', lbl: '3 deudas', done: d.length >= 3, bg: 'var(--col)' },
+    { ico: '🎯', lbl: 'Sin deudas', done: false, bg: 'var(--bg2)' },
+    { ico: '💰', lbl: '$10k ahorrado', done: false, bg: 'var(--bg2)' },
+  ];
+  document.getElementById('badges-grid').innerHTML = badges.map(b =>
+    `<div class="badge" style="${!b.done?'opacity:.4':''}"><div class="badge-ico" style="background:${b.bg}">${b.ico}</div><div class="badge-lbl">${b.lbl}</div></div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function navTo(name) {
+  if (STATE.currentScreen === name) return;
+  // Ocultar todas las pantallas correctamente
+  ['home','chat','missions','charts','profile'].forEach(function(s) {
+    var el = document.getElementById('s-' + s);
+    if (el) { el.style.display = 'none'; el.classList.remove('active'); }
+  });
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
+  // Mostrar la pantalla correcta
+  const scr = document.getElementById('s-' + name);
+  const btn = document.getElementById('nb-' + name);
+  if (scr) {
+    scr.style.display = 'flex';
+    scr.style.flexDirection = 'column';
+    scr.classList.add('active');
+  }
+  if (btn) btn.classList.add('on');
+  STATE.currentScreen = name;
+  if (name === 'charts') setTimeout(initCurrentChart, 100);
+  if (name === 'profile') setTimeout(animateBars, 200);
+  if (name === 'chat') {
+    var msgs = document.getElementById('chat-msgs');
+    if (msgs && msgs.children.length === 0) {
+      initChat();
+    }
+  }
+}
+
+// ══════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════
+function escHtml(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function daysLeft(dateStr) {
+  const diff = new Date(dateStr) - new Date();
+  return Math.max(0, Math.ceil(diff / 86400000));
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+  // Este script corre DESPUÉS de que los CDN cargan
+  initSupabase();
+  // Iniciar la app ahora que supabase está disponible
+  (async function() {
+    if (!sb) { showAuth(); return; }
+    try {
+      // Siempre cerrar sesión al abrir la app para pedir login
+      await sb.auth.signOut();
+      showAuth();
+    } catch(e) {
+      console.error('Init error:', e);
+      showAuth();
+    }
+    if (sb) sb.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        STATE.user = session.user;
+        try { await loadUserData(); } catch(e) { console.error(e); }
+        showApp();
+      } else if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
+        location.reload();
+      } else if (event === 'USER_UPDATED' && session?.user) {
+        STATE.user = session.user;
+      }
+    });
+  })();
+</script>
+</body>
+</html>
