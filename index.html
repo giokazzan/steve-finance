@@ -545,23 +545,27 @@ ${h.factors.map(f=>{const p=f.pts/f.max;return`<div class="tf-item">
 function renderPagos(){
   const el=$('home-pagos');if(!el)return;
   const today=new Date().getDate(),pagos=[];
-  S.expenses.filter(e=>e.due_day).forEach(e=>{
-    const d=e.due_day>=today?e.due_day-today:30-today+e.due_day;
-    pagos.push({name:e.name,amt:Number(e.amount),days:d,due:e.due_day,freq:e.frequency||'mensual',rate:0,urgency:d<=3?3:d<=7?2:1});
+  S.expenses.forEach(e=>{
+    const due=e.due_day||null;
+    const days=due?(due>=today?due-today:30-today+due):null;
+    pagos.push({name:e.name,amt:Number(e.amount),days,due,freq:e.frequency||'mensual',rate:0,urgency:days===null?0:days<=3?3:days<=7?2:1,hasDue:!!due});
   });
   S.debts.filter(d=>d.due_day).forEach(d=>{
     const days=d.due_day>=today?d.due_day-today:30-today+d.due_day;
-    pagos.push({name:d.name+' (mín.)',amt:Number(d.minimum_payment),days,due:d.due_day,freq:'mensual',rate:Number(d.interest_rate)||0,urgency:days<=3?3:days<=7?2:1});
+    pagos.push({name:d.name+' (mín.)',amt:Number(d.minimum_payment),days,due:d.due_day,freq:'mensual',rate:Number(d.interest_rate)||0,urgency:days<=3?3:days<=7?2:1,hasDue:true});
   });
   if(!pagos.length){el.innerHTML='<div style="color:var(--txt2);font-size:13px;text-align:center;padding:16px">Cuéntale a Steve tus gastos con fecha de pago</div>';return;}
-  // Orden: urgencia DESC, luego tasa DESC
-  pagos.sort((a,b)=>b.urgency-a.urgency||b.rate-a.rate);
+  // Ordenar: con fecha primero (por urgencia y tasa), sin fecha al final
+  pagos.sort((a,b)=>{
+    if(a.hasDue&&!b.hasDue)return -1;if(!a.hasDue&&b.hasDue)return 1;
+    return b.urgency-a.urgency||b.rate-a.rate;
+  });
   el.innerHTML=pagos.map(p=>{
-    const color=p.urgency===3?'var(--red)':p.urgency===2?'var(--am)':'var(--g)';
-    const lbl=p.urgency===3?'URGENTE':p.urgency===2?'Esta semana':'Este mes';
+    const color=!p.hasDue?'var(--txt2)':p.urgency===3?'var(--red)':p.urgency===2?'var(--am)':'var(--g)';
+    const lbl=!p.hasDue?'Sin fecha · dile a Steve el día':p.urgency===3?'URGENTE':p.urgency===2?'Esta semana':'Este mes';
     return`<div class="pago-item" style="border-color:${color}">
-<div><div class="pago-name">${esc(p.name)}</div><div class="pago-meta" style="color:${color}">${lbl} · Día ${p.due} · ${p.freq}${p.rate?' · '+p.rate+'% anual':''}</div></div>
-<div style="text-align:right;flex-shrink:0;margin-left:12px"><div style="font-size:15px;font-weight:800;color:var(--txt)">$${p.amt.toLocaleString()}</div><div style="font-size:11px;color:var(--txt2)">${p.days===0?'Hoy':'en '+p.days+' días'}</div></div>
+<div><div class="pago-name">${esc(p.name)}</div><div class="pago-meta" style="color:${color}">${lbl}${p.due?' · Día '+p.due:''}${p.freq?' · '+p.freq:''}${p.rate?' · '+p.rate+'% anual':''}</div></div>
+<div style="text-align:right;flex-shrink:0;margin-left:12px"><div style="font-size:15px;font-weight:800;color:var(--txt)">$${p.amt.toLocaleString()}</div><div style="font-size:11px;color:var(--txt2)">${p.hasDue?(p.days===0?'Hoy':'en '+p.days+' días'):'—'}</div></div>
 </div>`;
   }).join('');
 }
@@ -650,14 +654,23 @@ function renderMissions(){
   const active=S.missions.filter(m=>m.status==='active'),done=S.missions.filter(m=>m.status==='completed');
   $('mis-sub').textContent=active.length+' activas · '+done.length+' completadas';
   updateXP(S.profile?.xp_total||0,S.profile?.level||1);
-  $('active-missions').innerHTML=active.length?active.map(m=>missionHTML(m)).join(''):'<p style="font-size:13px;color:var(--txt2);text-align:center;padding:20px">Habla con Steve para activar misiones</p>';
+  if(!active.length){$('active-missions').innerHTML='<p style="font-size:13px;color:var(--txt2);text-align:center;padding:20px">Habla con Steve para activar misiones</p>';
+  }else{
+    // Mostrar activas + próxima misión disponible al final
+    const nextMis=done.length>0&&done[done.length-1];
+    $('active-missions').innerHTML=active.map(m=>missionHTML(m)).join('')+(nextMis?`<div style="background:var(--bg3);border:1px dashed var(--bdr2);border-radius:var(--r2);padding:13px;margin-bottom:8px;opacity:.6"><div style="font-size:11px;color:var(--txt2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;font-weight:700">🔒 Próxima misión</div><div style="font-size:13px;font-weight:700;color:var(--txt)">${esc(nextMis.missions?.title||'')}</div><div style="font-size:11px;color:var(--txt2)">${esc(nextMis.missions?.description||'')}</div></div>`:'');
+  }
   $('done-missions').innerHTML=done.length?done.map(m=>misDoneHTML(m)).join(''):'<p style="font-size:13px;color:var(--txt2);padding:8px">Ninguna completada aún</p>';
 }
 function missionHTML(m){
   const mis=m.missions||{},cnt=m.current_count||0,goal=mis.goal_count||1,pct=Math.round(cnt/goal*100);
-  return`<div class="mission"><div class="m-ico" style="background:${mis.color||'rgba(0,200,150,.1)'}">${mis.icon||'📋'}</div>
-<div class="m-body"><div class="m-title">${esc(mis.title||'Misión')}</div><div class="m-sub">${esc(mis.description||'')}</div>
-<div class="m-prow"><span class="m-ptxt">${cnt} / ${goal}</span><span class="m-ptxt">${pct}%</span></div>
+  const title=mis.title||m.mission_id||'Misión';
+  const desc=mis.description||'';
+  const icon=mis.icon||'🎯';
+  const color=mis.color||'rgba(0,200,150,.1)';
+  return`<div class="mission"><div class="m-ico" style="background:${color}">${icon}</div>
+<div class="m-body"><div class="m-title">${esc(title)}</div><div class="m-sub">${esc(desc)}</div>
+<div class="m-prow"><span class="m-ptxt">${cnt} de ${goal}</span><span class="m-ptxt">${pct}%</span></div>
 <div class="m-tbar"><div class="m-tfill" style="width:${pct}%"></div></div></div>
 <div class="m-xp">+${mis.xp_reward||50} XP</div></div>`;
 }
@@ -672,9 +685,14 @@ function buildGastos(){
   destroyChart('gastos');const c=$('chart-gastos');if(!c)return;
   const inc=Number(S.financial?.income_monthly)||1,mp=S.debts.reduce((s,d)=>s+(Number(d.minimum_payment)||0),0);
   if(!S.expenses.length){const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);ctx.font='13px sans-serif';ctx.fillStyle='#6E6E8A';ctx.textAlign='center';ctx.fillText('Cuéntale tus gastos a Steve',c.width/2,c.height/2-10);ctx.fillText('para ver la gráfica aquí',c.width/2,c.height/2+12);$('gastos-insight').textContent='Registra gastos para ver el análisis.';return;}
-  const ct={};S.expenses.forEach(e=>{const cat=e.category||'otros';ct[cat]=(ct[cat]||0)+(Number(e.amount)||0)*(FM[e.frequency]||1);});
-  const te=Object.values(ct).reduce((s,v)=>s+v,0),libre=Math.max(0,inc-te-mp);
-  const cats=Object.keys(ct),labels=[...cats.map(k=>k),libre>0?'Libre':''].filter(Boolean),vals=[...cats.map(k=>Math.round(ct[k]/inc*100)),libre>0?Math.round(libre/inc*100):0].filter((_,i)=>labels[i]),colors=[...cats.map(k=>CAT_COL[k]||'#6E6E8A'),'#00C896'].slice(0,labels.length);
+  const CAT_LBL={renta:'Renta',servicios:'Servicios',alimentacion:'Comida',transporte:'Transporte',salud:'Salud',educacion:'Educación',entretenimiento:'Entrete.',ropa:'Ropa',pago_deuda:'Pago deuda',ahorro:'Ahorro',inversion:'Inversión',negocio:'Negocio',otros:'Otros',fijo_esencial:'Fijo esencial',fijo_no_esencial:'No esencial'};
+  // Agrupar por nombre individual (no categoría) para mejor detalle
+  const ct={};S.expenses.forEach(e=>{const key=e.name;ct[key]=(ct[key]||{amt:0,cat:e.category||'otros',freq:e.frequency||'mensual'});ct[key].amt+=(Number(e.amount)||0)*(FM[e.frequency]||1);});
+  const te=Object.values(ct).reduce((s,v)=>s+v.amt,0),libre=Math.max(0,inc-te-mp);
+  const keys=Object.keys(ct);
+  const labels=[...keys.map(k=>k),libre>0?'Libre':''].filter(Boolean);
+  const vals=[...keys.map(k=>inc>0?Math.round(ct[k].amt/inc*100):Math.round(ct[k].amt)),libre>0?(inc>0?Math.round(libre/inc*100):0):0].filter((_,i)=>labels[i]);
+  const colors=[...keys.map(k=>CAT_COL[ct[k].cat]||'#6E6E8A'),'#00C896'].slice(0,labels.length);
   S.charts['gastos']=new Chart(c,{type:'doughnut',data:{labels,datasets:[{data:vals,backgroundColor:colors,borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+ctx.parsed+'%'}}},animation:{duration:900}}});
   $('leg-gastos').innerHTML=labels.map((l,i)=>`<div class="leg-item"><span class="leg-sq" style="background:${colors[i]}"></span><span class="leg-name">${l}</span><span class="leg-val">${vals[i]}%</span></div>`).join('');
   const er=Math.round((te+mp)/inc*100);
