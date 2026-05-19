@@ -649,32 +649,107 @@ function toggleRec(){if(!S.rec)startRec();else stopRec();}
 function startRec(){S.rec=true;S.recSecs=0;$('mic-btn').classList.add('rec');$('mic-ring').classList.add('on');$('mic-svg').innerHTML='<rect x="5" y="5" width="8" height="8" rx="1.5" fill="#fff"/>';$('rec-status').style.display='block';$('rec-lbl').textContent='Grabando...';S.recInt=setInterval(()=>{S.recSecs++;$('rec-timer').textContent='0:'+String(S.recSecs).padStart(2,'0');$('rec-fill').style.width=Math.min(100,S.recSecs/60*100)+'%';if(S.recSecs>=60)stopRec();},1000);}
 function stopRec(){S.rec=false;clearInterval(S.recInt);$('mic-btn').classList.remove('rec');$('mic-ring').classList.remove('on');setTimeout(()=>{$('mic-svg').innerHTML='<rect x="6" y="1" width="6" height="10" rx="3" stroke="#6E6E8A" stroke-width="1.4"/><path d="M3 9a6 6 0 0012 0" stroke="#6E6E8A" stroke-width="1.4" stroke-linecap="round"/><path d="M9 15v2" stroke="#6E6E8A" stroke-width="1.4" stroke-linecap="round"/>';$('rec-status').style.display='none';toast('Audio listo — activa Whisper para transcripción');},1200);}
 
-// MISSIONS
+// MISSIONS DATA
+const MIS_LOCAL={
+  'm-001':{title:'Primer mensaje',desc:'Escribe tu primer mensaje a Steve',icon:'👋',xp:25,howto:'Ya la completaste al abrir Steve por primera vez.',chatMsg:'¿Cómo voy con mis misiones?'},
+  'm-002':{title:'Registra tu ingreso',desc:'Dile a Steve cuánto ganas al mes',icon:'💰',xp:50,howto:'En el chat dile tu ingreso mensual. Ejemplo: "Gano $18,000 al mes" o "Mi quincena es de $9,000". Steve te pedirá confirmar y listo.',chatMsg:'Quiero registrar mi ingreso mensual'},
+  'm-003':{title:'Primer gasto registrado',desc:'Registra tu primer gasto fijo con Steve',icon:'📝',xp:50,howto:'Dile a Steve cualquier gasto fijo: renta, luz, internet, colegiatura. Ejemplo: "Pago $5,000 de renta el día 1 de cada mes". Confirma cuando Steve pregunte.',chatMsg:'Quiero registrar mis gastos fijos'},
+  'm-004':{title:'3 gastos registrados',desc:'Registra 3 gastos fijos diferentes',icon:'✅',xp:100,howto:'Sigue registrando gastos con Steve hasta llegar a 3. Puedes hacerlos todos en una misma conversación.',chatMsg:'Quiero registrar más gastos fijos'},
+  'm-005':{title:'5 gastos registrados',desc:'Llega a 5 gastos en tu perfil',icon:'🏆',xp:150,howto:'Agrega más gastos hasta tener 5: servicios, suscripciones, seguros, lo que pagues cada mes.',chatMsg:'¿Qué otros gastos me recomiendas registrar?'},
+  'm-006':{title:'Primera deuda registrada',desc:'Registra el saldo y tasa de tu deuda',icon:'📋',xp:75,howto:'Dile a Steve cualquier deuda que tengas. Ejemplo: "Tengo una tarjeta Banamex con $20,000 de saldo, pago mínimo $800 y tasa del 45%".',chatMsg:'Quiero registrar mis deudas'},
+  'm-007':{title:'Perfil completo',desc:'Ingreso + 3 gastos + 1 deuda registrados',icon:'🎯',xp:200,howto:'Completa las misiones anteriores: registra tu ingreso, al menos 3 gastos fijos y tu primera deuda. Con eso Steve puede darte un análisis completo.',chatMsg:'¿Cómo está mi perfil financiero?'},
+  'm-008':{title:'Consulta de compra',desc:'Pregunta a Steve antes de hacer una compra',icon:'🛒',xp:40,howto:'Antes de comprar algo, pregúntale a Steve. Ejemplo: "Quiero comprar un celular de $8,000, ¿me lo recomiendas?". Steve analizará tu situación.',chatMsg:'Quiero consultar una compra con Steve'},
+  'm-009':{title:'Tu salud financiera',desc:'Pregúntale a Steve cuál es tu salud financiera',icon:'❤️',xp:30,howto:'Simplemente pregúntale "¿Cuál es mi salud financiera?" y Steve te dará tu score con un análisis detallado.',chatMsg:'¿Cuál es mi salud financiera hoy?'},
+  'm-010':{title:'Racha de 3 días',desc:'Chatea con Steve 3 días seguidos',icon:'🔥',xp:100,howto:'Abre Steve y escríbele algo durante 3 días consecutivos. La constancia es parte de mejorar tus finanzas.',chatMsg:'¿Cómo voy con mi racha?'},
+  'm-011':{title:'Racha de 7 días',desc:'Chatea con Steve 7 días seguidos',icon:'⚡',xp:250,howto:'Mantén el hábito: escríbele a Steve durante 7 días seguidos.',chatMsg:'¿Cómo voy con mi racha de 7 días?'},
+  'm-012':{title:'Estrategia de deudas',desc:'Pídele a Steve un plan para liquidar tus deudas',icon:'🧠',xp:75,howto:'Pídele a Steve una estrategia. Ejemplo: "Dame un plan para salir de mis deudas lo más rápido posible". Steve usará el método avalancha o bola de nieve.',chatMsg:'Dame un plan para liquidar mis deudas'},
+};
+
 function renderMissions(){
-  const active=S.missions.filter(m=>m.status==='active'),done=S.missions.filter(m=>m.status==='completed');
+  const active=S.missions.filter(m=>m.status==='active');
+  const done=S.missions.filter(m=>m.status==='completed');
   $('mis-sub').textContent=active.length+' activas · '+done.length+' completadas';
   updateXP(S.profile?.xp_total||0,S.profile?.level||1);
-  if(!active.length){$('active-missions').innerHTML='<p style="font-size:13px;color:var(--txt2);text-align:center;padding:20px">Habla con Steve para activar misiones</p>';
+
+  // Misiones activas con título real
+  if(!active.length){
+    $('active-missions').innerHTML='<p style="font-size:13px;color:var(--txt2);text-align:center;padding:20px">Habla con Steve para activar misiones</p>';
   }else{
-    // Mostrar activas + próxima misión disponible al final
-    const nextMis=done.length>0&&done[done.length-1];
-    $('active-missions').innerHTML=active.map(m=>missionHTML(m)).join('')+(nextMis?`<div style="background:var(--bg3);border:1px dashed var(--bdr2);border-radius:var(--r2);padding:13px;margin-bottom:8px;opacity:.6"><div style="font-size:11px;color:var(--txt2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;font-weight:700">🔒 Próxima misión</div><div style="font-size:13px;font-weight:700;color:var(--txt)">${esc(nextMis.missions?.title||'')}</div><div style="font-size:11px;color:var(--txt2)">${esc(nextMis.missions?.description||'')}</div></div>`:'');
+    $('active-missions').innerHTML=active.map(m=>missionHTML(m)).join('');
   }
-  $('done-missions').innerHTML=done.length?done.map(m=>misDoneHTML(m)).join(''):'<p style="font-size:13px;color:var(--txt2);padding:8px">Ninguna completada aún</p>';
+
+  // Completadas + siguiente misión desbloqueada
+  const TODAS_MISIONES=[
+    {id:'m-002',title:'Registra tu ingreso',desc:'Dile a Steve cuánto ganas al mes',icon:'💰',xp:50},
+    {id:'m-003',title:'Primer gasto registrado',desc:'Menciona cualquier gasto y confirma que lo registre',icon:'📝',xp:50},
+    {id:'m-004',title:'3 gastos registrados',desc:'Registra 3 gastos fijos diferentes con Steve',icon:'✅',xp:100},
+    {id:'m-005',title:'5 gastos registrados',desc:'Llega a 5 gastos en tu perfil financiero',icon:'🏆',xp:150},
+    {id:'m-006',title:'Primera deuda registrada',desc:'Dile a Steve el saldo y tasa de cualquier deuda',icon:'📋',xp:75},
+    {id:'m-007',title:'Perfil completo',desc:'Ingreso + 3 gastos + 1 deuda registrados',icon:'🎯',xp:200},
+    {id:'m-008',title:'Consulta de compra',desc:'Pregúntale a Steve si debes hacer una compra',icon:'🛒',xp:40},
+    {id:'m-009',title:'Pregunta por tu salud',desc:'Pregúntale a Steve cuál es tu salud financiera',icon:'❤️',xp:30},
+    {id:'m-010',title:'Racha de 3 días',desc:'Chatea con Steve 3 días seguidos',icon:'🔥',xp:100},
+    {id:'m-011',title:'Racha de 7 días',desc:'Chatea con Steve 7 días seguidos',icon:'⚡',xp:250},
+    {id:'m-012',title:'Estrategia de deudas',desc:'Pídele a Steve un plan para liquidar tus deudas',icon:'🧠',xp:75},
+  ];
+  const doneIds=new Set(done.map(m=>m.mission_id));
+  const activeIds=new Set(active.map(m=>m.mission_id));
+  const siguiente=TODAS_MISIONES.find(m=>!doneIds.has(m.id)&&!activeIds.has(m.id));
+
+  let doneHtml=done.length?done.map(m=>misDoneHTML(m)).join(''):'<p style="font-size:13px;color:var(--txt2);padding:8px">Ninguna completada aún</p>';
+
+  // Mostrar siguiente misión disponible con instrucción clara
+  if(siguiente){
+    doneHtml=`<div style="background:linear-gradient(135deg,rgba(0,200,150,.06),rgba(123,110,246,.04));border:1px dashed rgba(0,200,150,.3);border-radius:var(--r2);padding:14px;margin-bottom:12px">
+      <div style="font-size:10px;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">🔓 Próxima misión por desbloquear</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="width:38px;height:38px;border-radius:10px;background:rgba(0,200,150,.1);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${siguiente.icon}</div>
+        <div><div style="font-size:13px;font-weight:700;color:var(--txt)">${siguiente.title}</div><div style="font-size:11px;color:var(--txt2);margin-top:2px">${siguiente.desc}</div></div>
+        <div style="margin-left:auto;font-size:11px;font-weight:700;color:var(--gd);background:var(--gl);border:1px solid rgba(0,200,150,.2);border-radius:7px;padding:3px 9px;flex-shrink:0">+${siguiente.xp} XP</div>
+      </div>
+    </div>`+doneHtml;
+  }
+  $('done-missions').innerHTML=doneHtml;
 }
 function missionHTML(m){
-  const mis=m.missions||{},cnt=m.current_count||0,goal=mis.goal_count||1,pct=Math.round(cnt/goal*100);
-  const title=mis.title||m.mission_id||'Misión';
-  const desc=mis.description||'';
-  const icon=mis.icon||'🎯';
-  const color=mis.color||'rgba(0,200,150,.1)';
-  return`<div class="mission"><div class="m-ico" style="background:${color}">${icon}</div>
-<div class="m-body"><div class="m-title">${esc(title)}</div><div class="m-sub">${esc(desc)}</div>
-<div class="m-prow"><span class="m-ptxt">${cnt} de ${goal}</span><span class="m-ptxt">${pct}%</span></div>
-<div class="m-tbar"><div class="m-tfill" style="width:${pct}%"></div></div></div>
-<div class="m-xp">+${mis.xp_reward||50} XP</div></div>`;
+  const db=m.missions||{},loc=MIS_LOCAL[m.mission_id]||{};
+  const title=db.title&&db.title!=='Misión'?db.title:loc.title||m.mission_id;
+  const desc=db.description||loc.desc||'';
+  const icon=db.icon||loc.icon||'🎯';
+  const color=db.color||'rgba(0,200,150,.1)';
+  const xp=db.xp_reward||loc.xp||50;
+  const goal=db.goal_count||1,cnt=m.current_count||0,pct=Math.round(cnt/goal*100);
+  const howto=loc.howto||desc;
+  const id='mis-'+m.id;
+  return`<div class="mission" style="flex-direction:column;align-items:stretch;cursor:pointer" onclick="toggleMis('${id}')">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="m-ico" style="background:${color}">${icon}</div>
+    <div class="m-body">
+      <div class="m-title">${esc(title)}</div>
+      <div class="m-sub">${esc(desc)}</div>
+      <div class="m-prow"><span class="m-ptxt">${cnt} de ${goal}${goal>1?' completados':''}</span><span class="m-ptxt">${pct}%</span></div>
+      <div class="m-tbar"><div class="m-tfill" style="width:${pct}%"></div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">
+      <div class="m-xp">+${xp} XP</div>
+      <div style="font-size:10px;color:var(--txt2)">▼ Cómo</div>
+    </div>
+  </div>
+  <div id="${id}" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--bdr)">
+    <div style="font-size:11px;font-weight:700;color:var(--g);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">¿Cómo conseguirla?</div>
+    <div style="font-size:13px;color:var(--txt2);line-height:1.6;margin-bottom:10px">${esc(howto)}</div>
+    <button onclick="event.stopPropagation();chat('${esc(loc.chatMsg||'¿Cómo voy con mis misiones?')}')" style="padding:7px 14px;border-radius:10px;background:var(--g);color:#000;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit">Ir a hacerlo con Steve ↗</button>
+  </div>
+</div>`;
 }
-function misDoneHTML(m){const mis=m.missions||{};return`<div class="mission done"><div class="m-ico" style="background:var(--gl)">✓</div><div class="m-body"><div class="m-title">${esc(mis.title||'Misión')}</div><div class="m-sub">+${m.xp_earned||mis.xp_reward||0} XP ganados</div><div class="m-tbar"><div class="m-tfill" style="width:100%"></div></div></div><div class="m-check"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="var(--g)" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div></div>`;}
+function toggleMis(id){const el=$(id);if(el)el.style.display=el.style.display==='none'?'block':'none';}
+function misDoneHTML(m){
+  const db=m.missions||{},loc=MIS_LOCAL[m.mission_id]||{};
+  const title=db.title&&db.title!=='Misión'?db.title:loc.title||m.mission_id;
+  const xp=m.xp_earned||db.xp_reward||loc.xp||0;
+  const icon=db.icon||loc.icon||'✓';
+  return`<div class="mission done"><div class="m-ico" style="background:var(--gl)">${icon}</div><div class="m-body"><div class="m-title">${esc(title)}</div><div class="m-sub">+${xp} XP ganados ✓</div><div class="m-tbar"><div class="m-tfill" style="width:100%"></div></div></div><div class="m-check"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="var(--g)" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div></div>`;
+}
 
 // CHARTS
 function navCharts(){if(S.screen==='charts')setTimeout(initCurrentChart,100);}
@@ -683,20 +758,48 @@ function initCurrentChart(){if(S.chartTab==='gastos')buildGastos();else if(S.cha
 
 function buildGastos(){
   destroyChart('gastos');const c=$('chart-gastos');if(!c)return;
-  const inc=Number(S.financial?.income_monthly)||1,mp=S.debts.reduce((s,d)=>s+(Number(d.minimum_payment)||0),0);
-  if(!S.expenses.length){const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);ctx.font='13px sans-serif';ctx.fillStyle='#6E6E8A';ctx.textAlign='center';ctx.fillText('Cuéntale tus gastos a Steve',c.width/2,c.height/2-10);ctx.fillText('para ver la gráfica aquí',c.width/2,c.height/2+12);$('gastos-insight').textContent='Registra gastos para ver el análisis.';return;}
-  const CAT_LBL={renta:'Renta',servicios:'Servicios',alimentacion:'Comida',transporte:'Transporte',salud:'Salud',educacion:'Educación',entretenimiento:'Entrete.',ropa:'Ropa',pago_deuda:'Pago deuda',ahorro:'Ahorro',inversion:'Inversión',negocio:'Negocio',otros:'Otros',fijo_esencial:'Fijo esencial',fijo_no_esencial:'No esencial'};
-  // Agrupar por nombre individual (no categoría) para mejor detalle
-  const ct={};S.expenses.forEach(e=>{const key=e.name;ct[key]=(ct[key]||{amt:0,cat:e.category||'otros',freq:e.frequency||'mensual'});ct[key].amt+=(Number(e.amount)||0)*(FM[e.frequency]||1);});
-  const te=Object.values(ct).reduce((s,v)=>s+v.amt,0),libre=Math.max(0,inc-te-mp);
+  const inc=Number(S.financial?.income_monthly)||0;
+  const mp=S.debts.reduce((s,d)=>s+(Number(d.minimum_payment)||0),0);
+  if(!S.expenses.length){
+    const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);
+    ctx.font='13px sans-serif';ctx.fillStyle='#6E6E8A';ctx.textAlign='center';
+    ctx.fillText('Cuéntale tus gastos a Steve',c.width/2,c.height/2-10);
+    ctx.fillText('para ver la gráfica aquí',c.width/2,c.height/2+12);
+    $('gastos-insight').textContent='Registra gastos para ver el análisis.';return;
+  }
+  // Agrupar por nombre, normalizar a mensual
+  const ct={};
+  S.expenses.forEach(e=>{
+    const key=e.name;
+    if(!ct[key])ct[key]={amt:0,cat:e.category||'otros'};
+    ct[key].amt+=(Number(e.amount)||0)*(FM[e.frequency]||1);
+  });
+  const te=Object.values(ct).reduce((s,v)=>s+v.amt,0);
+  const libre=inc>0?Math.max(0,inc-te-mp):0;
   const keys=Object.keys(ct);
-  const labels=[...keys.map(k=>k),libre>0?'Libre':''].filter(Boolean);
-  const vals=[...keys.map(k=>inc>0?Math.round(ct[k].amt/inc*100):Math.round(ct[k].amt)),libre>0?(inc>0?Math.round(libre/inc*100):0):0].filter((_,i)=>labels[i]);
+  const sinIngreso=inc===0;
+  // Labels siempre con $ para claridad
+  const labels=[...keys,libre>0?'Libre':''].filter(Boolean);
+  const vals=sinIngreso
+    ? [...keys.map(k=>Math.round(ct[k].amt)),0].slice(0,labels.length)
+    : [...keys.map(k=>Math.round(ct[k].amt/inc*100)),libre>0?Math.round(libre/inc*100):0].slice(0,labels.length);
   const colors=[...keys.map(k=>CAT_COL[ct[k].cat]||'#6E6E8A'),'#00C896'].slice(0,labels.length);
-  S.charts['gastos']=new Chart(c,{type:'doughnut',data:{labels,datasets:[{data:vals,backgroundColor:colors,borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.label+': '+ctx.parsed+'%'}}},animation:{duration:900}}});
-  $('leg-gastos').innerHTML=labels.map((l,i)=>`<div class="leg-item"><span class="leg-sq" style="background:${colors[i]}"></span><span class="leg-name">${l}</span><span class="leg-val">${vals[i]}%</span></div>`).join('');
-  const er=Math.round((te+mp)/inc*100);
-  $('gastos-insight').textContent=er>80?`Tus compromisos usan el ${er}% de tu ingreso. Hay poco margen. Habla con Steve sobre cómo reducirlos.`:er>60?`Tus gastos representan el ${er}% del ingreso. Razonable, pero hay espacio para mejorar.`:`Distribución saludable (${er}% del ingreso). Puedes destinar más al ahorro o pago de deudas.`;
+  S.charts['gastos']=new Chart(c,{
+    type:'doughnut',
+    data:{labels,datasets:[{data:vals,backgroundColor:colors,borderWidth:0,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>sinIngreso?` ${ctx.label}: $${ctx.parsed.toLocaleString()}/mes`:` ${ctx.label}: ${ctx.parsed}% del ingreso`}}},
+      animation:{duration:900}}
+  });
+  $('leg-gastos').innerHTML=labels.map((l,i)=>`<div class="leg-item"><span class="leg-sq" style="background:${colors[i]}"></span><span class="leg-name">${l}</span><span class="leg-val">${sinIngreso?'$'+vals[i].toLocaleString():vals[i]+'%'}</span></div>`).join('');
+  // Insight en lenguaje simple
+  if(sinIngreso){
+    $('gastos-insight').textContent=`Tienes $${Math.round(te).toLocaleString()} en gastos fijos al mes. Cuéntale a Steve tu ingreso para saber qué porcentaje representan y si hay margen de mejora.`;
+  }else{
+    const er=Math.round((te+mp)/inc*100);
+    $('gastos-insight').textContent=er>80?`De cada $100 que ganas, $${er} ya están comprometidos en gastos y deudas. Queda muy poco margen. Habla con Steve para identificar qué se puede reducir.`:er>60?`De cada $100 que ganas, $${er} van a gastos fijos. Es manejable, pero hay espacio para mejorar y liberar más dinero.`:`De cada $100 que ganas, solo $${er} están comprometidos en gastos fijos. Vas bien — considera destinar el resto al ahorro o pago de deudas.`;
+  }
 }
 
 function buildDeudas(){
