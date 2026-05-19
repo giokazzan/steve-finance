@@ -48,10 +48,13 @@ Ejemplo: usuario dice "la renta vence el día 5" → STEVE_DATA con name:"Renta"
 CATEGORÍAS DE GASTOS:
 renta, servicios, alimentacion, transporte, salud, educacion, entretenimiento, ropa, pago_deuda, ahorro, inversion, negocio, otros
 
-PAGO DE TARJETA — CRÍTICO:
-El pago mensual mínimo = GASTO con category="pago_deuda"
-El saldo total = DEUDA separada
-Son DOS registros distintos. Siempre registra ambos cuando el usuario mencione una tarjeta.
+PAGO DE TARJETA — CRÍTICO, DOS REGISTROS OBLIGATORIOS:
+Cuando el usuario mencione una tarjeta de crédito, SIEMPRE registras DOS cosas en el mismo STEVE_DATA:
+1. La DEUDA: saldo total, pago mínimo, tasa de interés, día de corte → va en "debts"
+2. El GASTO MENSUAL: el pago mínimo como gasto fijo con category="pago_deuda" → va en "expenses"
+
+Ejemplo si usuario dice "tengo Banamex con $45,000 de saldo, pago $2,200 mínimo, tasa 45%, corte día 20":
+STEVE_DATA:{"expenses":[{"name":"Pago tarjeta Banamex","amount":2200,"category":"pago_deuda","frequency":"mensual","due_day":20}],"debts":[{"name":"Tarjeta Banamex","total_amount":45000,"minimum_payment":2200,"interest_rate":45,"debt_type":"tarjeta_credito","due_day":20}],"financial":{}}
 
 FLUJO DE ORGANIZACIÓN (respeta este orden):
 PASO 1: Gastos fijos esenciales con monto + frecuencia + día de vencimiento
