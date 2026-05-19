@@ -655,6 +655,9 @@ async function callSteve(userText){
   try{
     const res=await fetch(API+'/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:S.msgs,user_id:S.user.id,conversation_id:S.convId})});
     const data=await res.json();hideTyping();$('chat-status').textContent='En línea';
+    // DEBUG temporal — ver en DevTools → Console
+    console.log('DEBUG:', JSON.stringify(data._debug));
+    console.log('saved_types:', data.saved_types, 'reload:', data.reload_data);
     if(data.message){
       addSteve(data.message);
       if(data.fresh_data){
