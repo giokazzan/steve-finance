@@ -24,8 +24,6 @@
 }
 html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg2);overflow-x:hidden}
 .app{width:100%;max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;display:flex;flex-direction:column}
-
-/* ── AUTH ── */
 #auth-screen{display:flex;flex-direction:column;min-height:100vh;background:var(--bg)}
 .auth-hero{background:var(--g);padding:60px 24px 40px;text-align:center}
 .auth-logo{width:64px;height:64px;border-radius:18px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;font-weight:700;color:#fff}
@@ -45,36 +43,24 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
 .auth-msg{font-size:13px;text-align:center;margin-top:12px;min-height:18px}
 .auth-msg.err{color:var(--co)}
 .auth-msg.ok{color:var(--g)}
-
-/* ── MAIN APP ── */
 #main-app{display:none;flex-direction:column;min-height:100vh}
 .screen{display:none;flex:1;flex-direction:column;min-height:calc(100vh - 56px);overflow-y:auto;-webkit-overflow-scrolling:touch}
 .screen.active{display:flex;flex-direction:column}
-
-/* ── TOPBAR ── */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;border-bottom:1px solid var(--bdr);background:var(--bg);position:sticky;top:0;z-index:10;flex-shrink:0}
 .tb-l{display:flex;align-items:center;gap:10px}
 .av{width:36px;height:36px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0}
 .tb-name{font-size:15px;font-weight:600;color:var(--txt)}
 .tb-sub{font-size:11px;color:var(--txt2);margin-top:1px}
 .xp-pill{background:var(--pl);border-radius:12px;padding:5px 10px;font-size:12px;font-weight:600;color:var(--pd);display:flex;align-items:center;gap:4px;flex-shrink:0}
-
-/* ── BOTTOM NAV ── */
 .nav{display:flex;border-top:1px solid var(--bdr);background:var(--bg);padding-bottom:env(safe-area-inset-bottom);flex-shrink:0;position:sticky;bottom:0;z-index:10}
 .nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px 10px;gap:3px;border:none;background:transparent;cursor:pointer;font-family:inherit}
 .nb svg{width:22px;height:22px;stroke:var(--txt2);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s}
 .nb span{font-size:10px;color:var(--txt2);transition:color .2s}
 .nb.on svg{stroke:var(--g)}
 .nb.on span{color:var(--g);font-weight:600}
-
-/* ── SCROLL CONTENT ── */
 .content{padding:14px 16px;flex:1}
-
-/* ── CARDS ── */
 .card{background:var(--bg);border:1px solid var(--bdr);border-radius:var(--r2);padding:14px;margin-bottom:12px}
 .card-t{font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
-
-/* ── LEVEL CARD ── */
 .level-card{border-radius:var(--r2);padding:14px 16px;margin-bottom:12px;background:var(--g);position:relative;overflow:hidden}
 .lc-bg1{position:absolute;right:-16px;top:-16px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.07)}
 .lc-bg2{position:absolute;right:20px;bottom:-20px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.05)}
@@ -86,31 +72,23 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
 .bar-track{height:7px;background:rgba(255,255,255,.2);border-radius:4px;overflow:hidden;margin:8px 0 4px}
 .bar-fill{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
 .bar-labels{display:flex;justify-content:space-between;font-size:10px;color:#9FE1CB}
-
-/* ── KPI GRID ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
 .kpi{background:var(--bg2);border-radius:var(--r);padding:11px 12px}
 .kpi-l{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;font-weight:500}
 .kpi-v{font-size:19px;font-weight:700;line-height:1.1;word-break:break-word;color:var(--txt)}
 .kpi-v.g{color:var(--g)}.kpi-v.r{color:var(--co)}.kpi-v.a{color:var(--am)}
 .kpi-s{font-size:10px;color:var(--txt2);margin-top:2px}
-
-/* ── STREAK ── */
 .streak-row{display:flex;gap:4px;justify-content:space-between;margin-bottom:12px}
 .sd{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
 .sd-c{width:100%;max-width:38px;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;border:1px solid var(--bdr);color:var(--txt2);background:var(--bg2)}
 .sd-c.done{background:var(--g);color:#fff;border-color:var(--g)}
 .sd-c.today{background:var(--pl);color:var(--pm);border-color:var(--p)}
 .sd-l{font-size:9px;color:var(--txt2)}
-
-/* ── INSIGHTS ── */
 .ins-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .ins{padding:5px 11px;border-radius:12px;font-size:11px;font-weight:500}
 .ins.ok{background:var(--gl);color:var(--gd)}
 .ins.warn{background:var(--aml);color:var(--amd)}
 .ins.bad{background:var(--col);color:var(--cod)}
-
-/* ── LEADERBOARD ── */
 .lb{background:var(--bg);border:1px solid var(--bdr);border-radius:14px;overflow:hidden;margin-bottom:12px}
 .lb-row{display:flex;align-items:center;gap:10px;padding:10px 13px;border-bottom:1px solid var(--bdr)}
 .lb-row:last-child{border-bottom:none}
@@ -119,8 +97,6 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
 .lb-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0}
 .lb-name{flex:1;font-size:13px;color:var(--txt);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lb-xp{font-size:12px;font-weight:600;color:var(--pm);flex-shrink:0}
-
-/* ── TIP CARD ── */
 .tip-card{background:var(--pl);border:1px solid #AFA9EC;border-radius:14px;padding:14px;margin-bottom:12px}
 .tip-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .tip-ico{width:30px;height:30px;border-radius:8px;background:var(--p);display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -129,39 +105,27 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
 .tip-txt{font-size:13px;color:#26215C;line-height:1.55;margin-bottom:10px}
 .tip-btn{width:100%;padding:11px;border-radius:10px;background:var(--p);color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit}
 .tip-btn:active{transform:scale(.98)}
-
-/* ── CHAT ── */
 .chat-msgs-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
 .msg-s{display:flex;gap:8px;align-items:flex-end}
 .msg-u{display:flex;gap:8px;align-items:flex-end;flex-direction:row-reverse}
 .m-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
 .bs{background:var(--gl);border-radius:4px 14px 14px 14px;padding:10px 13px;font-size:14px;color:#085041;line-height:1.55;max-width:calc(100% - 46px)}
 .bu{background:var(--bg2);border-radius:14px 4px 14px 14px;padding:10px 13px;font-size:14px;color:var(--txt);line-height:1.55;max-width:calc(100% - 46px)}
-.msg-time{font-size:10px;color:var(--txt2);margin-top:3px;padding:0 2px}
-
-/* ── TYPING INDICATOR ── */
 .typing{display:flex;gap:4px;align-items:center;padding:10px 13px;background:var(--gl);border-radius:4px 14px 14px 14px;width:fit-content}
 .typing span{width:6px;height:6px;border-radius:50%;background:var(--gm);animation:bounce .9s infinite}
 .typing span:nth-child(2){animation-delay:.15s}
 .typing span:nth-child(3){animation-delay:.3s}
 @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-
-/* ── SESSION HEADER (chat) ── */
 .session-hdr{background:var(--bg2);border-radius:var(--r2);padding:12px 14px;margin:12px 16px 0;display:flex;gap:10px;align-items:flex-start}
 .sh-ico{width:30px;height:30px;border-radius:8px;background:var(--gl);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
 .sh-lbl{font-size:10px;font-weight:600;color:var(--g);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
 .sh-txt{font-size:12px;color:var(--txt);line-height:1.5}
 .sh-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .sh-tag{font-size:10px;background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:2px 8px;color:var(--txt2)}
-.sh-tag.a{background:var(--gl);border-color:#9FE1CB;color:var(--gd)}
-
-/* ── PURCHASE CARD (semáforo) ── */
 .purchase-card{border-radius:14px;overflow:hidden;margin:4px 0;max-width:calc(100% - 46px)}
 .pc-top{padding:12px 14px 10px;display:flex;align-items:center;gap:10px}
 .pc-sig{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.pc-sig.green{background:var(--gl)}
-.pc-sig.yellow{background:var(--aml)}
-.pc-sig.red{background:var(--col)}
+.pc-sig.green{background:var(--gl)}.pc-sig.yellow{background:var(--aml)}.pc-sig.red{background:var(--col)}
 .pc-v-title{font-size:14px;font-weight:600;color:var(--txt);margin-bottom:2px}
 .pc-v-sub{font-size:11px;color:var(--txt2)}
 .pc-details{padding:0 14px 10px;display:flex;flex-direction:column;gap:6px}
@@ -171,27 +135,8 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
 .pc-acts{display:flex;gap:6px;padding:8px 14px 12px;border-top:1px solid rgba(0,0,0,.06);flex-wrap:wrap}
 .pca{flex:1;padding:8px;border-radius:10px;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit;text-align:center;min-height:36px;transition:transform .15s}
 .pca:active{transform:scale(.96)}
-.pca.yes{background:var(--g);color:#fff}
-.pca.no{background:var(--bg2);color:var(--txt);border:1px solid var(--bdr)}
-.pca.wait{background:var(--aml);color:var(--amd)}
-.pc-green{background:var(--gl);border:1px solid #9FE1CB}
-.pc-yellow{background:#FFFDF5;border:1px solid #FAC775}
-.pc-red{background:#FFF8F6;border:1px solid #F5C4B3}
-
-/* ── AUDIO BUBBLE ── */
-.audio-bub{border-radius:4px 14px 14px 14px;padding:10px 13px;display:flex;align-items:center;gap:9px;max-width:calc(100% - 46px);background:var(--g)}
-.audio-bub.u{background:var(--bg2);border-radius:14px 4px 14px 14px}
-.play-btn{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;flex-shrink:0}
-.audio-bub.u .play-btn{background:rgba(0,0,0,.07)}
-.wv{display:flex;align-items:center;gap:2px;height:18px;flex:1}
-.wb{width:3px;border-radius:2px;background:rgba(255,255,255,.75)}
-.audio-bub.u .wb{background:var(--g)}
-.adur{font-size:10px;color:rgba(255,255,255,.8);min-width:26px;flex-shrink:0}
-.audio-bub.u .adur{color:var(--txt2)}
-.transcribed{background:var(--gl);border-radius:0 0 12px 12px;padding:6px 13px 9px;font-size:12px;color:var(--gm);max-width:calc(100% - 46px);margin-top:-6px;border-top:1px dashed rgba(29,158,117,.2)}
-.trans-lbl{font-size:9px;font-weight:600;color:var(--gm);opacity:.7;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
-
-/* ── CHAT INPUT ── */
+.pca.yes{background:var(--g);color:#fff}.pca.no{background:var(--bg2);color:var(--txt);border:1px solid var(--bdr)}.pca.wait{background:var(--aml);color:var(--amd)}
+.pc-green{background:var(--gl);border:1px solid #9FE1CB}.pc-yellow{background:#FFFDF5;border:1px solid #FAC775}.pc-red{background:#FFF8F6;border:1px solid #F5C4B3}
 .chat-bottom{border-top:1px solid var(--bdr);background:var(--bg);padding:8px 12px;padding-bottom:max(8px,env(safe-area-inset-bottom));flex-shrink:0}
 .chat-reps{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .rep{padding:8px 14px;border-radius:20px;font-size:12px;border:1px solid #5DCAA5;background:transparent;color:var(--gd);cursor:pointer;font-family:inherit;font-weight:500}
@@ -207,15 +152,11 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
 .send-btn{width:42px;height:42px;border-radius:50%;background:var(--g);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .send-btn:active{transform:scale(.9)}
 .rec-row{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 6px}
-.rec-txt{font-size:12px;color:var(--txt2)}
-.rec-timer{font-size:12px;font-weight:600;color:var(--red);font-variant-numeric:tabular-nums}
+.rec-txt{font-size:12px;color:var(--txt2)}.rec-timer{font-size:12px;font-weight:600;color:var(--red);font-variant-numeric:tabular-nums}
 .rec-bar{height:2px;background:var(--bg2);border-radius:1px;margin-bottom:6px;overflow:hidden}
 .rec-fill{height:100%;background:var(--red);width:0%;transition:width .15s linear}
-
-/* ── MISSIONS ── */
 .mission{background:var(--bg);border:1px solid var(--bdr);border-radius:14px;padding:12px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .2s;margin-bottom:8px;width:100%;text-align:left}
-.mission:active{transform:scale(.98)}
-.mission.done{opacity:.55}
+.mission:active{transform:scale(.98)}.mission.done{opacity:.55}
 .m-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px}
 .m-body{flex:1;min-width:0}
 .m-title{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:2px}
@@ -226,8 +167,6 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
 .m-xp{font-size:11px;font-weight:600;color:var(--pm);background:var(--pl);border-radius:6px;padding:2px 8px;white-space:nowrap}
 .m-time{font-size:10px;color:var(--txt2)}
 .m-check{width:22px;height:22px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center}
-
-/* ── CHARTS ── */
 .chart-tabs-row{display:flex;gap:6px;padding:12px 16px 4px;overflow-x:auto;scrollbar-width:none}
 .chart-tabs-row::-webkit-scrollbar{display:none}
 .ctab{padding:7px 16px;border-radius:18px;font-size:12px;font-weight:500;border:1px solid var(--bdr2);background:transparent;color:var(--txt2);cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0}
@@ -241,41 +180,27 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
 .leg-val{font-size:11px;color:var(--txt2);margin-left:auto;flex-shrink:0}
 .prog-item{margin-bottom:11px}
 .prog-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
-.prog-lbl{font-size:12px;color:var(--txt);font-weight:500}
-.prog-amt{font-size:11px;color:var(--txt2)}
+.prog-lbl{font-size:12px;color:var(--txt);font-weight:500}.prog-amt{font-size:11px;color:var(--txt2)}
 .prog-track{height:9px;background:var(--bg2);border-radius:5px;overflow:hidden}
 .prog-fill{height:100%;border-radius:5px;transition:width 1s cubic-bezier(.4,0,.2,1)}
 .prog-sub{font-size:10px;color:var(--txt2);margin-top:3px}
 .total-pill{display:flex;justify-content:space-between;align-items:center;background:var(--gl);border-radius:10px;padding:10px 13px;margin-top:8px}
-.tp-l{font-size:12px;color:var(--gd);font-weight:600}
-.tp-v{font-size:13px;color:var(--gd);font-weight:600}
-
-/* ── PROFILE ── */
+.tp-l{font-size:12px;color:var(--gd);font-weight:600}.tp-v{font-size:13px;color:var(--gd);font-weight:600}
 .profile-hero{background:var(--g);border-radius:var(--r2);padding:18px 16px;margin-bottom:12px;text-align:center}
 .ph-av{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;margin:0 auto 10px}
-.ph-name{font-size:18px;font-weight:700;color:#fff;margin-bottom:2px}
-.ph-level{font-size:12px;color:#9FE1CB}
+.ph-name{font-size:18px;font-weight:700;color:#fff;margin-bottom:2px}.ph-level{font-size:12px;color:#9FE1CB}
 .ph-stats{display:flex;justify-content:center;gap:20px;margin-top:12px;flex-wrap:wrap}
-.ph-stat{text-align:center}
-.ph-stat-v{font-size:16px;font-weight:700;color:#fff}
-.ph-stat-l{font-size:10px;color:#9FE1CB}
+.ph-stat{text-align:center}.ph-stat-v{font-size:16px;font-weight:700;color:#fff}.ph-stat-l{font-size:10px;color:#9FE1CB}
 .setting-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--bdr)}
 .setting-row:last-child{border-bottom:none}
-.setting-lbl{font-size:13px;color:var(--txt)}
-.setting-val{font-size:13px;color:var(--txt2)}
+.setting-lbl{font-size:13px;color:var(--txt)}.setting-val{font-size:13px;color:var(--txt2)}
 .badge-grid{display:flex;gap:10px;flex-wrap:wrap}
 .badge{text-align:center;width:56px}
 .badge-ico{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 4px}
 .badge-lbl{font-size:10px;color:var(--txt2);line-height:1.3}
-
-/* ── SECTION TITLE ── */
 .sec-t{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:10px}
-
-/* ── TOAST ── */
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(0,0,0,.85);color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;opacity:0;transition:all .3s;pointer-events:none;z-index:100;white-space:nowrap;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ── LOADER ── */
 #loader{position:fixed;inset:0;background:var(--g);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;transition:opacity .5s}
 #loader.fade{opacity:0;pointer-events:none}
 .loader-logo{width:70px;height:70px;border-radius:20px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;color:#fff;margin-bottom:16px}
@@ -283,10 +208,8 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
 .loader-sub{font-size:14px;color:rgba(255,255,255,.7)}
 .loader-dots{display:flex;gap:6px;margin-top:20px}
 .loader-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5);animation:ldot 1.2s infinite}
-.loader-dot:nth-child(2){animation-delay:.2s}
-.loader-dot:nth-child(3){animation-delay:.4s}
+.loader-dot:nth-child(2){animation-delay:.2s}.loader-dot:nth-child(3){animation-delay:.4s}
 @keyframes ldot{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
-
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .fade{animation:fadeUp .35s ease forwards}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
@@ -294,22 +217,15 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
 </head>
 <body>
 
-<!-- LOADER -->
 <div id="loader">
   <div class="loader-logo">S</div>
   <div class="loader-name">Steve</div>
   <div class="loader-sub">Tu asesor financiero personal</div>
-  <div class="loader-dots">
-    <div class="loader-dot"></div>
-    <div class="loader-dot"></div>
-    <div class="loader-dot"></div>
-  </div>
+  <div class="loader-dots"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- AUTH -->
 <div id="auth-screen" style="display:none">
   <div class="auth-hero">
     <div class="auth-logo">S</div>
@@ -336,16 +252,11 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
   </div>
 </div>
 
-<!-- MAIN APP -->
 <div class="app" id="main-app">
 
-  <!-- ══ HOME ══ -->
   <div class="screen active" id="s-home">
     <div class="topbar">
-      <div class="tb-l">
-        <div class="av" id="home-av">?</div>
-        <div><div class="tb-name" id="home-name">Steve</div><div class="tb-sub" id="home-date">Cargando...</div></div>
-      </div>
+      <div class="tb-l"><div class="av" id="home-av">?</div><div><div class="tb-name" id="home-name">Steve</div><div class="tb-sub" id="home-date">Cargando...</div></div></div>
       <div class="xp-pill" id="home-xp">⭐ 0 XP</div>
     </div>
     <div class="content" style="padding-bottom:20px">
@@ -358,8 +269,8 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
         <div class="bar-track"><div class="bar-fill" id="home-lvl-bar" style="width:0%;background:#fff"></div></div>
         <div class="bar-labels"><span id="home-xp-cur">0 XP</span><span id="home-xp-next">200 XP</span></div>
       </div>
-      <div id="health-score-panel" style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px;margin-bottom:16px">
-        <div style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:8px">Cargando salud financiera...</div>
+      <div id="health-score-panel" style="background:var(--bg);border:1px solid var(--bdr);border-radius:var(--r2);padding:16px;margin-bottom:12px">
+        <div style="font-size:13px;color:var(--txt2);text-align:center;padding:8px">Cargando salud financiera...</div>
       </div>
       <div class="kpi-grid">
         <div class="kpi"><div class="kpi-l">Salud financiera</div><div class="kpi-v a" id="kpi-health">—</div><div class="kpi-s">Tu score hoy</div></div>
@@ -373,24 +284,15 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
       <div class="tip-card">
         <div class="tip-head">
           <div class="tip-ico"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#fff" stroke-width="1.3"/><path d="M8 5v3.5M8 10.5v.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-          <span class="tip-lbl">Tip del día</span>
-          <span class="tip-badge">Gratis</span>
+          <span class="tip-lbl">Tip del día</span><span class="tip-badge">Gratis</span>
         </div>
-        <div class="tip-txt" id="home-tip">Pagar un poco extra cada mes a tu deuda de mayor interés puede ahorrarte miles de pesos y meses de pago. Pregúntale a Steve cómo aplicarlo a tu situación.</div>
-        <button class="tip-btn" onclick="navTo('chat');setTimeout(()=>addUserMsg('¿Cómo puedo aplicar el tip de pagar extra a mi deuda?'),300)">Aplicar este tip ↗</button>
+        <div class="tip-txt" id="home-tip">Pagar un poco extra cada mes a tu deuda de mayor interés puede ahorrarte miles de pesos. Pregúntale a Steve cómo aplicarlo.</div>
+        <button class="tip-btn" onclick="navTo('chat');setTimeout(()=>addUserMsg('¿Cómo puedo pagar extra a mi deuda y cuánto me ahorro?'),300)">Aplicar este tip ↗</button>
       </div>
       <div class="sec-t">📅 Próximos pagos</div>
-      <div id="home-pagos" style="margin-bottom:16px">
-        <div style="color:var(--txt2);font-size:13px;text-align:center;padding:16px">
-          Cuéntale a Steve tus gastos para ver tu calendario de pagos aquí
-        </div>
-      </div>
+      <div id="home-pagos" style="margin-bottom:16px"><div style="color:var(--txt2);font-size:13px;text-align:center;padding:16px">Cuéntale a Steve tus gastos para ver tu calendario aquí</div></div>
       <div class="sec-t">Gastos registrados</div>
-      <div id="home-gastos-lista" style="margin-bottom:16px">
-        <div style="color:var(--txt2);font-size:13px;text-align:center;padding:16px">
-          Aún sin gastos registrados
-        </div>
-      </div>
+      <div id="home-gastos-lista" style="margin-bottom:16px"><div style="color:var(--txt2);font-size:13px;text-align:center;padding:16px">Aún sin gastos registrados</div></div>
       <div class="sec-t">Ranking</div>
       <div class="lb" id="home-lb">
         <div class="lb-row"><span class="lb-pos" style="color:var(--am)">1</span><div class="lb-av" style="background:var(--aml);color:var(--amd)">—</div><span class="lb-name">Próximamente</span><span class="lb-xp">—</span></div>
@@ -399,22 +301,14 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
     </div>
   </div>
 
-  <!-- ══ CHAT ══ -->
   <div class="screen" id="s-chat" style="display:none;flex-direction:column">
     <div class="topbar">
-      <div class="tb-l">
-        <div class="av">S</div>
-        <div><div class="tb-name">Steve</div><div class="tb-sub" id="chat-status">En línea</div></div>
-      </div>
+      <div class="tb-l"><div class="av">S</div><div><div class="tb-name">Steve</div><div class="tb-sub" id="chat-status">En línea</div></div></div>
       <div class="xp-pill" id="chat-xp">⭐ 0 XP</div>
     </div>
     <div class="session-hdr" id="session-hdr" style="display:none">
       <div class="sh-ico"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#1D9E75" stroke-width="1.2"/><path d="M7 4v3l2 1" stroke="#1D9E75" stroke-width="1.2" stroke-linecap="round"/></svg></div>
-      <div>
-        <div class="sh-lbl">Continuando desde tu última sesión</div>
-        <div class="sh-txt" id="session-summary-txt">Cargando contexto...</div>
-        <div class="sh-tags" id="session-tags"></div>
-      </div>
+      <div><div class="sh-lbl">Continuando desde tu última sesión</div><div class="sh-txt" id="session-summary-txt">Cargando contexto...</div><div class="sh-tags" id="session-tags"></div></div>
     </div>
     <div class="chat-msgs-wrap" id="chat-msgs"></div>
     <div class="chat-bottom">
@@ -427,11 +321,7 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
         <input class="chat-inp" id="chat-inp" type="text" placeholder="Escríbele a Steve...">
         <button class="mic-btn" id="mic-btn" onclick="toggleRec()">
           <div class="mic-ring" id="mic-ring"></div>
-          <svg id="mic-svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <rect x="6" y="1" width="6" height="10" rx="3" stroke="#6B6B68" stroke-width="1.4"/>
-            <path d="M3 9a6 6 0 0012 0" stroke="#6B6B68" stroke-width="1.4" stroke-linecap="round"/>
-            <path d="M9 15v2" stroke="#6B6B68" stroke-width="1.4" stroke-linecap="round"/>
-          </svg>
+          <svg id="mic-svg" width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="6" y="1" width="6" height="10" rx="3" stroke="#6B6B68" stroke-width="1.4"/><path d="M3 9a6 6 0 0012 0" stroke="#6B6B68" stroke-width="1.4" stroke-linecap="round"/><path d="M9 15v2" stroke="#6B6B68" stroke-width="1.4" stroke-linecap="round"/></svg>
         </button>
         <button class="send-btn" onclick="sendChatMsg()">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M8 2l6 6-6 6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -440,7 +330,6 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
     </div>
   </div>
 
-  <!-- ══ MISSIONS ══ -->
   <div class="screen" id="s-missions" style="display:none">
     <div class="topbar">
       <div class="tb-l"><div class="av">S</div><div><div class="tb-name">Misiones</div><div class="tb-sub" id="missions-sub">Cargando...</div></div></div>
@@ -462,7 +351,6 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
     </div>
   </div>
 
-  <!-- ══ CHARTS ══ -->
   <div class="screen" id="s-charts" style="display:none">
     <div class="topbar">
       <div class="tb-l"><div class="av">S</div><div><div class="tb-name">Mi panorama</div><div class="tb-sub">Actualizado hoy</div></div></div>
@@ -476,7 +364,7 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
     <div class="content">
       <div id="cp-gastos">
         <div class="card"><div class="card-t">A dónde va tu dinero</div>
-          <div class="ch-wrap"><canvas id="chart-gastos" role="img" aria-label="Pastel de gastos mensuales"></canvas></div>
+          <div class="ch-wrap"><canvas id="chart-gastos"></canvas></div>
           <div class="leg-grid" id="leg-gastos"></div>
         </div>
         <div class="card" style="background:var(--gl);border-color:#9FE1CB">
@@ -487,13 +375,13 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
       </div>
       <div id="cp-deudas" style="display:none">
         <div class="card"><div class="card-t">Tus deudas activas</div>
-          <div class="ch-wrap" style="height:170px"><canvas id="chart-deudas" role="img" aria-label="Barras de deudas"></canvas></div>
+          <div class="ch-wrap" style="height:170px"><canvas id="chart-deudas"></canvas></div>
         </div>
         <div class="card" id="deudas-detail"><div class="card-t">Detalle</div></div>
       </div>
       <div id="cp-proyeccion" style="display:none">
         <div class="card"><div class="card-t">Proyección 18 meses</div>
-          <div class="ch-wrap" style="height:210px"><canvas id="chart-linea" role="img" aria-label="Proyección de deudas"></canvas></div>
+          <div class="ch-wrap" style="height:210px"><canvas id="chart-linea"></canvas></div>
           <div class="leg-grid" style="margin-top:10px">
             <div class="leg-item"><span class="leg-sq" style="background:var(--co)"></span><span class="leg-name">Deuda principal</span></div>
             <div class="leg-item"><span class="leg-sq" style="background:var(--bl)"></span><span class="leg-name">Resto de deudas</span></div>
@@ -504,7 +392,6 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
     </div>
   </div>
 
-  <!-- ══ PROFILE ══ -->
   <div class="screen" id="s-profile" style="display:none">
     <div class="topbar">
       <div class="tb-l"><div class="av" id="prof-av">?</div><div><div class="tb-name">Mi perfil</div><div class="tb-sub" id="prof-level-sub">Nivel 1</div></div></div>
@@ -521,69 +408,39 @@ html,body{width:100%;height:100%;font-family:-apple-system,BlinkMacSystemFont,'S
           <div class="ph-stat"><div class="ph-stat-v" id="ps-missions">0</div><div class="ph-stat-l">Misiones</div></div>
         </div>
       </div>
-      <div class="card">
-        <div class="card-t">Mi plan financiero</div>
-        <div id="plan-bars"></div>
-      </div>
+      <div class="card"><div class="card-t">Mi plan financiero</div><div id="plan-bars"></div></div>
       <div class="card">
         <div class="card-t">Mi cuenta</div>
         <div class="setting-row"><span class="setting-lbl">Plan actual</span><span class="setting-val" style="color:var(--g);font-weight:600">Gratuito · acceso completo</span></div>
         <div class="setting-row" style="cursor:pointer" onclick="navTo('chat');setTimeout(()=>addUserMsg('¿Qué incluye el plan premium de Steve?'),300)"><span class="setting-lbl">Ver plan Premium</span><span class="setting-val" style="color:var(--pm)">$99 MXN/mes →</span></div>
         <div class="setting-row"><span class="setting-lbl">Mensajes este mes</span><span class="setting-val" id="msgs-count">0 usados</span></div>
-        <div class="setting-row" style="cursor:pointer;color:var(--co)" onclick="doLogout()"><span class="setting-lbl" style="color:var(--co)">Cerrar sesión</span></div>
+        <div class="setting-row" style="cursor:pointer" onclick="doLogout()"><span class="setting-lbl" style="color:var(--co)">Cerrar sesión</span></div>
       </div>
-      <div class="card">
-        <div class="card-t">Insignias</div>
-        <div class="badge-grid" id="badges-grid"></div>
-      </div>
+      <div class="card"><div class="card-t">Insignias</div><div class="badge-grid" id="badges-grid"></div></div>
     </div>
   </div>
 
-  <!-- ══ BOTTOM NAV ══ -->
   <div class="nav">
-    <button class="nb on" id="nb-home" onclick="navTo('home')">
-      <svg viewBox="0 0 22 22"><path d="M3 9.5L11 3l8 6.5V19a1 1 0 01-1 1H14v-5h-4v5H4a1 1 0 01-1-1V9.5z"/></svg>
-      <span>Inicio</span>
-    </button>
-    <button class="nb" id="nb-chat" onclick="navTo('chat')">
-      <svg viewBox="0 0 22 22"><path d="M4 4h14a1 1 0 011 1v9a1 1 0 01-1 1H7l-4 3V5a1 1 0 011-1z"/></svg>
-      <span>Chat</span>
-    </button>
-    <button class="nb" id="nb-missions" onclick="navTo('missions')">
-      <svg viewBox="0 0 22 22"><circle cx="11" cy="11" r="8"/><path d="M8 11l2 2 4-4"/></svg>
-      <span>Misiones</span>
-    </button>
-    <button class="nb" id="nb-charts" onclick="navTo('charts')">
-      <svg viewBox="0 0 22 22"><rect x="3" y="13" width="4" height="6" rx="1"/><rect x="9" y="8" width="4" height="11" rx="1"/><rect x="15" y="4" width="4" height="15" rx="1"/></svg>
-      <span>Gráficas</span>
-    </button>
-    <button class="nb" id="nb-profile" onclick="navTo('profile')">
-      <svg viewBox="0 0 22 22"><circle cx="11" cy="7" r="4"/><path d="M3 19c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-      <span>Perfil</span>
-    </button>
+    <button class="nb on" id="nb-home" onclick="navTo('home')"><svg viewBox="0 0 22 22"><path d="M3 9.5L11 3l8 6.5V19a1 1 0 01-1 1H14v-5h-4v5H4a1 1 0 01-1-1V9.5z"/></svg><span>Inicio</span></button>
+    <button class="nb" id="nb-chat" onclick="navTo('chat')"><svg viewBox="0 0 22 22"><path d="M4 4h14a1 1 0 011 1v9a1 1 0 01-1 1H7l-4 3V5a1 1 0 011-1z"/></svg><span>Chat</span></button>
+    <button class="nb" id="nb-missions" onclick="navTo('missions')"><svg viewBox="0 0 22 22"><circle cx="11" cy="11" r="8"/><path d="M8 11l2 2 4-4"/></svg><span>Misiones</span></button>
+    <button class="nb" id="nb-charts" onclick="navTo('charts')"><svg viewBox="0 0 22 22"><rect x="3" y="13" width="4" height="6" rx="1"/><rect x="9" y="8" width="4" height="11" rx="1"/><rect x="15" y="4" width="4" height="15" rx="1"/></svg><span>Gráficas</span></button>
+    <button class="nb" id="nb-profile" onclick="navTo('profile')"><svg viewBox="0 0 22 22"><circle cx="11" cy="7" r="4"/><path d="M3 19c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Perfil</span></button>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════
-// CONFIGURACIÓN
-// ══════════════════════════════════════════════
-const SUPABASE_URL = 'https://yeidzkanwbratjbritfu.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllaWR6a2Fud2JyYXRqYnJpdGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3NDY2NjcsImV4cCI6MjA5MzMyMjY2N30.gJv0lZZyIuEHAvvev708D7y0ZL8cOe_cwFYZu3NhH_k'; 
+const SUPABASE_URL  = 'https://yeidzkanwbratjbritfu.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllaWR6a2Fud2JyYXRqYnJpdGZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3NDY2NjcsImV4cCI6MjA5MzMyMjY2N30.gJv0lZZyIuEHAvvev708D7y0ZL8cOe_cwFYZu3NhH_k';
 const API_BASE = '/api';
 
 let sb;
 function initSupabase() {
   if (typeof supabase !== 'undefined') {
-    try {
-      sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-    } catch(e) {
-      console.error('Supabase init error:', e);
-    }
+    try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON); } catch(e) { console.error('Supabase init error:', e); }
   }
 }
 
-// ── ESTADO GLOBAL ──
 let STATE = {
   user: null, profile: null, financial: null,
   debts: [], expenses: [], memory: null, missions: [],
@@ -595,14 +452,6 @@ let STATE = {
 const LEVEL_NAMES = ['','Iniciando','Explorador','Organizador','Estratega','Ahorrador','Inversor','Libre'];
 const LEVEL_XP    = [0,0,200,500,1000,2000,3500,5000];
 
-// ══════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════
-// Init movido al final del body después de CDNs
-
-// ══════════════════════════════════════════════
-// AUTH
-// ══════════════════════════════════════════════
 function switchAuthTab(tab, btn) {
   document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('on'));
   btn.classList.add('on');
@@ -653,9 +502,6 @@ async function doLogout() {
   if (sb) await sb.auth.signOut();
 }
 
-// ══════════════════════════════════════════════
-// LOAD USER DATA
-// ══════════════════════════════════════════════
 async function loadUserData() {
   const uid = STATE.user.id;
   try {
@@ -668,7 +514,7 @@ async function loadUserData() {
       sb.from('expenses').select('*').eq('user_id', uid).order('priority', { ascending: true })
     ]);
     STATE.profile   = pR.data  || { id: uid, full_name: '', xp_total: 0, level: 1, streak_days: 0, messages_this_month: 0, onboarding_complete: false, sessions_count: 0 };
-    STATE.financial = fR.data  || { income_monthly: 0, total_fixed_expenses: 0, health_score: 0, rent: 0, food: 0, transport: 0, services: 0 };
+    STATE.financial = fR.data  || { income_monthly: 0, total_fixed_expenses: 0, health_score: 0 };
     STATE.debts     = dR.data  || [];
     STATE.memory    = mR.data  || {};
     STATE.missions  = misR.data || [];
@@ -677,24 +523,16 @@ async function loadUserData() {
     console.error('loadUserData error:', e);
     STATE.profile   = { id: uid, full_name: '', xp_total: 0, level: 1, streak_days: 0, messages_this_month: 0, onboarding_complete: false, sessions_count: 0 };
     STATE.financial = { income_monthly: 0, total_fixed_expenses: 0, health_score: 0 };
-    STATE.debts     = [];
-    STATE.memory    = {};
-    STATE.missions  = [];
-    STATE.expenses  = [];
+    STATE.debts = []; STATE.memory = {}; STATE.missions = []; STATE.expenses = [];
   }
 }
 
-// ══════════════════════════════════════════════
-// SHOW APP
-// ══════════════════════════════════════════════
 function showApp() {
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('main-app').style.display = 'flex';
   document.getElementById('loader').classList.add('fade');
   setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
   renderAll();
-  // initChat se llama cuando el usuario navega a Chat (en navTo)
-  // Pre-cargar conversación en background sin mostrar
   setTimeout(function() {
     sb.from('conversations').insert({ user_id: STATE.user.id, messages: [] }).select().maybeSingle()
       .then(function(r) { if (r.data) STATE.conversationId = r.data.id; })
@@ -702,25 +540,24 @@ function showApp() {
   }, 1000);
 }
 
-function renderAll() {
-  renderHome();
-  renderMissions();
-  renderCharts();
-  renderProfile();
-}
+function renderAll() { renderHome(); renderMissions(); renderCharts(); renderProfile(); }
 
-// ══════════════════════════════════════════════
-// HOME
-// ══════════════════════════════════════════════
 function renderHome() {
   const p = STATE.profile;
   const f = STATE.financial;
   const d = STATE.debts;
+  const e = STATE.expenses;
   const rawName = p.full_name || STATE.user?.user_metadata?.full_name || STATE.user?.email?.split('@')[0] || 'amigo';
   const name = rawName;
   const initial = name[0].toUpperCase();
+
+  // Calcular gastos normalizados a mensual
+  const totalExpMonthly = e.reduce((s, exp) => {
+    const mult = { bimestral:0.5, trimestral:0.333, semestral:0.167, anual:0.083, quincenal:2, semanal:4.3 }[exp.frequency] || 1;
+    return s + (Number(exp.amount) || 0) * mult;
+  }, 0);
   const minPay = d.reduce((s, x) => s + (Number(x.minimum_payment) || 0), 0);
-  const freeCash = (Number(f.income_monthly) || 0) - (Number(f.total_fixed_expenses) || 0) - minPay;
+  const freeCash = (Number(f.income_monthly) || 0) - totalExpMonthly - minPay;
 
   document.getElementById('home-av').textContent = initial;
   document.getElementById('home-name').textContent = 'Hola, ' + name.split(' ')[0];
@@ -728,29 +565,21 @@ function renderHome() {
   const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
   const now = new Date();
   document.getElementById('home-date').textContent = days[now.getDay()] + ' · ' + now.getDate() + ' ' + months[now.getMonth()];
-
   updateXPDisplay(p.xp_total || 0, p.level || 1);
-
   document.getElementById('kpi-health').textContent = (f.health_score || 0) + '/100';
   document.getElementById('kpi-streak').textContent = (p.streak_days || 0) + ' días';
   document.getElementById('kpi-free').textContent = '$' + Math.max(0, freeCash).toLocaleString();
   const done = STATE.missions.filter(m => m.status === 'completed').length;
   document.getElementById('kpi-missions').textContent = done + '/' + STATE.missions.length;
 
-  // Insights
   const insights = [];
-  if (d.length > 0) {
-    const hiRate = Math.max(...d.map(x => x.interest_rate || 0));
-    if (hiRate > 30) insights.push({ t: 'Tasa alta: ' + hiRate + '% anual', cls: 'bad' });
-  }
-  const expRatio = f.income_monthly > 0 ? (f.total_fixed_expenses / f.income_monthly) * 100 : 0;
+  if (d.length > 0) { const hiRate = Math.max(...d.map(x => x.interest_rate || 0)); if (hiRate > 30) insights.push({ t: 'Tasa alta: ' + hiRate + '% anual', cls: 'bad' }); }
+  const expRatio = f.income_monthly > 0 ? (totalExpMonthly / f.income_monthly) * 100 : 0;
   if (expRatio > 70) insights.push({ t: 'Gastos: ' + Math.round(expRatio) + '% ingreso', cls: 'warn' });
-  else insights.push({ t: 'Gastos: ' + Math.round(expRatio) + '% ingreso', cls: 'ok' });
+  else if (expRatio > 0) insights.push({ t: 'Gastos: ' + Math.round(expRatio) + '% ingreso', cls: 'ok' });
   if (p.streak_days > 0) insights.push({ t: p.streak_days + ' días de racha', cls: 'ok' });
-  const insEl = document.getElementById('home-insights');
-  insEl.innerHTML = insights.map(i => `<span class="ins ${i.cls}">${i.t}</span>`).join('');
+  document.getElementById('home-insights').innerHTML = insights.map(i => `<span class="ins ${i.cls}">${i.t}</span>`).join('');
 
-  // Streak
   const stEl = document.getElementById('home-streak');
   const dayLetters = ['L','M','M','J','V','S','D'];
   const dayNames = ['Lun','Mar','Mié','Jue','Vie','Sáb','Hoy'];
@@ -760,104 +589,134 @@ function renderHome() {
     return `<div class="sd"><div class="sd-c ${cls}">${l}</div><div class="sd-l">${dayNames[i]}</div></div>`;
   }).join('');
 
-  // Leaderboard my row
   document.getElementById('lb-my-av').textContent = initial;
   document.getElementById('lb-my-name').textContent = name.split(' ')[0] + ' (tú)';
   document.getElementById('lb-my-xp').textContent = (p.xp_total || 0) + ' XP';
-  
-  // Renderizar tabla de pagos y lista de gastos
+
   renderPagos();
   renderGastosLista();
   renderHealthScore();
 }
-
 
 function renderGastosLista() {
   const el = document.getElementById('home-gastos-lista');
   if (!el) return;
   const expenses = STATE.expenses || [];
   const debts = STATE.debts || [];
-  if (expenses.length === 0 && debts.length === 0) {
-    el.innerHTML = '<div style="color:var(--txt2);font-size:13px;text-align:center;padding:16px">Aún sin gastos registrados</div>';
-    return;
-  }
-  const catIcon = { 'fijo_esencial':'🏠', 'fijo_no_esencial':'📱', 'variable_esencial':'🛒', 'variable_no_esencial':'🎮' };
-  const sorted = [...expenses].sort((a,b) => (a.priority||3)-(b.priority||3));
-  const total = sorted.reduce((s,e) => s+Number(e.amount), 0);
-  let html = `<div style="font-size:12px;color:var(--txt2);margin-bottom:8px">Total: <strong style="color:var(--txt)">$${total.toLocaleString()}/mes</strong></div>`;
-  html += sorted.map(e => `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg2);border-radius:10px;margin-bottom:6px"><div><div style="font-size:13px;font-weight:600;color:var(--txt)">${catIcon[e.category]||'📋'} ${e.name}</div><div style="font-size:11px;color:var(--txt2)">${e.category||'gasto'}${e.due_date?' · Día '+e.due_date:''}</div></div><div style="font-size:14px;font-weight:700;color:var(--txt)">$${Number(e.amount).toLocaleString()}</div></div>`).join('');
-  if (debts.length > 0) {
-    const totalDebt = debts.reduce((s,d) => s+Number(d.total_amount), 0);
-    html += `<div style="font-size:12px;color:#E24B4A;margin:10px 0 6px">💳 Deudas · $${totalDebt.toLocaleString()} total</div>`;
-    html += debts.map(d => `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg2);border-radius:10px;margin-bottom:6px;border-left:3px solid #E24B4A"><div><div style="font-size:13px;font-weight:600;color:var(--txt)">${d.name}</div><div style="font-size:11px;color:var(--txt2)">Mínimo $${Number(d.minimum_payment).toLocaleString()}${d.interest_rate?' · '+d.interest_rate+'% anual':''}${d.due_date?' · Corte día '+d.due_date:''}</div></div><div style="text-align:right"><div style="font-size:14px;font-weight:700;color:#E24B4A">$${Number(d.total_amount).toLocaleString()}</div><div style="font-size:11px;color:var(--txt2)">saldo</div></div></div>`).join('');
+  if (!expenses.length && !debts.length) { el.innerHTML = '<div style="color:var(--txt2);font-size:13px;text-align:center;padding:16px">Aún sin gastos registrados</div>'; return; }
+  const icon = {'renta':'🏠','servicios':'💡','alimentacion':'🛒','transporte':'🚗','salud':'💊','educacion':'📚','entretenimiento':'🎬','ropa':'👕','pago_deuda':'💳','ahorro':'🏦','inversion':'📈','negocio':'💼','otros':'📋','fijo_esencial':'🏠','fijo_no_esencial':'📱'};
+  const freqLabel = {'mensual':'mensual','bimestral':'bimestral','trimestral':'trimestral','semestral':'semestral','anual':'anual','quincenal':'quincenal','semanal':'semanal'};
+  const sorted = [...expenses].sort((a,b)=>(a.priority||3)-(b.priority||3));
+  const totalMensual = sorted.reduce((s,e)=>{ const m={bimestral:0.5,trimestral:0.333,semestral:0.167,anual:0.083,quincenal:2,semanal:4.3}[e.frequency]||1; return s+(Number(e.amount)||0)*m; },0);
+  let html = `<div style="font-size:12px;color:var(--txt2);margin-bottom:8px">Total mes: <strong style="color:var(--txt)">$${Math.round(totalMensual).toLocaleString()}</strong></div>`;
+  html += sorted.map(e=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg2);border-radius:10px;margin-bottom:6px"><div><div style="font-size:13px;font-weight:600;color:var(--txt)">${icon[e.category]||'📋'} ${e.name}</div><div style="font-size:11px;color:var(--txt2)">${freqLabel[e.frequency]||'mensual'}${e.due_day?' · Día '+e.due_day:''}</div></div><div style="text-align:right"><div style="font-size:14px;font-weight:700;color:var(--txt)">$${Number(e.amount).toLocaleString()}</div></div></div>`).join('');
+  if (debts.length) {
+    const td = debts.reduce((s,d)=>s+Number(d.total_amount),0);
+    html += `<div style="font-size:12px;color:#E24B4A;margin:10px 0 6px">💳 Deudas activas · Saldo total: $${td.toLocaleString()}</div>`;
+    html += debts.map(d=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg2);border-radius:10px;margin-bottom:6px;border-left:3px solid #E24B4A"><div><div style="font-size:13px;font-weight:600;color:var(--txt)">${d.name}</div><div style="font-size:11px;color:var(--txt2)">Mínimo $${Number(d.minimum_payment).toLocaleString()}${d.interest_rate?' · '+d.interest_rate+'% anual':''}${d.due_day?' · Día '+d.due_day:''}</div></div><div style="text-align:right"><div style="font-size:14px;font-weight:700;color:#E24B4A">$${Number(d.total_amount).toLocaleString()}</div><div style="font-size:11px;color:var(--txt2)">saldo</div></div></div>`).join('');
   }
   el.innerHTML = html;
 }
 
-function updateXPDisplay(xp, level) {
-  const lvlNames = ['','Iniciando','Explorador','Organizador','Estratega','Ahorrador','Inversor','Libre'];
-  const lvlXP    = [0,0,200,500,1000,2000,3500,5000,9999];
-  const curXP = lvlXP[level] || 0;
-  const nextXP = lvlXP[level + 1] || 9999;
-  const pct = nextXP > curXP ? Math.min(100, Math.round(((xp - curXP) / (nextXP - curXP)) * 100)) : 100;
-  const lvlName = lvlNames[level] || 'Experto';
-
-  document.querySelectorAll('.xp-pill').forEach(el => el.innerHTML = '⭐ ' + xp + ' XP');
-  const lvlBar = document.getElementById('home-lvl-bar');
-  if (lvlBar) setTimeout(() => lvlBar.style.width = pct + '%', 200);
-  const el = document.getElementById.bind(document);
-  if (el('home-lvl-label'))  el('home-lvl-label').textContent  = 'Nivel ' + level;
-  if (el('home-lvl-name'))   el('home-lvl-name').textContent   = lvlName;
-  if (el('home-lvl-sub'))    el('home-lvl-sub').textContent    = (nextXP - xp) + ' XP para el siguiente nivel';
-  if (el('home-lvl-badge'))  el('home-lvl-badge').textContent  = 'Nivel ' + (level + 1) + ' pronto';
-  if (el('home-xp-cur'))     el('home-xp-cur').textContent     = xp + ' XP';
-  if (el('home-xp-next'))    el('home-xp-next').textContent    = nextXP + ' XP';
-  if (el('m-lvl-label'))     el('m-lvl-label').textContent     = 'Nivel ' + level;
-  if (el('m-xp-cur'))        el('m-xp-cur').textContent        = xp;
-  if (el('m-xp-next'))       el('m-xp-next').textContent       = nextXP;
-  if (el('m-lvl-badge'))     el('m-lvl-badge').textContent     = (nextXP - xp) + ' XP restantes';
-  const mBar = document.getElementById('m-lvl-bar');
-  if (mBar) setTimeout(() => mBar.style.width = pct + '%', 200);
+function renderPagos() {
+  const el = document.getElementById('home-pagos');
+  if (!el) return;
+  const today = new Date().getDate();
+  const pagos = [];
+  (STATE.expenses||[]).filter(e=>e.due_day).forEach(e=>{
+    const d = e.due_day >= today ? e.due_day - today : 30 - today + e.due_day;
+    pagos.push({name:e.name,amount:Number(e.amount),due_day:e.due_day,days:d,freq:e.frequency||'mensual',color:d<=3?'#E24B4A':d<=7?'#BA7517':'#1D9E75',urgencia:d<=3?'Urgente':d<=7?'Esta semana':'Este mes'});
+  });
+  (STATE.debts||[]).filter(d=>d.due_day).forEach(d=>{
+    const days = d.due_day >= today ? d.due_day - today : 30 - today + d.due_day;
+    pagos.push({name:d.name+' (mín.)',amount:Number(d.minimum_payment),due_day:d.due_day,days,freq:'mensual',color:days<=3?'#E24B4A':days<=7?'#BA7517':'#1D9E75',urgencia:days<=3?'Urgente':days<=7?'Esta semana':'Este mes'});
+  });
+  if (!pagos.length) { el.innerHTML = '<div style="font-size:13px;color:var(--txt2);text-align:center;padding:16px">Cuéntale a Steve tus gastos con fechas de pago</div>'; return; }
+  pagos.sort((a,b)=>a.days-b.days);
+  el.innerHTML = pagos.map(p=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg2);border-radius:10px;margin-bottom:8px;border-left:3px solid ${p.color}"><div><div style="font-size:13px;font-weight:600;color:var(--txt)">${p.name}</div><div style="font-size:11px;color:${p.color}">${p.urgencia} · Día ${p.due_day} · ${p.freq}</div></div><div style="text-align:right"><div style="font-size:14px;font-weight:600;color:var(--txt)">$${p.amount.toLocaleString()}</div><div style="font-size:11px;color:var(--txt2)">${p.days===0?'Hoy':'en '+p.days+' días'}</div></div></div>`).join('');
 }
 
-// ══════════════════════════════════════════════
-// CHAT
-// ══════════════════════════════════════════════
+function calcHealthScore() {
+  const income = Number(STATE.financial?.income_monthly) || 0;
+  const expenses = (STATE.expenses||[]).reduce((s,e)=>{ const m={bimestral:0.5,trimestral:0.333,semestral:0.167,anual:0.083,quincenal:2,semanal:4.3}[e.frequency]||1; return s+(Number(e.amount)||0)*m; },0);
+  const debts = STATE.debts||[];
+  const minPay = debts.reduce((s,d)=>s+Number(d.minimum_payment),0);
+  const maxRate = debts.length ? Math.max(...debts.map(d=>Number(d.interest_rate)||0)) : 0;
+  const totalDebt = debts.reduce((s,d)=>s+Number(d.total_amount),0);
+  const free = income - expenses - minPay;
+  if (income === 0) return null;
+  const expRatio = (expenses+minPay)/income;
+  const f1 = expRatio<0.50?30:expRatio<0.70?15:0;
+  const debtRatio = totalDebt/(income*12);
+  const f2 = debtRatio<0.20?30:debtRatio<0.36?20:debtRatio<0.60?10:0;
+  const f3 = maxRate===0?20:maxRate<15?20:maxRate<30?10:0;
+  const freeRatio = free/income;
+  const f4 = freeRatio>0.20?20:freeRatio>0.10?10:0;
+  const score = f1+f2+f3+f4;
+  return { score, label:score>=80?'Excelente':score>=60?'Bueno':score>=40?'Regular':score>=20?'En riesgo':'Crítico', color:score>=60?'#1D9E75':score>=40?'#BA7517':'#E24B4A',
+    factors:[
+      {name:'Gastos vs ingreso',pts:f1,max:30,estado:f1>=25?'Excelente':f1>=15?'Regular':'Atención',detail:`Tus compromisos fijos: ${Math.round(expRatio*100)}% de tu ingreso. Meta: menos del 50%.`,accion:f1<30?'Intenta reducir algún gasto fijo no esencial.':'¡Vas muy bien en este rubro!'},
+      {name:'Tamaño de tus deudas',pts:f2,max:30,estado:f2>=25?'Excelente':f2>=15?'Regular':'Atención',detail:totalDebt>0?`Deuda total $${totalDebt.toLocaleString()} = ${Math.round(debtRatio*100)}% de tu ingreso anual.`:'Sin deudas registradas aún.',accion:f2<20?'Prioriza liquidar la deuda más costosa primero.':'Tu nivel de deuda es manejable.'},
+      {name:'Costo de intereses',pts:f3,max:20,estado:f3>=18?'Excelente':f3>=10?'Regular':'Atención',detail:maxRate>0?`Tasa más alta: ${maxRate}% anual.`:'Sin tasas registradas aún.',accion:f3<20?'Paga más del mínimo en la tarjeta con mayor tasa.':'Tus tasas son razonables.'},
+      {name:'Dinero libre al mes',pts:f4,max:20,estado:f4>=18?'Excelente':f4>=10?'Regular':'Atención',detail:`Te sobran $${Math.max(0,free).toLocaleString()}/mes (${Math.max(0,Math.round(freeRatio*100))}%). Meta: al menos 10%.`,accion:f4<20?'Destina parte del dinero libre a liquidar deudas.':'¡Excelente liquidez mensual!'}
+    ]
+  };
+}
+
+function renderHealthScore() {
+  const el = document.getElementById('health-score-panel');
+  if (!el) return;
+  const h = calcHealthScore();
+  if (!h) { el.innerHTML = '<div style="padding:16px;font-size:13px;color:var(--txt2);text-align:center">Cuéntale tus ingresos a Steve para ver tu salud financiera completa</div>'; return; }
+  const barColor = (pts,max) => pts/max>=.75?'#1D9E75':pts/max>=.40?'#BA7517':'#E24B4A';
+  const badgeBg = e=>({Excelente:'#D1ECE1',Bueno:'#D1ECE1',Regular:'#FFF3CD',Atención:'#FDEAEA'})[e]||'#FDEAEA';
+  const badgeTx = e=>({Excelente:'#0F6E56',Bueno:'#0F6E56',Regular:'#854F0B',Atención:'#A32D2D'})[e]||'#A32D2D';
+  el.innerHTML = `<div style="display:flex;align-items:center;gap:16px;margin-bottom:18px"><div style="width:80px;height:80px;border-radius:50%;border:3px solid ${h.color};display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:28px;font-weight:500;color:${h.color};line-height:1">${h.score}</span><span style="font-size:10px;color:var(--txt2)">de 100</span></div><div><div style="font-size:15px;font-weight:500;color:${h.color};margin-bottom:4px">${h.label}</div><div style="font-size:12px;color:var(--txt2);line-height:1.5;margin-bottom:8px">${h.score>=70?'Vas muy bien. Steve te ayuda a mantenerlo.':h.score>=40?'Hay margen de mejora. Steve tiene un plan.':'Situación de alerta. Actúa pronto con Steve.'}</div><button onclick="navTo('chat');setTimeout(()=>addUserMsg('Dame un plan concreto para mejorar mi salud financiera'),300)" style="font-size:11px;padding:4px 12px;border-radius:12px;border:1px solid var(--bdr);background:transparent;color:var(--txt);cursor:pointer">Ver mi plan ↗</button></div></div>${h.factors.map(f=>`<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:13px;font-weight:500;color:var(--txt)">${f.name}</span><span style="font-size:11px;padding:2px 8px;border-radius:10px;background:${badgeBg(f.estado)};color:${badgeTx(f.estado)}">${f.estado}</span></div><div style="font-size:12px;color:var(--txt2);margin-bottom:5px;line-height:1.4">${f.detail}</div><div style="height:7px;background:var(--bg2);border-radius:4px;overflow:hidden;margin-bottom:4px"><div style="height:100%;width:${Math.round(f.pts/f.max*100)}%;background:${barColor(f.pts,f.max)};border-radius:4px;transition:width .8s"></div></div><div style="font-size:11px;color:var(--txt2);font-style:italic">${f.accion}</div></div>`).join('')}`;
+}
+
+function updateXPDisplay(xp, level) {
+  const lvlNames = ['','Iniciando','Explorador','Organizador','Estratega','Ahorrador','Inversor','Libre'];
+  const lvlXP = [0,0,200,500,1000,2000,3500,5000,9999];
+  const curXP = lvlXP[level]||0, nextXP = lvlXP[level+1]||9999;
+  const pct = nextXP>curXP ? Math.min(100,Math.round(((xp-curXP)/(nextXP-curXP))*100)) : 100;
+  const lvlName = lvlNames[level]||'Experto';
+  document.querySelectorAll('.xp-pill').forEach(el=>el.innerHTML='⭐ '+xp+' XP');
+  const lb = document.getElementById('home-lvl-bar'); if(lb) setTimeout(()=>lb.style.width=pct+'%',200);
+  const el = document.getElementById.bind(document);
+  if(el('home-lvl-label')) el('home-lvl-label').textContent='Nivel '+level;
+  if(el('home-lvl-name'))  el('home-lvl-name').textContent=lvlName;
+  if(el('home-lvl-sub'))   el('home-lvl-sub').textContent=(nextXP-xp)+' XP para el siguiente nivel';
+  if(el('home-lvl-badge')) el('home-lvl-badge').textContent='Nivel '+(level+1)+' pronto';
+  if(el('home-xp-cur'))    el('home-xp-cur').textContent=xp+' XP';
+  if(el('home-xp-next'))   el('home-xp-next').textContent=nextXP+' XP';
+  if(el('m-lvl-label'))    el('m-lvl-label').textContent='Nivel '+level;
+  if(el('m-xp-cur'))       el('m-xp-cur').textContent=xp;
+  if(el('m-xp-next'))      el('m-xp-next').textContent=nextXP;
+  if(el('m-lvl-badge'))    el('m-lvl-badge').textContent=(nextXP-xp)+' XP restantes';
+  const mb = document.getElementById('m-lvl-bar'); if(mb) setTimeout(()=>mb.style.width=pct+'%',200);
+}
+
 async function initChat() {
-  // Limpiar chat completamente - DOM y STATE
   const chatMsgs = document.getElementById('chat-msgs');
   if (chatMsgs) chatMsgs.innerHTML = '';
-  STATE.chatMessages = [];  // Resetear historial de mensajes
-  
-  // Crear conversación nueva
+  STATE.chatMessages = [];
   try {
     const { data } = await sb.from('conversations').insert({ user_id: STATE.user.id, messages: [] }).select().maybeSingle();
     if (data) STATE.conversationId = data.id;
   } catch(e) { console.error('conversations insert:', e); }
-
-  // Mensaje inicial fijo - empático y correcto
   try {
     const name = STATE.profile?.full_name?.split(' ')[0] || STATE.user?.user_metadata?.full_name?.split(' ')[0] || '';
-    
     if (STATE.memory?.last_session_summary) {
       const hdr = document.getElementById('session-hdr');
       if (hdr) hdr.style.display = 'flex';
       const txt = document.getElementById('session-summary-txt');
       if (txt) txt.textContent = STATE.memory.last_session_summary;
-      const hook = STATE.memory.next_session_hook;
-      addSteveMsg(hook || ('Hola' + (name ? ' ' + name : '') + ', bienvenido de nuevo. ¿Seguimos donde lo dejamos?'));
+      addSteveMsg(STATE.memory.next_session_hook || ('Hola' + (name?' '+name:'') + ', bienvenido de nuevo. ¿Seguimos?'));
     } else {
-      // Saludo simple - solo conectar primero, el plan viene después
-      const greeting = name
-        ? 'Hola ' + name + ', qué gusto tenerte por aquí. Soy Steve, tu asesor financiero personal. ¿Cómo estás hoy?'
-        : 'Hola, qué gusto tenerte por aquí. Soy Steve, tu asesor financiero personal. ¿Cómo estás?';
-      addSteveMsg(greeting);
+      addSteveMsg(name ? 'Hola '+name+', qué gusto tenerte por aquí. Soy Steve, tu asesor financiero personal. ¿Cómo estás hoy?' : 'Hola, qué gusto tenerte. Soy Steve, tu asesor financiero. ¿Cómo estás?');
     }
     showQuickReplies(['Bien, ¿por dónde empezamos?', 'Hola Steve', 'Cuéntame más sobre ti']);
-  } catch(e) { 
-    console.error('initChat error:', e);
-    addSteveMsg('Hola, soy Steve. ¿Empezamos a organizar tus finanzas?');
-  }
+  } catch(e) { addSteveMsg('Hola, soy Steve. ¿Empezamos a organizar tus finanzas?'); }
 }
 
 function addSteveMsg(text) {
@@ -888,59 +747,16 @@ function showTyping() {
   const div = document.createElement('div');
   div.className = 'msg-s'; div.id = 'typing-ind';
   div.innerHTML = `<div class="m-av" style="background:var(--g);color:#fff">S</div><div class="typing"><span></span><span></span><span></span></div>`;
-  wrap.appendChild(div);
-  scrollChat();
+  wrap.appendChild(div); scrollChat();
 }
+function hideTyping() { const el = document.getElementById('typing-ind'); if(el) el.remove(); }
+function scrollChat() { const w = document.getElementById('chat-msgs'); setTimeout(()=>w.scrollTop=w.scrollHeight,60); }
+function showQuickReplies(r) { const el = document.getElementById('chat-reps'); el.style.display='flex'; el.innerHTML=r.map(x=>`<button class="rep" onclick="addUserMsg('${x}')">${x}</button>`).join(''); }
+function hideQuickReplies() { document.getElementById('chat-reps').style.display='none'; }
 
-function hideTyping() {
-  const el = document.getElementById('typing-ind');
-  if (el) el.remove();
-}
-
-function scrollChat() {
-  const wrap = document.getElementById('chat-msgs');
-  setTimeout(() => wrap.scrollTop = wrap.scrollHeight, 60);
-}
-
-function showQuickReplies(replies) {
-  const el = document.getElementById('chat-reps');
-  el.style.display = 'flex';
-  el.innerHTML = replies.map(r => `<button class="rep" onclick="addUserMsg('${r}')">${r}</button>`).join('');
-}
-
-function hideQuickReplies() {
-  document.getElementById('chat-reps').style.display = 'none';
-}
-
-async function callSteveFirst() {
-  showTyping();
-  document.getElementById('chat-status').textContent = 'Escribiendo...';
-  try {
-    const res = await fetch(API_BASE + '/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messages: [{ role: 'user', content: '__INICIO_SESION__' }],
-        user_id: STATE.user.id,
-        conversation_id: STATE.conversationId,
-        is_first_message: true
-      })
-    });
-    const data = await res.json();
-    hideTyping();
-    document.getElementById('chat-status').textContent = 'En línea';
-    if (data.message) {
-      addSteveMsg(data.message);
-      showQuickReplies(['Sí, empecemos', 'Tengo una duda primero', 'Dime más sobre Steve']);
-    }
-  } catch(e) {
-    hideTyping();
-    document.getElementById('chat-status').textContent = 'En línea';
-    addSteveMsg('Hola, soy Steve. Voy a ayudarte a organizar tus finanzas de forma simple. ¿Empezamos?');
-    showQuickReplies(['Sí, empecemos', 'Tengo una duda primero']);
-  }
-}
-
+// ══════════════════════════════════════════════
+// CALLSTEVE — con fresh_data y notificaciones
+// ══════════════════════════════════════════════
 async function callSteve(userText) {
   showTyping();
   document.getElementById('chat-status').textContent = 'Escribiendo...';
@@ -962,23 +778,53 @@ async function callSteve(userText) {
     if (data.message) {
       addSteveMsg(data.message);
       if (data.purchase_card) renderPurchaseCard(data.purchase_card);
-      
-      // Si Steve guardó datos financieros, recargar estado completo
-      if (data.reload_data) {
+
+      // Actualizar STATE con datos frescos del servidor
+      if (data.fresh_data) {
+        if (data.fresh_data.financial) STATE.financial = data.fresh_data.financial;
+        if (data.fresh_data.debts)     STATE.debts     = data.fresh_data.debts;
+        if (data.fresh_data.expenses)  STATE.expenses  = data.fresh_data.expenses;
+        if (data.fresh_data.missions)  STATE.missions  = data.fresh_data.missions;
+        if (data.fresh_data.profile) {
+          STATE.profile.xp_total    = data.fresh_data.profile.xp_total    ?? STATE.profile.xp_total;
+          STATE.profile.level       = data.fresh_data.profile.level       ?? STATE.profile.level;
+          STATE.profile.streak_days = data.fresh_data.profile.streak_days ?? STATE.profile.streak_days;
+        }
+        renderHome();
+        renderMissions();
+        if (STATE.currentScreen === 'charts') initCurrentChart();
+      } else if (data.reload_data) {
         try {
-          // Pequeño delay para que Supabase termine de guardar
-          await new Promise(r => setTimeout(r, 800));
+          await new Promise(r => setTimeout(r, 600));
           await loadUserData();
           renderAll();
         } catch(e) { console.error('reload error:', e); }
       }
-      
+
+      // Notificaciones de registro
+      if (data.saved_types && data.saved_types.length > 0) {
+        const labels = { expense:'💾 Gasto registrado', income:'💰 Ingreso registrado', debt:'📋 Deuda registrada', goal:'🎯 Meta registrada', reminder:'🔔 Recordatorio guardado' };
+        const last = data.saved_types[data.saved_types.length - 1];
+        if (labels[last]) showToast(labels[last]);
+      }
+
+      // Notificación de misiones completadas
+      if (data.missions_completed && data.missions_completed.length > 0) {
+        setTimeout(() => showToast('🏆 ¡Misión completada! Revisa tus XP'), 1500);
+      }
+
       if (data.update?.health_score) {
         STATE.financial.health_score = data.update.health_score;
         const kpiH = document.getElementById('kpi-health');
         if (kpiH) kpiH.textContent = data.update.health_score + '/100';
       }
-      
+
+      if (data.fresh_data?.profile) {
+        updateXPDisplay(data.fresh_data.profile.xp_total || STATE.profile.xp_total, data.fresh_data.profile.level || STATE.profile.level);
+        const kpiS = document.getElementById('kpi-streak');
+        if (kpiS) kpiS.textContent = (data.fresh_data.profile.streak_days || 0) + ' días';
+      }
+
       showQuickReplies(getSuggestedReplies(userText));
     }
   } catch (e) {
@@ -990,57 +836,32 @@ async function callSteve(userText) {
 
 function getSuggestedReplies(lastMsg) {
   const m = lastMsg.toLowerCase();
-  if (m.includes('comprar') || m.includes('quiero') || m.includes('cuesta'))
-    return ['¿Hay una mejor opción?', '¿Cuándo sería buen momento?', 'No voy a comprarlo'];
-  if (m.includes('tarjeta') || m.includes('deuda'))
-    return ['¿Cuánto ahorro si pago extra?', 'Muéstrame la estrategia completa', '¿Por cuál empiezo?'];
-  return ['Cuéntame más', 'Dame un reto de ahorro', '¿Cómo mejoro mi salud financiera?'];
+  if (m.includes('comprar')||m.includes('quiero')||m.includes('cuesta')) return ['¿Hay una mejor opción?','¿Cuándo sería buen momento?','No voy a comprarlo'];
+  if (m.includes('tarjeta')||m.includes('deuda')) return ['¿Cuánto ahorro si pago extra?','Muéstrame la estrategia completa','¿Por cuál empiezo?'];
+  if (m.includes('sí')||m.includes('si')||m.includes('va')||m.includes('registra')) return ['¿Qué sigue?','Tengo otro gasto','¿Cómo voy hasta ahora?'];
+  return ['Cuéntame más','Dame un reto de ahorro','¿Cómo mejoro mi salud financiera?'];
 }
 
 function renderPurchaseCard(card) {
   const wrap = document.getElementById('chat-msgs');
-  const colorMap = { green: 'var(--g)', yellow: 'var(--am)', red: 'var(--co)' };
-  const dotColorMap = { green: 'var(--g)', yellow: 'var(--am)', red: 'var(--co)', blue: 'var(--bl)' };
-  const signalIcon = card.signal === 'green'
-    ? `<path d="M7 10l2 2 4-4" stroke="${colorMap.green}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`
-    : card.signal === 'yellow'
-    ? `<path d="M10 6v4M10 12v.5" stroke="${colorMap.yellow}" stroke-width="1.5" stroke-linecap="round"/>`
-    : `<path d="M10 6v4M10 12v.5" stroke="${colorMap.red}" stroke-width="1.5" stroke-linecap="round"/>`;
-  const pts = (card.points || []).map(p =>
-    `<div class="pc-row"><div class="pc-dot" style="background:${dotColorMap[p.color]||'var(--txt2)'}"></div><div class="pc-row-txt">${escHtml(p.text)}</div></div>`
-  ).join('');
-  const acts = (card.actions || []).map((a, i) => {
-    const cls = i === 0 ? 'yes' : i === card.actions.length - 1 ? 'no' : 'wait';
-    return `<button class="pca ${cls}" onclick="purchaseAction('${escHtml(a)}')">${escHtml(a)}</button>`;
-  }).join('');
-  const div = document.createElement('div');
-  div.className = 'msg-s fade';
-  div.innerHTML = `<div style="width:28px;flex-shrink:0"></div>
-    <div class="purchase-card pc-${card.signal}">
-      <div class="pc-top">
-        <div class="pc-sig ${card.signal}">
-          <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
-            <circle cx="10" cy="10" r="8" stroke="${colorMap[card.signal]}" stroke-width="1.5"/>
-            ${signalIcon}
-          </svg>
-        </div>
-        <div><div class="pc-v-title">${escHtml(card.title||'Veredicto')}</div><div class="pc-v-sub">$${(card.amount||0).toLocaleString()} · ${card.impact_pct||0}% de tu margen</div></div>
-      </div>
-      <div class="pc-details">${pts}</div>
-      <div class="pc-acts">${acts}</div>
-    </div>`;
-  wrap.appendChild(div);
-  scrollChat();
+  const colorMap = {green:'var(--g)',yellow:'var(--am)',red:'var(--co)'};
+  const dotColorMap = {green:'var(--g)',yellow:'var(--am)',red:'var(--co)',blue:'var(--bl)'};
+  const signalIcon = card.signal==='green' ? `<path d="M7 10l2 2 4-4" stroke="${colorMap.green}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>` : `<path d="M10 6v4M10 12v.5" stroke="${colorMap[card.signal]||colorMap.yellow}" stroke-width="1.5" stroke-linecap="round"/>`;
+  const pts = (card.points||[]).map(p=>`<div class="pc-row"><div class="pc-dot" style="background:${dotColorMap[p.color]||'var(--txt2)'}"></div><div class="pc-row-txt">${escHtml(p.text)}</div></div>`).join('');
+  const acts = (card.actions||[]).map((a,i)=>{ const cls=i===0?'yes':i===card.actions.length-1?'no':'wait'; return `<button class="pca ${cls}" onclick="purchaseAction('${escHtml(a)}')">${escHtml(a)}</button>`; }).join('');
+  const div = document.createElement('div'); div.className='msg-s fade';
+  div.innerHTML=`<div style="width:28px;flex-shrink:0"></div><div class="purchase-card pc-${card.signal}"><div class="pc-top"><div class="pc-sig ${card.signal}"><svg width="22" height="22" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="${colorMap[card.signal]}" stroke-width="1.5"/>${signalIcon}</svg></div><div><div class="pc-v-title">${escHtml(card.title||'Veredicto')}</div><div class="pc-v-sub">$${(card.amount||0).toLocaleString()} · ${card.impact_pct||0}% de tu margen</div></div></div><div class="pc-details">${pts}</div><div class="pc-acts">${acts}</div></div>`;
+  wrap.appendChild(div); scrollChat();
 }
 
 function purchaseAction(action) {
-  document.querySelectorAll('.pc-acts').forEach(el => { el.style.opacity = '.4'; el.style.pointerEvents = 'none'; });
+  document.querySelectorAll('.pc-acts').forEach(el=>{el.style.opacity='.4';el.style.pointerEvents='none';});
   addUserMsg(action);
 }
 
 function sendChatMsg() {
   const inp = document.getElementById('chat-inp');
-  const val = (inp.value || '').trim();
+  const val = (inp.value||'').trim();
   if (!val) return;
   inp.value = '';
   addUserMsg(val);
@@ -1048,630 +869,189 @@ function sendChatMsg() {
 
 document.addEventListener('DOMContentLoaded', () => {
   const inp = document.getElementById('chat-inp');
-  if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMsg(); } });
+  if (inp) inp.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChatMsg();} });
 });
 
-// ── AUDIO RECORDING ──
-function toggleRec() {
-  if (!STATE.isRecording) startRec(); else stopRec();
-}
-
+function toggleRec() { if(!STATE.isRecording) startRec(); else stopRec(); }
 function startRec() {
-  STATE.isRecording = true; STATE.recSecs = 0;
-  const btn = document.getElementById('mic-btn');
-  const ring = document.getElementById('mic-ring');
-  const svg = document.getElementById('mic-svg');
-  const recRow = document.getElementById('rec-status');
-  btn.classList.add('rec');
-  ring.classList.add('on');
-  svg.innerHTML = '<rect x="5" y="5" width="8" height="8" rx="1.5" fill="#fff"/>';
-  recRow.style.display = 'block';
-  document.getElementById('rec-lbl').textContent = 'Grabando...';
-  STATE.recInterval = setInterval(() => {
-    STATE.recSecs++;
-    const t = document.getElementById('rec-timer');
-    const f = document.getElementById('rec-fill');
-    if (t) t.textContent = '0:' + String(STATE.recSecs).padStart(2, '0');
-    if (f) f.style.width = Math.min(100, Math.round(STATE.recSecs / 60 * 100)) + '%';
-    if (STATE.recSecs > 2) document.getElementById('rec-lbl').textContent = 'Hablando...';
-    if (STATE.recSecs >= 60) stopRec();
-  }, 1000);
+  STATE.isRecording=true; STATE.recSecs=0;
+  const btn=document.getElementById('mic-btn'),ring=document.getElementById('mic-ring'),svg=document.getElementById('mic-svg'),recRow=document.getElementById('rec-status');
+  btn.classList.add('rec'); ring.classList.add('on');
+  svg.innerHTML='<rect x="5" y="5" width="8" height="8" rx="1.5" fill="#fff"/>';
+  recRow.style.display='block'; document.getElementById('rec-lbl').textContent='Grabando...';
+  STATE.recInterval=setInterval(()=>{ STATE.recSecs++; const t=document.getElementById('rec-timer'),f=document.getElementById('rec-fill'); if(t)t.textContent='0:'+String(STATE.recSecs).padStart(2,'0'); if(f)f.style.width=Math.min(100,Math.round(STATE.recSecs/60*100))+'%'; if(STATE.recSecs>2)document.getElementById('rec-lbl').textContent='Hablando...'; if(STATE.recSecs>=60)stopRec(); },1000);
 }
-
 async function stopRec() {
-  STATE.isRecording = false;
-  clearInterval(STATE.recInterval);
-  const btn = document.getElementById('mic-btn');
-  const ring = document.getElementById('mic-ring');
-  const svg = document.getElementById('mic-svg');
-  btn.classList.remove('rec');
-  ring.classList.remove('on');
-  document.getElementById('rec-lbl').textContent = 'Procesando...';
-  svg.innerHTML = '<circle cx="9" cy="9" r="6" stroke="var(--p)" stroke-width="1.5" stroke-dasharray="20 18" style="animation:spin .8s linear infinite"/>';
-
-  // Intentar transcribir (si no hay API key de OpenAI, falla silenciosamente)
-  setTimeout(() => {
-    svg.innerHTML = '<rect x="6" y="1" width="6" height="10" rx="3" stroke="#6B6B68" stroke-width="1.4"/><path d="M3 9a6 6 0 0012 0" stroke="#6B6B68" stroke-width="1.4" stroke-linecap="round"/><path d="M9 15v2" stroke="#6B6B68" stroke-width="1.4" stroke-linecap="round"/>';
-    document.getElementById('rec-status').style.display = 'none';
-    showToast('Audio listo — activa Whisper para transcripción automática');
-  }, 1200);
-  STATE.recSecs = 0;
-}
-
-// ══════════════════════════════════════════════
-// MISSIONS
-// ══════════════════════════════════════════════
-
-// ── SALUD FINANCIERA ─────────────────────────
-// Fórmula modular: 4 factores, fácil de ajustar
-function calcHealthScore() {
-  const income  = Number(STATE.financial?.income_monthly) || 0;
-  const expenses = (STATE.expenses || []).reduce((s,e) => s + Number(e.amount), 0);
-  const debts    = STATE.debts || [];
-  const minPay   = debts.reduce((s,d) => s + Number(d.minimum_payment), 0);
-  const maxRate  = debts.length ? Math.max(...debts.map(d => Number(d.interest_rate)||0)) : 0;
-  const totalDebt = debts.reduce((s,d) => s + Number(d.total_amount), 0);
-  const free     = income - expenses - minPay;
-
-  if (income === 0) return null; // no calcular sin ingreso
-
-  // Factor 1: gastos vs ingreso (30 pts)
-  const expRatio = (expenses + minPay) / income;
-  const f1 = expRatio < 0.50 ? 30 : expRatio < 0.70 ? 15 : 0;
-
-  // Factor 2: deuda vs ingreso anual (30 pts)
-  const debtRatio = totalDebt / (income * 12);
-  const f2 = debtRatio < 0.20 ? 30 : debtRatio < 0.36 ? 20 : debtRatio < 0.60 ? 10 : 0;
-
-  // Factor 3: tasa de interés más alta (20 pts)
-  const f3 = maxRate === 0 ? 20 : maxRate < 15 ? 20 : maxRate < 30 ? 10 : 0;
-
-  // Factor 4: dinero libre (20 pts)
-  const freeRatio = free / income;
-  const f4 = freeRatio > 0.20 ? 20 : freeRatio > 0.10 ? 10 : 0;
-
-  const score = f1 + f2 + f3 + f4;
-
-  return {
-    score,
-    label: score >= 80 ? 'Excelente' : score >= 60 ? 'Bueno' : score >= 40 ? 'Regular' : score >= 20 ? 'En riesgo' : 'Crítico',
-    color: score >= 80 ? '#1D9E75' : score >= 60 ? '#1D9E75' : score >= 40 ? '#BA7517' : '#E24B4A',
-    factors: [
-      {
-        name: 'Gastos fijos vs lo que ganas',
-        pts: f1, max: 30,
-        pct: Math.round(expRatio * 100),
-        estado: f1 >= 25 ? 'Excelente' : f1 >= 15 ? 'Regular' : 'Atención',
-        detail: `Tus compromisos fijos se llevan el ${Math.round(expRatio*100)}% de tu ingreso. Lo saludable es menos del 50%.`,
-        accion: f1 < 30 ? 'Intenta reducir algún gasto fijo no esencial.' : '¡Vas muy bien en este rubro!'
-      },
-      {
-        name: 'Tamaño total de tus deudas',
-        pts: f2, max: 30,
-        pct: Math.round(debtRatio * 100),
-        estado: f2 >= 25 ? 'Excelente' : f2 >= 15 ? 'Regular' : 'Atención',
-        detail: totalDebt > 0 ? `Tu deuda total ($${totalDebt.toLocaleString()}) es el ${Math.round(debtRatio*100)}% de tu ingreso anual. Lo aceptable es menos del 36%.` : 'Sin deudas registradas aún.',
-        accion: f2 < 20 ? 'Prioriza liquidar la deuda más costosa primero.' : 'Tu nivel de deuda es manejable.'
-      },
-      {
-        name: 'Costo de tus deudas (intereses)',
-        pts: f3, max: 20,
-        pct: maxRate,
-        estado: f3 >= 18 ? 'Excelente' : f3 >= 10 ? 'Regular' : 'Atención',
-        detail: maxRate > 0 ? `Tu tasa más alta es ${maxRate}% anual. Por cada $10,000 de saldo pagas $${Math.round(maxRate*100)} solo en intereses al año.` : 'Sin deudas con tasa registrada aún.',
-        accion: f3 < 20 ? 'Paga más del mínimo en la tarjeta con mayor tasa.' : 'Tus tasas son bajas. Bien manejado.'
-      },
-      {
-        name: 'Dinero libre cada mes',
-        pts: f4, max: 20,
-        pct: Math.max(0, Math.round(freeRatio * 100)),
-        estado: f4 >= 18 ? 'Excelente' : f4 >= 10 ? 'Regular' : 'Atención',
-        detail: `Te sobran $${Math.max(0,free).toLocaleString()} al mes (${Math.max(0,Math.round(freeRatio*100))}% de tu ingreso). Lo recomendado es al menos el 10%.`,
-        accion: f4 < 20 ? 'Destina parte de este dinero libre a liquidar deudas.' : '¡Excelente liquidez mensual!'
-      }
-    ],
-    income, expenses, minPay, free, totalDebt, maxRate
-  };
-}
-
-function getHealthEmoji(estado) {
-  return { 'Excelente':'✓', 'Bueno':'✓', 'Regular':'!', 'Atención':'!' }[estado] || '!';
-}
-
-// ── RENDER SALUD FINANCIERA ───────────────────
-function renderHealthScore() {
-  const el = document.getElementById('health-score-panel');
-  if (!el) return;
-  const h = calcHealthScore();
-  if (!h) {
-    el.innerHTML = '<div style="padding:16px;font-size:13px;color:var(--color-text-secondary);text-align:center">Comparte tus ingresos con Steve para ver tu salud financiera completa</div>';
-    return;
-  }
-
-  const barColor = (pts, max) => pts/max >= .75 ? '#1D9E75' : pts/max >= .40 ? '#BA7517' : '#E24B4A';
-  const badgeBg  = (e) => ({Excelente:'#D1ECE1',Bueno:'#D1ECE1',Regular:'#FFF3CD',Atención:'#FDEAEA'})[e]||'#FDEAEA';
-  const badgeTx  = (e) => ({Excelente:'#0F6E56',Bueno:'#0F6E56',Regular:'#854F0B',Atención:'#A32D2D'})[e]||'#A32D2D';
-
-  el.innerHTML = `
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px">
-      <div style="width:80px;height:80px;border-radius:50%;border:3px solid ${h.color};display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0">
-        <span style="font-size:28px;font-weight:500;color:${h.color};line-height:1">${h.score}</span>
-        <span style="font-size:10px;color:var(--color-text-secondary)">de 100</span>
-      </div>
-      <div>
-        <div style="font-size:15px;font-weight:500;color:${h.color};margin-bottom:4px">${h.label}</div>
-        <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:8px">${h.score >= 70 ? 'Vas muy bien. Steve te ayuda a mantenerlo.' : h.score >= 40 ? 'Hay margen de mejora. Steve tiene un plan.' : 'Situación de alerta. Actúa pronto con Steve.'}</div>
-        <button onclick="sendPrompt('Steve, dame un plan concreto para mejorar mi salud financiera')" style="font-size:11px;padding:4px 12px;border-radius:12px;border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);cursor:pointer">Ver mi plan de mejora ↗</button>
-      </div>
-    </div>
-    ${h.factors.map(f => `
-      <div style="margin-bottom:14px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <span style="font-size:13px;font-weight:500;color:var(--color-text-primary)">${f.name}</span>
-          <span style="font-size:11px;padding:2px 8px;border-radius:10px;background:${badgeBg(f.estado)};color:${badgeTx(f.estado)}">${f.estado}</span>
-        </div>
-        <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:5px;line-height:1.4">${f.detail}</div>
-        <div style="height:7px;background:var(--color-background-secondary);border-radius:4px;overflow:hidden;margin-bottom:4px">
-          <div style="height:100%;width:${Math.round(f.pts/f.max*100)}%;background:${barColor(f.pts,f.max)};border-radius:4px;transition:width .8s"></div>
-        </div>
-        <div style="font-size:11px;color:var(--color-text-secondary);font-style:italic">${f.accion}</div>
-      </div>
-    `).join('')}
-  `;
-}
-
-// ── RENDER PRÓXIMOS PAGOS ─────────────────────
-function renderPagos() {
-  const el = document.getElementById('home-pagos');
-  if (!el) return;
-  const today = new Date().getDate();
-
-  const pagos = [];
-  (STATE.expenses || []).filter(e => e.due_date).forEach(e => {
-    const d = e.due_date >= today ? e.due_date - today : 30 - today + e.due_date;
-    pagos.push({ name: e.name, amount: Number(e.amount), due_date: e.due_date, days: d,
-      color: d<=3?'#E24B4A':d<=7?'#BA7517':'#1D9E75',
-      urgencia: d<=3?'Urgente':d<=7?'Esta semana':'Este mes',
-      type: 'gasto' });
-  });
-  (STATE.debts || []).filter(d => d.due_date).forEach(d => {
-    const days = d.due_date >= today ? d.due_date - today : 30 - today + d.due_date;
-    pagos.push({ name: d.name + ' (pago mínimo)', amount: Number(d.minimum_payment),
-      due_date: d.due_date, days,
-      color: days<=3?'#E24B4A':days<=7?'#BA7517':'#1D9E75',
-      urgencia: days<=3?'Urgente':days<=7?'Esta semana':'Este mes',
-      type: 'deuda', rate: d.interest_rate });
-  });
-
-  if (!pagos.length) {
-    el.innerHTML = '<div style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:16px">Cuéntale a Steve tus gastos con fechas para ver tu calendario aquí</div>';
-    return;
-  }
-
-  pagos.sort((a,b) => a.days - b.days);
-  el.innerHTML = pagos.map(p => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:8px;border-left:3px solid ${p.color}">
-      <div style="display:flex;align-items:flex-start;gap:8px">
-        <div style="width:8px;height:8px;border-radius:50%;background:${p.color};flex-shrink:0;margin-top:4px"></div>
-        <div>
-          <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">${p.name}</div>
-          <div style="font-size:11px;color:${p.color}">${p.urgencia} · Día ${p.due_date}${p.rate?' · '+p.rate+'% anual':''}</div>
-        </div>
-      </div>
-      <div style="text-align:right;flex-shrink:0;margin-left:12px">
-        <div style="font-size:14px;font-weight:500;color:var(--color-text-primary)">$${p.amount.toLocaleString()}</div>
-        <div style="font-size:11px;color:var(--color-text-secondary)">${p.days===0?'Hoy':'en '+p.days+' días'}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-// ── RENDER LISTA DE GASTOS ────────────────────
-function renderGastosLista() {
-  const el = document.getElementById('home-gastos-lista');
-  if (!el) return;
-  const expenses = STATE.expenses || [];
-  const debts = STATE.debts || [];
-  if (!expenses.length && !debts.length) {
-    el.innerHTML = '<div style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:16px">Aún sin gastos registrados</div>';
-    return;
-  }
-  const icon = {'fijo_esencial':'🏠','fijo_no_esencial':'📱','variable_esencial':'🛒','variable_no_esencial':'🎮'};
-  const sorted = [...expenses].sort((a,b)=>(a.priority||3)-(b.priority||3));
-  const total = sorted.reduce((s,e)=>s+Number(e.amount),0);
-  let html = `<div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:8px">Total registrado: <strong style="color:var(--color-text-primary)">$${total.toLocaleString()}/mes</strong></div>`;
-  html += sorted.map(e=>`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:6px">
-      <div>
-        <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">${icon[e.category]||'📋'} ${e.name}</div>
-        <div style="font-size:11px;color:var(--color-text-secondary)">${e.category||'gasto'}${e.due_date?' · Día '+e.due_date:''}</div>
-      </div>
-      <div style="font-size:14px;font-weight:500;color:var(--color-text-primary)">$${Number(e.amount).toLocaleString()}</div>
-    </div>
-  `).join('');
-  if (debts.length) {
-    const td = debts.reduce((s,d)=>s+Number(d.total_amount),0);
-    html += `<div style="font-size:12px;color:#E24B4A;margin:10px 0 6px">💳 Deudas activas · Saldo total: $${td.toLocaleString()}</div>`;
-    html += debts.map(d=>`
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:6px;border-left:3px solid #E24B4A">
-        <div>
-          <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">${d.name}</div>
-          <div style="font-size:11px;color:var(--color-text-secondary)">Mínimo $${Number(d.minimum_payment).toLocaleString()}${d.interest_rate?' · '+d.interest_rate+'% anual':''}${d.due_date?' · Corte día '+d.due_date:''}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:14px;font-weight:500;color:#E24B4A">$${Number(d.total_amount).toLocaleString()}</div>
-          <div style="font-size:11px;color:var(--color-text-secondary)">saldo</div>
-        </div>
-      </div>
-    `).join('');
-  }
-  el.innerHTML = html;
+  STATE.isRecording=false; clearInterval(STATE.recInterval);
+  const btn=document.getElementById('mic-btn'),ring=document.getElementById('mic-ring'),svg=document.getElementById('mic-svg');
+  btn.classList.remove('rec'); ring.classList.remove('on');
+  setTimeout(()=>{ svg.innerHTML='<rect x="6" y="1" width="6" height="10" rx="3" stroke="#6B6B68" stroke-width="1.4"/><path d="M3 9a6 6 0 0012 0" stroke="#6B6B68" stroke-width="1.4" stroke-linecap="round"/><path d="M9 15v2" stroke="#6B6B68" stroke-width="1.4" stroke-linecap="round"/>'; document.getElementById('rec-status').style.display='none'; showToast('Audio listo — activa Whisper para transcripción automática'); },1200);
+  STATE.recSecs=0;
 }
 
 function renderMissions() {
-  const active = STATE.missions.filter(m => m.status === 'active');
-  const done   = STATE.missions.filter(m => m.status === 'completed');
-
-  document.getElementById('missions-sub').textContent = active.length + ' activas · ' + done.length + ' completadas';
-
-  const alEl = document.getElementById('active-missions-list');
-  alEl.innerHTML = active.length ? active.map(m => missionHTML(m)).join('') : '<p style="font-size:13px;color:var(--txt2);text-align:center;padding:20px 0">Completa tu perfil para recibir misiones</p>';
-
-  const dlEl = document.getElementById('done-missions-list');
-  dlEl.innerHTML = done.length ? done.map(m => missionDoneHTML(m)).join('') : '<p style="font-size:13px;color:var(--txt2);padding:8px 0">Ninguna completada aún</p>';
-
-  updateXPDisplay(STATE.profile?.xp_total || 0, STATE.profile?.level || 1);
+  const active=STATE.missions.filter(m=>m.status==='active');
+  const done=STATE.missions.filter(m=>m.status==='completed');
+  document.getElementById('missions-sub').textContent=active.length+' activas · '+done.length+' completadas';
+  document.getElementById('active-missions-list').innerHTML=active.length?active.map(m=>missionHTML(m)).join(''):'<p style="font-size:13px;color:var(--txt2);text-align:center;padding:20px 0">Habla con Steve para recibir misiones</p>';
+  document.getElementById('done-missions-list').innerHTML=done.length?done.map(m=>missionDoneHTML(m)).join(''):'<p style="font-size:13px;color:var(--txt2);padding:8px 0">Ninguna completada aún</p>';
+  updateXPDisplay(STATE.profile?.xp_total||0,STATE.profile?.level||1);
 }
 
 function missionHTML(m) {
-  const mis = m.missions || {};
-  const pct = m.progress_pct || 0;
-  const bgColor = mis.color || '#E1F5EE';
-  return `<button class="mission" id="um-${m.id}" onclick="completeMission('${m.id}','${(mis.title||'').replace(/'/g,"\\'")}',${mis.xp_reward||50})">
-    <div class="m-ico" style="background:${bgColor}">${mis.icon||'📋'}</div>
-    <div class="m-body">
-      <div class="m-title">${escHtml(mis.title||'Misión')}</div>
-      <div class="m-sub">${escHtml(mis.description||'')}</div>
-      <div class="m-tbar"><div class="m-tfill" style="width:${pct}%;background:var(--g)"></div></div>
-    </div>
-    <div class="m-right">
-      <span class="m-xp">+${mis.xp_reward||50} XP</span>
-      <span class="m-time">${m.expires_at ? daysLeft(m.expires_at) + ' días' : ''}</span>
-    </div>
-  </button>`;
+  const mis=m.missions||{}; const pct=m.progress_pct||0;
+  return `<button class="mission" id="um-${m.id}" onclick="completeMission('${m.id}','${(mis.title||'').replace(/'/g,"\\'")}',${mis.xp_reward||50})"><div class="m-ico" style="background:${mis.color||'#E1F5EE'}">${mis.icon||'📋'}</div><div class="m-body"><div class="m-title">${escHtml(mis.title||'Misión')}</div><div class="m-sub">${escHtml(mis.description||'')}</div><div class="m-tbar"><div class="m-tfill" style="width:${pct}%;background:var(--g)"></div></div></div><div class="m-right"><span class="m-xp">+${mis.xp_reward||50} XP</span></div></button>`;
 }
 
 function missionDoneHTML(m) {
-  const mis = m.missions || {};
-  return `<button class="mission done">
-    <div class="m-ico" style="background:var(--gl)">✓</div>
-    <div class="m-body">
-      <div class="m-title">${escHtml(mis.title||'Misión')}</div>
-      <div class="m-sub">+${m.xp_earned||mis.xp_reward||0} XP ganados</div>
-      <div class="m-tbar"><div class="m-tfill" style="width:100%;background:var(--g)"></div></div>
-    </div>
-    <div class="m-right"><div class="m-check"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="var(--g)" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div></div>
-  </button>`;
+  const mis=m.missions||{};
+  return `<button class="mission done"><div class="m-ico" style="background:var(--gl)">✓</div><div class="m-body"><div class="m-title">${escHtml(mis.title||'Misión')}</div><div class="m-sub">+${m.xp_earned||mis.xp_reward||0} XP ganados</div><div class="m-tbar"><div class="m-tfill" style="width:100%;background:var(--g)"></div></div></div><div class="m-right"><div class="m-check"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="var(--g)" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div></div></button>`;
 }
 
 async function completeMission(umId, title, xp) {
-  const el = document.getElementById('um-' + umId);
-  if (!el || el.classList.contains('done')) return;
+  const el = document.getElementById('um-'+umId);
+  if (!el||el.classList.contains('done')) return;
   el.classList.add('done');
-
-  await sb.from('user_missions').update({ status: 'completed', completed_at: new Date().toISOString(), progress_pct: 100, xp_earned: xp }).eq('id', umId);
-  await sb.rpc('add_xp', { p_user_id: STATE.user.id, p_xp: xp });
-
-  STATE.profile.xp_total = (STATE.profile.xp_total || 0) + xp;
-  updateXPDisplay(STATE.profile.xp_total, STATE.profile.level || 1);
-  showToast('¡+' + xp + ' XP! Misión completada');
-  await loadUserData();
-  renderMissions();
-  navTo('chat');
-  setTimeout(() => addUserMsg('Completé la misión: ' + title), 400);
+  await sb.from('user_missions').update({status:'completed',completed_at:new Date().toISOString(),progress_pct:100,xp_earned:xp}).eq('id',umId);
+  await sb.rpc('add_xp',{p_user_id:STATE.user.id,p_xp:xp});
+  STATE.profile.xp_total=(STATE.profile.xp_total||0)+xp;
+  updateXPDisplay(STATE.profile.xp_total,STATE.profile.level||1);
+  showToast('¡+'+xp+' XP! Misión completada');
+  await loadUserData(); renderMissions();
 }
 
-// ══════════════════════════════════════════════
-// CHARTS
-// ══════════════════════════════════════════════
-function renderCharts() {
-  if (STATE.currentScreen === 'charts') {
-    setTimeout(() => initCurrentChart(), 100);
-  }
+function renderCharts() { if(STATE.currentScreen==='charts') setTimeout(()=>initCurrentChart(),100); }
+
+function showChart(tab,btn) {
+  ['gastos','deudas','proyeccion'].forEach(t=>{ const el=document.getElementById('cp-'+t); if(el) el.style.display=t===tab?'block':'none'; });
+  document.querySelectorAll('.ctab').forEach(b=>b.classList.remove('on')); btn.classList.add('on');
+  STATE.activeChartTab=tab; setTimeout(()=>{initCurrentChart();animateBars();},60);
 }
 
-function showChart(tab, btn) {
-  ['gastos','deudas','proyeccion'].forEach(t => {
-    const el = document.getElementById('cp-' + t);
-    if (el) el.style.display = t === tab ? 'block' : 'none';
-  });
-  document.querySelectorAll('.ctab').forEach(b => b.classList.remove('on'));
-  btn.classList.add('on');
-  STATE.activeChartTab = tab;
-  setTimeout(() => { initCurrentChart(); animateBars(); }, 60);
-}
-
-function destroyChart(id) {
-  if (STATE.chartInstances[id]) { try { STATE.chartInstances[id].destroy(); } catch(e){} delete STATE.chartInstances[id]; }
-}
+function destroyChart(id) { if(STATE.chartInstances[id]){try{STATE.chartInstances[id].destroy();}catch(e){}delete STATE.chartInstances[id];} }
 
 function initCurrentChart() {
-  const f = STATE.financial;
-  const d = STATE.debts;
-  if (STATE.activeChartTab === 'gastos') buildGastosChart(f);
-  if (STATE.activeChartTab === 'deudas') buildDeudasChart(d);
-  if (STATE.activeChartTab === 'proyeccion') buildProyChart(d, f);
+  if(STATE.activeChartTab==='gastos')    buildGastosChart(STATE.financial);
+  if(STATE.activeChartTab==='deudas')    buildDeudasChart(STATE.debts);
+  if(STATE.activeChartTab==='proyeccion') buildProyChart(STATE.debts,STATE.financial);
 }
 
 function buildGastosChart(f) {
   destroyChart('gastos');
-  const c = document.getElementById('chart-gastos');
-  if (!c) return;
-  const income = Number(f?.income_monthly) || 1;
-  const minPay = STATE.debts.reduce((s, x) => s + (Number(x.minimum_payment) || 0), 0);
+  const c=document.getElementById('chart-gastos'); if(!c) return;
+  const income=Number(f?.income_monthly)||1;
+  const minPay=STATE.debts.reduce((s,x)=>s+(Number(x.minimum_payment)||0),0);
+  const catColors={'renta':'#D85A30','servicios':'#9FE1CB','alimentacion':'#BA7517','transporte':'#378ADD','salud':'#7F77DD','educacion':'#5BA55B','entretenimiento':'#E24B4A','ropa':'#F0A500','pago_deuda':'#C44D9B','ahorro':'#1D9E75','inversion':'#2DD4BF','negocio':'#6366F1','otros':'#9ca3af','fijo_esencial':'#D85A30','fijo_no_esencial':'#378ADD'};
+  const catLabels={'renta':'Renta','servicios':'Servicios','alimentacion':'Comida','transporte':'Transp.','salud':'Salud','educacion':'Educación','entretenimiento':'Entrete.','ropa':'Ropa','pago_deuda':'Pago deuda','ahorro':'Ahorro','inversion':'Inversión','negocio':'Negocio','otros':'Otros','fijo_esencial':'Fijo esencial','fijo_no_esencial':'No esencial'};
 
-  // Usar expenses si están disponibles, sino usar financial_data como fallback
-  let labels = [], vals = [], libre = 0;
-  
   if (STATE.expenses && STATE.expenses.length > 0) {
-    // Agrupar expenses por categoría
-    const groups = {};
-    STATE.expenses.forEach(e => {
-      const cat = e.category || 'otro';
-      const catLabel = {
-        'fijo_esencial': e.name,
-        'fijo_no_esencial': e.name,
-        'variable_esencial': e.name,
-        'variable_no_esencial': e.name
-      }[cat] || e.name;
-      if (!groups[catLabel]) groups[catLabel] = 0;
-      groups[catLabel] += Number(e.amount) || 0;
-    });
-    
-    // Ordenar por monto descendente
-    const sorted = Object.entries(groups).sort((a, b) => b[1] - a[1]);
-    
-    // Tomar top 6 gastos + deudas + libre
-    const top = sorted.slice(0, 5);
-    const otrosSum = sorted.slice(5).reduce((s, g) => s + g[1], 0);
-    
-    const totalGastos = sorted.reduce((s, g) => s + g[1], 0);
-    libre = Math.max(0, income - totalGastos - minPay);
-    
-    labels = [...top.map(g => g[0])];
-    vals = [...top.map(g => Math.max(0, Math.round(g[1] / income * 100)))];
-    
-    if (otrosSum > 0) { labels.push('Otros'); vals.push(Math.round(otrosSum / income * 100)); }
-    if (minPay > 0) { labels.push('Deudas'); vals.push(Math.round(minPay / income * 100)); }
-    labels.push('Libre'); vals.push(Math.max(0, Math.round(libre / income * 100)));
+    const catTotals={};
+    STATE.expenses.forEach(e=>{ const mult={bimestral:0.5,trimestral:0.333,semestral:0.167,anual:0.083,quincenal:2,semanal:4.3}[e.frequency]||1; const cat=e.category||'otros'; catTotals[cat]=(catTotals[cat]||0)+(Number(e.amount)||0)*mult; });
+    const totalExp=Object.values(catTotals).reduce((s,v)=>s+v,0);
+    const libre=Math.max(0,income-totalExp-minPay);
+    const allCats=Object.keys(catTotals);
+    const labels=[...allCats.map(k=>catLabels[k]||k),'Libre'];
+    const vals=[...allCats.map(k=>Math.max(0,Math.round(catTotals[k]/income*100))),Math.round(libre/income*100)];
+    const colors=[...allCats.map(k=>catColors[k]||'#9ca3af'),'#1D9E75'];
+    STATE.chartInstances['gastos']=new Chart(c,{type:'doughnut',data:{labels,datasets:[{data:vals,backgroundColor:colors,borderWidth:3,borderColor:'transparent',hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.label+': '+c.parsed+'%'}}},animation:{duration:900}}});
+    document.getElementById('leg-gastos').innerHTML=labels.map((l,i)=>`<div class="leg-item"><span class="leg-sq" style="background:${colors[i]}"></span><span class="leg-name">${l}</span><span class="leg-val">${vals[i]}%</span></div>`).join('');
+    const expRatio=Math.round((totalExp+minPay)/income*100);
+    const insEl=document.getElementById('gastos-insight');
+    if(insEl) insEl.textContent=expRatio>80?'Tus gastos y deudas superan el '+expRatio+'% de tu ingreso. Hay poco margen. Steve puede ayudarte a liberar espacio.':expRatio>60?'Tus gastos son el '+expRatio+'% de tu ingreso. Razonable, pero hay espacio para mejorar.':'Tu distribución es saludable ('+expRatio+'% del ingreso). Puedes destinar más al ahorro o pago de deudas.';
   } else {
-    // Fallback: usar financial_data
-    const rent = Number(f?.rent) || 0;
-    const food = Number(f?.food) || 0;
-    const transport = Number(f?.transport) || 0;
-    const services = Number(f?.services) || 0;
-    libre = Math.max(0, income - rent - food - transport - services - minPay);
-    labels = ['Renta','Deudas','Comida','Transporte','Servicios','Libre'];
-    vals = [rent, minPay, food, transport, services, libre].map(v => Math.max(0, Math.round(v / income * 100)));
-  }
-
-  const hasIncome = (Number(f?.income_monthly) || 0) > 0;
-  // Si no hay ingreso, usar montos absolutos en lugar de porcentajes
-  const displayVals = hasIncome ? vals : (STATE.expenses || []).slice(0,6).map(e => Number(e.amount));
-  const displayLabels = hasIncome ? labels : (STATE.expenses || []).slice(0,6).map(e => e.name);
-  const suffix = hasIncome ? '%' : ' MXN';
-  
-  const chartData = displayVals.length > 0 ? displayVals : [1];
-  const chartLabels = displayLabels.length > 0 ? displayLabels : ['Sin datos aún'];
-
-  STATE.chartInstances['gastos'] = new Chart(c, {
-    type: 'doughnut',
-    data: { labels: chartLabels, datasets: [{ data: chartData, backgroundColor: ['#D85A30','#E24B4A','#BA7517','#378ADD','#9FE1CB','#1D9E75','#9B59B6'], borderWidth: 3, borderColor: '#fff', hoverOffset: 6 }] },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.label + ': $' + ctx.parsed.toLocaleString() + (hasIncome ? ' (' + ctx.parsed + '%)' : '') } } }, animation: { duration: 900 } }
-  });
-
-  const legEl = document.getElementById('leg-gastos');
-  const cols = ['#D85A30','#E24B4A','#BA7517','#378ADD','#9FE1CB','#1D9E75','#9B59B6'];
-  legEl.innerHTML = chartLabels.map((l, i) => `<div class="leg-item"><span class="leg-sq" style="background:${cols[i%cols.length]}"></span><span class="leg-name">${l}</span><span class="leg-val">${hasIncome ? chartData[i]+'%' : '$'+(chartData[i]||0).toLocaleString()}</span></div>`).join('');
-
-  // Calcular insight dinámico basado en gastos reales
-  const totalExp = STATE.expenses.reduce((s, e) => s + Number(e.amount), 0);
-  const expRatio = income > 0 ? Math.round((totalExp + minPay) / income * 100) : 0;
-  const insightEl = document.getElementById('gastos-insight');
-  if (insightEl) {
-    if (expRatio > 90) {
-      insightEl.textContent = 'Tus gastos y deudas superan el 90% de tu ingreso. Hay un déficit real que necesita atención inmediata.';
-    } else if (expRatio > 70) {
-      insightEl.textContent = 'Tus gastos y deudas representan el ' + expRatio + '% de tu ingreso. El margen es muy ajustado. Steve puede ayudarte a liberar espacio.';
-    } else {
-      insightEl.textContent = 'Tu distribución de gastos es manejable (' + expRatio + '% del ingreso). El siguiente paso es optimizar deudas y crear un fondo de emergencia.';
-    }
+    const ctx=c.getContext('2d'); ctx.clearRect(0,0,c.width,c.height); ctx.font='13px sans-serif'; ctx.fillStyle='#9ca3af'; ctx.textAlign='center';
+    ctx.fillText('Cuéntale tus gastos a Steve',c.width/2,c.height/2-10); ctx.fillText('para ver la gráfica aquí',c.width/2,c.height/2+12);
   }
 }
 
 function buildDeudasChart(debts) {
   destroyChart('deudas');
-  const c = document.getElementById('chart-deudas');
-  if (!c || !debts.length) { if (c) { const ctx = c.getContext('2d'); ctx.font = '14px sans-serif'; ctx.fillStyle = '#6B6B68'; ctx.textAlign = 'center'; ctx.fillText('Sin deudas registradas', c.width/2, c.height/2); } return; }
-  const cols = ['#D85A30','#BA7517','#378ADD','#1D9E75','#7F77DD','#E24B4A'];
-  STATE.chartInstances['deudas'] = new Chart(c, {
-    type: 'bar',
-    data: { labels: debts.map(d => d.name), datasets: [{ data: debts.map(d => d.total_amount), backgroundColor: debts.map((_, i) => cols[i % cols.length]), borderRadius: 8, borderWidth: 0 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' $' + c.parsed.y.toLocaleString() } } }, scales: { y: { ticks: { callback: v => '$' + Math.round(v/1000) + 'k', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.04)' } }, x: { grid: { display: false }, ticks: { font: { size: 11 } } } }, animation: { duration: 900 } }
-  });
-
-  const detEl = document.getElementById('deudas-detail');
-  detEl.innerHTML = '<div class="card-t">Detalle por deuda</div>' + debts.map((d, i) => {
-    const maxD = Math.max(...debts.map(x => x.total_amount));
-    const pct = maxD > 0 ? Math.round(d.total_amount / maxD * 100) : 0;
-    return `<div class="prog-item"><div class="prog-head"><span class="prog-lbl">${escHtml(d.name)}</span><span class="prog-amt">$${Number(d.total_amount).toLocaleString()}</span></div><div class="prog-track"><div class="prog-fill" style="width:0%;background:${cols[i % cols.length]}" data-w="${pct}"></div></div><div class="prog-sub">${d.interest_rate}% anual</div></div>`;
-  }).join('') + `<div class="total-pill"><span class="tp-l">Prioridad: mayor interés primero</span><span class="tp-v">${debts[0]?.name||'—'}</span></div>`;
-  setTimeout(animateBars, 100);
+  const c=document.getElementById('chart-deudas');
+  if(!c||!debts.length){if(c){const ctx=c.getContext('2d');ctx.font='14px sans-serif';ctx.fillStyle='#6B6B68';ctx.textAlign='center';ctx.fillText('Sin deudas registradas',c.width/2,c.height/2);}return;}
+  const cols=['#D85A30','#BA7517','#378ADD','#1D9E75','#7F77DD','#E24B4A'];
+  STATE.chartInstances['deudas']=new Chart(c,{type:'bar',data:{labels:debts.map(d=>d.name),datasets:[{data:debts.map(d=>d.total_amount),backgroundColor:debts.map((_,i)=>cols[i%cols.length]),borderRadius:8,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' $'+c.parsed.y.toLocaleString()}}},scales:{y:{ticks:{callback:v=>'$'+Math.round(v/1000)+'k',font:{size:10}},grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false},ticks:{font:{size:11}}}},animation:{duration:900}}});
+  const detEl=document.getElementById('deudas-detail');
+  detEl.innerHTML='<div class="card-t">Detalle por deuda</div>'+debts.map((d,i)=>{ const maxD=Math.max(...debts.map(x=>x.total_amount)); const pct=maxD>0?Math.round(d.total_amount/maxD*100):0; return `<div class="prog-item"><div class="prog-head"><span class="prog-lbl">${escHtml(d.name)}</span><span class="prog-amt">$${Number(d.total_amount).toLocaleString()}</span></div><div class="prog-track"><div class="prog-fill" style="width:0%;background:${cols[i%cols.length]}" data-w="${pct}"></div></div><div class="prog-sub">${d.interest_rate}% anual${d.due_day?' · Corte día '+d.due_day:''}</div></div>`; }).join('')+`<div class="total-pill"><span class="tp-l">Prioridad: mayor interés primero</span><span class="tp-v">${debts[0]?.name||'—'}</span></div>`;
+  setTimeout(animateBars,100);
 }
 
-function buildProyChart(debts, financial) {
+function buildProyChart(debts,financial) {
   destroyChart('linea');
-  const c = document.getElementById('chart-linea');
-  if (!c) return;
-  const topDebt = debts[0];
-  const otherDebts = debts.slice(1);
-  const months = ['Hoy','2m','4m','6m','8m','10m','12m','14m','16m','18m'];
-  const topStart = Number(topDebt?.total_amount) || 0;
-  const topPayExtra = Number(topDebt?.minimum_payment || 0) * 1.5;
-  const topData = months.map((_, i) => {
-    const val = topStart - (topPayExtra * i * 2);
-    return Math.max(0, Math.round(val));
-  });
-  const otherStart = otherDebts.reduce((s, d) => s + Number(d.total_amount), 0);
-  const otherData = months.map((_, i) => Math.max(0, Math.round(otherStart - otherStart * 0.03 * i * 2)));
-
-  STATE.chartInstances['linea'] = new Chart(c, {
-    type: 'line',
-    data: { labels: months, datasets: [
-      { label: topDebt?.name || 'Deuda principal', data: topData, borderColor: '#D85A30', backgroundColor: 'rgba(216,90,48,.08)', tension: .4, fill: true, pointRadius: 3, borderWidth: 2, pointBackgroundColor: '#D85A30' },
-      { label: 'Resto de deudas', data: otherData, borderColor: '#378ADD', backgroundColor: 'rgba(55,138,221,.05)', tension: .4, fill: true, pointRadius: 3, borderWidth: 2, borderDash: [4,3], pointBackgroundColor: '#378ADD' }
-    ]},
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' $' + c.parsed.y.toLocaleString() } } }, scales: { y: { ticks: { callback: v => '$' + Math.round(v/1000) + 'k', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.04)' } }, x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: false } } }, animation: { duration: 1000 } }
-  });
-
-  const minPay = debts.reduce((s, d) => s + (Number(d.minimum_payment) || 0), 0);
-  const freeCash = (Number(financial?.income_monthly) || 0) - (Number(financial?.total_fixed_expenses) || 0) - minPay;
-  const kpisEl = document.getElementById('proy-kpis');
-  kpisEl.innerHTML = `
-    <div class="kpi"><div class="kpi-l">Libre hoy</div><div class="kpi-v r">$${Math.max(0,freeCash).toLocaleString()}</div><div class="kpi-s">Actual</div></div>
-    <div class="kpi"><div class="kpi-l">Al liquidar</div><div class="kpi-v g">+$${Math.round((Number(topDebt?.minimum_payment)||0)).toLocaleString()}/mes</div><div class="kpi-s">Se libera</div></div>
-    <div class="kpi"><div class="kpi-l">Salud actual</div><div class="kpi-v a">${financial?.health_score||0}/100</div><div class="kpi-s">Score hoy</div></div>
-    <div class="kpi"><div class="kpi-l">Meta 6 meses</div><div class="kpi-v g">${Math.min(100,(financial?.health_score||0)+28)}/100</div><div class="kpi-s">Proyectado</div></div>`;
+  const c=document.getElementById('chart-linea'); if(!c) return;
+  const topDebt=debts[0],otherDebts=debts.slice(1);
+  const months=['Hoy','2m','4m','6m','8m','10m','12m','14m','16m','18m'];
+  const topStart=Number(topDebt?.total_amount)||0,topPayExtra=Number(topDebt?.minimum_payment||0)*1.5;
+  const topData=months.map((_,i)=>Math.max(0,Math.round(topStart-(topPayExtra*i*2))));
+  const otherStart=otherDebts.reduce((s,d)=>s+Number(d.total_amount),0);
+  const otherData=months.map((_,i)=>Math.max(0,Math.round(otherStart-otherStart*0.03*i*2)));
+  STATE.chartInstances['linea']=new Chart(c,{type:'line',data:{labels:months,datasets:[{label:topDebt?.name||'Deuda principal',data:topData,borderColor:'#D85A30',backgroundColor:'rgba(216,90,48,.08)',tension:.4,fill:true,pointRadius:3,borderWidth:2,pointBackgroundColor:'#D85A30'},{label:'Resto',data:otherData,borderColor:'#378ADD',backgroundColor:'rgba(55,138,221,.05)',tension:.4,fill:true,pointRadius:3,borderWidth:2,borderDash:[4,3],pointBackgroundColor:'#378ADD'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' $'+c.parsed.y.toLocaleString()}}},scales:{y:{ticks:{callback:v=>'$'+Math.round(v/1000)+'k',font:{size:10}},grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false},ticks:{font:{size:10},maxRotation:0,autoSkip:false}}},animation:{duration:1000}}});
+  const minPay=debts.reduce((s,d)=>s+(Number(d.minimum_payment)||0),0);
+  const freeCash=(Number(financial?.income_monthly)||0)-(Number(financial?.total_fixed_expenses)||0)-minPay;
+  document.getElementById('proy-kpis').innerHTML=`<div class="kpi"><div class="kpi-l">Libre hoy</div><div class="kpi-v r">$${Math.max(0,freeCash).toLocaleString()}</div><div class="kpi-s">Actual</div></div><div class="kpi"><div class="kpi-l">Al liquidar</div><div class="kpi-v g">+$${Math.round(Number(topDebt?.minimum_payment)||0).toLocaleString()}/mes</div><div class="kpi-s">Se libera</div></div><div class="kpi"><div class="kpi-l">Salud actual</div><div class="kpi-v a">${financial?.health_score||0}/100</div><div class="kpi-s">Hoy</div></div><div class="kpi"><div class="kpi-l">Meta 6 meses</div><div class="kpi-v g">${Math.min(100,(financial?.health_score||0)+28)}/100</div><div class="kpi-s">Proyectado</div></div>`;
 }
 
-function animateBars() {
-  document.querySelectorAll('.prog-fill[data-w]').forEach(b => {
-    b.style.width = '0%';
-    setTimeout(() => b.style.width = b.dataset.w + '%', 100);
-  });
-}
+function animateBars() { document.querySelectorAll('.prog-fill[data-w]').forEach(b=>{b.style.width='0%';setTimeout(()=>b.style.width=b.dataset.w+'%',100);}); }
 
-// ══════════════════════════════════════════════
-// PROFILE
-// ══════════════════════════════════════════════
 function renderProfile() {
-  const p = STATE.profile;
-  const f = STATE.financial;
-  const d = STATE.debts;
-  const name = p.full_name || STATE.user?.email?.split('@')[0] || '—';
-  const initial = name[0].toUpperCase();
-  const lvlNames = ['','Iniciando','Explorador','Organizador','Estratega','Ahorrador','Inversor','Libre'];
-  const lvlName = lvlNames[p.level || 1] || 'Experto';
-
-  document.getElementById('prof-av').textContent = initial;
-  document.getElementById('prof-level-sub').textContent = 'Nivel ' + (p.level||1) + ' · ' + lvlName;
-  document.getElementById('ph-av').textContent = initial;
-  document.getElementById('ph-name').textContent = name;
-  document.getElementById('ph-level').textContent = 'Nivel ' + (p.level||1) + ' · ' + lvlName;
-  document.getElementById('ps-xp').textContent = p.xp_total || 0;
-  document.getElementById('ps-streak').textContent = p.streak_days || 0;
-  document.getElementById('ps-missions').textContent = STATE.missions.filter(m => m.status === 'completed').length;
-  document.getElementById('msgs-count').textContent = (p.messages_this_month || 0) + ' usados';
-
-  const minPay = d.reduce((s, x) => s + (Number(x.minimum_payment) || 0), 0);
-  const freeCash = (Number(f?.income_monthly)||0) - (Number(f?.total_fixed_expenses)||0) - minPay;
-  const planEl = document.getElementById('plan-bars');
-  const items = [
-    { l: 'Salud financiera', a: (f?.health_score||0) + '/100', pct: f?.health_score||0, col: '#BA7517' },
-    { l: 'Deudas capturadas', a: d.length + ' activas', pct: Math.min(100, d.length * 33), col: '#1D9E75' },
-    { l: 'Disponible/mes', a: '$' + Math.max(0,freeCash).toLocaleString(), pct: Math.min(100, Math.round(freeCash / (Number(f?.income_monthly)||1) * 100)), col: '#378ADD' },
-  ];
-  planEl.innerHTML = items.map(i => `<div class="prog-item"><div class="prog-head"><span class="prog-lbl">${i.l}</span><span class="prog-amt">${i.a}</span></div><div class="prog-track"><div class="prog-fill" style="width:0%;background:${i.col}" data-w="${i.pct}"></div></div></div>`).join('');
-  setTimeout(animateBars, 200);
-
-  const badges = [
-    { ico: '🏆', lbl: 'Primer ingreso', done: (f?.income_monthly||0) > 0, bg: 'var(--gl)' },
-    { ico: '🔥', lbl: '5 días racha', done: (p.streak_days||0) >= 5, bg: 'var(--aml)' },
-    { ico: '📊', lbl: 'Ver gráfica', done: true, bg: 'var(--bl)' },
-    { ico: '💳', lbl: '3 deudas', done: d.length >= 3, bg: 'var(--col)' },
-    { ico: '🎯', lbl: 'Sin deudas', done: false, bg: 'var(--bg2)' },
-    { ico: '💰', lbl: '$10k ahorrado', done: false, bg: 'var(--bg2)' },
-  ];
-  document.getElementById('badges-grid').innerHTML = badges.map(b =>
-    `<div class="badge" style="${!b.done?'opacity:.4':''}"><div class="badge-ico" style="background:${b.bg}">${b.ico}</div><div class="badge-lbl">${b.lbl}</div></div>`
-  ).join('');
+  const p=STATE.profile,f=STATE.financial,d=STATE.debts;
+  const name=p.full_name||STATE.user?.email?.split('@')[0]||'—';
+  const initial=name[0].toUpperCase();
+  const lvlNames=['','Iniciando','Explorador','Organizador','Estratega','Ahorrador','Inversor','Libre'];
+  const lvlName=lvlNames[p.level||1]||'Experto';
+  document.getElementById('prof-av').textContent=initial;
+  document.getElementById('prof-level-sub').textContent='Nivel '+(p.level||1)+' · '+lvlName;
+  document.getElementById('ph-av').textContent=initial;
+  document.getElementById('ph-name').textContent=name;
+  document.getElementById('ph-level').textContent='Nivel '+(p.level||1)+' · '+lvlName;
+  document.getElementById('ps-xp').textContent=p.xp_total||0;
+  document.getElementById('ps-streak').textContent=p.streak_days||0;
+  document.getElementById('ps-missions').textContent=STATE.missions.filter(m=>m.status==='completed').length;
+  document.getElementById('msgs-count').textContent=(p.messages_this_month||0)+' usados';
+  const minPay=d.reduce((s,x)=>s+(Number(x.minimum_payment)||0),0);
+  const freeCash=(Number(f?.income_monthly)||0)-(Number(f?.total_fixed_expenses)||0)-minPay;
+  const planEl=document.getElementById('plan-bars');
+  const items=[{l:'Salud financiera',a:(f?.health_score||0)+'/100',pct:f?.health_score||0,col:'#BA7517'},{l:'Deudas registradas',a:d.length+' activas',pct:Math.min(100,d.length*33),col:'#1D9E75'},{l:'Disponible/mes',a:'$'+Math.max(0,freeCash).toLocaleString(),pct:Math.min(100,Math.round(freeCash/(Number(f?.income_monthly)||1)*100)),col:'#378ADD'}];
+  planEl.innerHTML=items.map(i=>`<div class="prog-item"><div class="prog-head"><span class="prog-lbl">${i.l}</span><span class="prog-amt">${i.a}</span></div><div class="prog-track"><div class="prog-fill" style="width:0%;background:${i.col}" data-w="${i.pct}"></div></div></div>`).join('');
+  setTimeout(animateBars,200);
+  const badges=[{ico:'🏆',lbl:'Primer ingreso',done:(f?.income_monthly||0)>0,bg:'var(--gl)'},{ico:'🔥',lbl:'5 días racha',done:(p.streak_days||0)>=5,bg:'var(--aml)'},{ico:'📊',lbl:'Ver gráfica',done:true,bg:'var(--bl)'},{ico:'💳',lbl:'3 deudas',done:d.length>=3,bg:'var(--col)'},{ico:'🎯',lbl:'Sin deudas',done:false,bg:'var(--bg2)'},{ico:'💰',lbl:'$10k ahorrado',done:false,bg:'var(--bg2)'}];
+  document.getElementById('badges-grid').innerHTML=badges.map(b=>`<div class="badge" style="${!b.done?'opacity:.4':''}"><div class="badge-ico" style="background:${b.bg}">${b.ico}</div><div class="badge-lbl">${b.lbl}</div></div>`).join('');
 }
 
-// ══════════════════════════════════════════════
-// NAVIGATION
-// ══════════════════════════════════════════════
 function navTo(name) {
-  if (STATE.currentScreen === name) return;
-  // Ocultar todas las pantallas correctamente
-  ['home','chat','missions','charts','profile'].forEach(function(s) {
-    var el = document.getElementById('s-' + s);
-    if (el) { el.style.display = 'none'; el.classList.remove('active'); }
-  });
-  document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
-  // Mostrar la pantalla correcta
-  const scr = document.getElementById('s-' + name);
-  const btn = document.getElementById('nb-' + name);
-  if (scr) {
-    scr.style.display = 'flex';
-    scr.style.flexDirection = 'column';
-    scr.classList.add('active');
-  }
-  if (btn) btn.classList.add('on');
-  STATE.currentScreen = name;
-  if (name === 'charts') setTimeout(initCurrentChart, 100);
-  if (name === 'profile') setTimeout(animateBars, 200);
-  if (name === 'chat') {
-    var msgs = document.getElementById('chat-msgs');
-    if (msgs && msgs.children.length === 0) {
-      initChat();
-    }
-  }
+  if(STATE.currentScreen===name) return;
+  ['home','chat','missions','charts','profile'].forEach(s=>{ const el=document.getElementById('s-'+s); if(el){el.style.display='none';el.classList.remove('active');} });
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  const scr=document.getElementById('s-'+name),btn=document.getElementById('nb-'+name);
+  if(scr){scr.style.display='flex';scr.style.flexDirection='column';scr.classList.add('active');}
+  if(btn) btn.classList.add('on');
+  STATE.currentScreen=name;
+  if(name==='charts') setTimeout(initCurrentChart,100);
+  if(name==='profile') setTimeout(animateBars,200);
+  if(name==='chat'){const msgs=document.getElementById('chat-msgs');if(msgs&&msgs.children.length===0)initChat();}
 }
 
-// ══════════════════════════════════════════════
-// UTILS
-// ══════════════════════════════════════════════
-function escHtml(str) {
-  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-
-function daysLeft(dateStr) {
-  const diff = new Date(dateStr) - new Date();
-  return Math.max(0, Math.ceil(diff / 86400000));
-}
-
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3000);
-}
+function escHtml(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function daysLeft(d){return Math.max(0,Math.ceil((new Date(d)-new Date())/86400000));}
+function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-  // Este script corre DESPUÉS de que los CDN cargan
   initSupabase();
-  // Iniciar la app ahora que supabase está disponible
   (async function() {
     if (!sb) { showAuth(); return; }
     try {
-      // Siempre cerrar sesión al abrir la app para pedir login
       await sb.auth.signOut();
       showAuth();
-    } catch(e) {
-      console.error('Init error:', e);
-      showAuth();
-    }
+    } catch(e) { console.error('Init error:', e); showAuth(); }
     if (sb) sb.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
         STATE.user = session.user;
         try { await loadUserData(); } catch(e) { console.error(e); }
         showApp();
-      } else if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
+      } else if (event === 'SIGNED_OUT') {
         location.reload();
-      } else if (event === 'USER_UPDATED' && session?.user) {
-        STATE.user = session.user;
       }
     });
   })();
