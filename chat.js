@@ -281,6 +281,132 @@ async function completeMissions(userId, missionIds) {
   return xpTotal;
 }
 
+
+// ═══════════════════════════════════════════════════════
+// EXTRACTOR DIRECTO — detecta datos del mensaje del usuario
+// sin depender de que Claude genere STEVE_DATA
+// ═══════════════════════════════════════════════════════
+function extractDataFromUser(userMsg, existingExpenses) {
+  const text = userMsg.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const expenses = [];
+  const financial = {};
+
+  // ── DETECTAR MONTO ──
+  function getMonto(str) {
+    const numWords = {'uno':1,'dos':2,'tres':3,'cuatro':4,'cinco':5,'seis':6,'siete':7,'ocho':8,'nueve':9,'diez':10,'quince':15,'veinte':20};
+    let s = str;
+    Object.entries(numWords).forEach(([w,n]) => { s = s.replace(new RegExp('\\b'+w+'\\b','g'), String(n)); });
+    const patterns = [
+      /\$\s*([\d,]+)/,
+      /([\d,]+)\s*(?:pesos|varos|lana|mxn)/,
+      /([\d]+)\s*mil(?!\s*\d)/,
+      /(?:^|[^\d])(\d{3,6})(?:[^\d]|$)/,
+      /(?:^|[^\d])(\d{2,6})(?:[^\d]|$)/
+    ];
+    for (const p of patterns) {
+      const m = s.match(p);
+      if (m) {
+        let n = (m[1]||'').replace(/[, ]/g,'');
+        if (p.source.includes('mil')) n = String(parseFloat(n)*1000);
+        const v = parseFloat(n);
+        if (v >= 50 && v <= 500000) return v;
+      }
+    }
+    return 0;
+  }
+
+  // ── DETECTAR DÍA ──
+  function getDia(str) {
+    const m = str.match(/d[iíi]a\s*(\d{1,2})|el\s+(\d{1,2})\s+de\s+cada|cada\s+(\d{1,2})|el\s+(\d{1,2})\s+(?:de\s+)?(?:cada\s+)?mes/i);
+    if (m) return parseInt(m[1]||m[2]||m[3]||m[4]);
+    if (/quince|el 15|d[iíi]a 15/.test(str)) return 15;
+    if (/primero|el 1[^0-9]|d[iíi]a 1[^0-9]/.test(str)) return 1;
+    if (/ultimo|fin de mes|dia 30/.test(str)) return 30;
+    return null;
+  }
+
+  // ── DETECTAR FRECUENCIA ──
+  function getFreq(str) {
+    if (/bimestral|cada dos meses|cada 2 meses|cada bimestre/.test(str)) return 'bimestral';
+    if (/quincenal|cada quincena|cada 15 dias/.test(str)) return 'quincenal';
+    if (/trimestral|cada tres meses/.test(str)) return 'trimestral';
+    if (/semestral|cada seis meses/.test(str)) return 'semestral';
+    if (/anual|al año|una vez al año/.test(str)) return 'anual';
+    return 'mensual';
+  }
+
+  // ── CONCEPTOS A DETECTAR ──
+  const conceptos = [
+    {keys:['renta','depa','departamento','hipoteca','arriendo','alquiler'], name:'Renta', cat:'renta', freq:'mensual'},
+    {keys:['luz','cfe','electricidad','electric'], name:'Luz CFE', cat:'servicios', freq:'bimestral'},
+    {keys:['agua'], name:'Agua', cat:'servicios', freq:'mensual'},
+    {keys:['gas'], name:'Gas', cat:'servicios', freq:'mensual'},
+    {keys:['internet','wifi','telmex','izzi','totalplay','megacable'], name:'Internet', cat:'servicios', freq:'mensual'},
+    {keys:['celular','telcel','att','movistar','bait'], name:'Celular', cat:'servicios', freq:'mensual'},
+    {keys:['colegiatura','colegio','escuela','kinder','preescolar'], name:'Colegiatura', cat:'educacion', freq:'mensual'},
+    {keys:['universidad','tec','unam'], name:'Universidad', cat:'educacion', freq:'mensual'},
+    {keys:['netflix'], name:'Netflix', cat:'entretenimiento', freq:'mensual'},
+    {keys:['spotify'], name:'Spotify', cat:'entretenimiento', freq:'mensual'},
+    {keys:['dazn'], name:'Dazn', cat:'entretenimiento', freq:'mensual'},
+    {keys:['disney'], name:'Disney+', cat:'entretenimiento', freq:'mensual'},
+    {keys:['amazon prime'], name:'Amazon Prime', cat:'entretenimiento', freq:'mensual'},
+    {keys:['gym','gimnasio','crossfit'], name:'Gym', cat:'salud', freq:'mensual'},
+    {keys:['natacion','natación'], name:'Natación', cat:'salud', freq:'mensual'},
+    {keys:['banamex','citibanamex'], name:'Pago tarjeta Banamex', cat:'pago_deuda', freq:'mensual'},
+    {keys:['bbva','bancomer'], name:'Pago tarjeta BBVA', cat:'pago_deuda', freq:'mensual'},
+    {keys:['santander'], name:'Pago tarjeta Santander', cat:'pago_deuda', freq:'mensual'},
+    {keys:['banorte'], name:'Pago tarjeta Banorte', cat:'pago_deuda', freq:'mensual'},
+    {keys:['hsbc'], name:'Pago tarjeta HSBC', cat:'pago_deuda', freq:'mensual'},
+    {keys:['liverpool','palacio','suburbia'], name:'Pago tarjeta departamental', cat:'pago_deuda', freq:'mensual'},
+    {keys:['seguro'], name:'Seguro', cat:'salud', freq:'mensual'},
+    {keys:['gasolina','gas station','bencina'], name:'Gasolina', cat:'transporte', freq:'mensual'},
+    {keys:['uber','didi','cabify'], name:'Transporte', cat:'transporte', freq:'mensual'},
+  ];
+
+  // Para cada concepto detectado, buscar monto y día en ventana cercana
+  for (const c of conceptos) {
+    const keyFound = c.keys.find(k => text.includes(k));
+    if (!keyFound) continue;
+
+    const keyIdx = text.indexOf(keyFound);
+    const ventana = text.slice(Math.max(0, keyIdx-120), Math.min(text.length, keyIdx+120));
+
+    const monto = getMonto(ventana) || getMonto(text); // fallback al texto completo
+    const dia = getDia(ventana) || getDia(text);
+    const freq = getFreq(ventana) || c.freq;
+
+    // Buscar si ya existe este gasto (fuzzy)
+    const existing = existingExpenses.find(e =>
+      e.name.toLowerCase().includes(keyFound) ||
+      keyFound.includes(e.name.toLowerCase().split(' ')[0])
+    );
+
+    const expName = existing ? existing.name : c.name;
+    const expAmount = monto || (existing ? existing.amount : 0);
+
+    expenses.push({
+      name: expName,
+      amount: expAmount,
+      category: c.cat,
+      frequency: freq,
+      due_day: dia
+    });
+  }
+
+  // Detectar ingreso
+  if (/gano|ingreso|sueldo|salario|quincena|me depositan|me pagan/.test(text)) {
+    const monto = getMonto(text);
+    const freq = getFreq(text);
+    if (monto > 0) {
+      const monthly = freq === 'quincenal' ? monto * 2 : freq === 'semanal' ? monto * 4.3 : monto;
+      financial.income_monthly = Math.round(monthly);
+    }
+  }
+
+  if (expenses.length === 0 && Object.keys(financial).length === 0) return null;
+  return { expenses, financial };
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -358,7 +484,18 @@ Misiones activas: ${activeMis}
     console.log('RAW:', raw.slice(0, 200));
     console.log('STEVE_DATA encontrado:', !!parsed.steveData);
 
+    // Usar STEVE_DATA de Claude si existe, sino extraer del mensaje del usuario
     let steveDataFinal = parsed.steveData;
+    if (!steveDataFinal) {
+      const lastUserMsg = messages.filter(m => m.role === 'user').pop()?.content || '';
+      const extracted = extractDataFromUser(lastUserMsg, expenses);
+      if (extracted && (extracted.expenses.length > 0 || extracted.financial.income_monthly)) {
+        console.log('EXTRACTOR activado para:', lastUserMsg.slice(0,60));
+        steveDataFinal = extracted;
+      }
+    } else {
+      console.log('STEVE_DATA de Claude OK');
+    }
 
     // Guardar datos si los hay
     let saveResult = { types: [] };
