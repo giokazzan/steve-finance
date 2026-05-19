@@ -486,15 +486,17 @@ Misiones activas: ${activeMis}
 
     // Usar STEVE_DATA de Claude si existe, sino extraer del mensaje del usuario
     let steveDataFinal = parsed.steveData;
+    let debugInfo = { claudeHadData: !!parsed.steveData, extractorRan: false, lastMsg: '', extracted: null };
+
     if (!steveDataFinal) {
       const lastUserMsg = messages.filter(m => m.role === 'user').pop()?.content || '';
+      debugInfo.lastMsg = lastUserMsg.slice(0, 80);
       const extracted = extractDataFromUser(lastUserMsg, expenses);
-      if (extracted && (extracted.expenses.length > 0 || extracted.financial.income_monthly)) {
-        console.log('EXTRACTOR activado para:', lastUserMsg.slice(0,60));
+      debugInfo.extracted = extracted;
+      debugInfo.extractorRan = true;
+      if (extracted && (extracted.expenses.length > 0 || extracted.financial?.income_monthly)) {
         steveDataFinal = extracted;
       }
-    } else {
-      console.log('STEVE_DATA de Claude OK');
     }
 
     // Guardar datos si los hay
@@ -540,7 +542,8 @@ Misiones activas: ${activeMis}
       saved_types: saveResult.types,
       missions_completed: missionIds,
       fresh_data: fresh,
-      reload_data: saveResult.types.length > 0
+      reload_data: saveResult.types.length > 0,
+      _debug: debugInfo
     });
 
   } catch(err) {
