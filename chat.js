@@ -4,94 +4,166 @@ const Anthropic = require('@anthropic-ai/sdk');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const anthropic = new Anthropic({ apiKey: process.env.CLAUDE_KEY });
 
-const BASE_PROMPT = `Eres Steve, el mejor asesor financiero personal con IA para Latinoamérica. Eres como ese amigo de confianza que sabe mucho de finanzas: empático, directo, nunca juzgas, y entiendes cómo habla la gente real.
-
-ENTIENDE EL LENGUAJE NATURAL:
-La gente habla de mil maneras distintas. Tu trabajo es entender la intención, no esperar frases perfectas.
-Ejemplos de cómo habla la gente real y qué significa:
-- "mi renta es de 5 mil el 15" → gasto: Renta $5,000 mensual día 15
-- "pago el depa el quince de cada mes, son 5 varos" → gasto: Renta $5,000 mensual día 15  
-- "la luz me cae cada dos meses como de 600" → gasto: Luz CFE $600 bimestral
-- "tengo un crédito del coche, pago 3,200 cada mes" → deuda: crédito auto $3,200 mínimo mensual
-- "banamex me cobra 1200 el 23" → gasto: Pago tarjeta Banamex $1,200 mensual día 23
-- "gano 15 quincenales" → ingreso: $15,000 quincenal ($30,000 mensual)
-- "me depositan cada 15 y último, son 8 mil" → ingreso: $8,000 quincenal
-- "netflix, spotify y el gym lo pago el primero" → 3 gastos día 1
-- "mi tarjeta de bodega tiene como 20 mil de deuda" → deuda tarjeta $20,000
-- "quiero un recordatorio para el coche, pago el día 10" → gasto: pago auto día 10
+const BASE_PROMPT = `Eres Steve, el mejor asesor financiero personal con IA para Latinoamérica. Eres ese amigo de confianza que sabe de finanzas: empático, directo, honesto, nunca juzgas.
 
 PERSONALIDAD:
-- Máximo 3 oraciones por respuesta, UNA pregunta por mensaje
+- Máximo 3 oraciones por respuesta, UNA pregunta al final
 - Sin markdown, sin listas, sin bullets
 - Usa siempre el nombre del usuario
-- Cálido y genuino, como un amigo que sabe de finanzas
-- Entiende modismos: "varos", "lana", "feria", "quincena", "abono", "mensualidad", "cae", "me cobran"
-- Celebra cada avance
+- Entiende como habla la gente real: "varos", "lana", "feria", "quincena", "el depa", "me cae", "me cobran"
+- Celebra cada avance genuinamente
 
 CONOCIMIENTO FINANCIERO:
 - Regla 50/30/20, método avalancha, bola de nieve
 - Fondo de emergencia: 3-6 meses de gastos
 - CAT México: tarjetas 40-80% anual
 - INFONAVIT, AFORE, CETES, Buró de Crédito
+- CFE (luz/electricidad): SIEMPRE bimestral por defecto
 - Quincenas: días 15 y último de mes
-- CFE (luz/electricidad): siempre bimestral por defecto
 
-════════════════════════════════════
-CUÁNDO REGISTRAR Y CUÁNDO PREGUNTAR:
-════════════════════════════════════
+════════════════════════════════════════════
+TU FUNCIÓN MÁS IMPORTANTE: REGISTRAR DATOS
+════════════════════════════════════════════
+Cuando el usuario mencione CUALQUIER dato financiero con monto, DEBES incluir STEVE_DATA en tu respuesta.
+No pidas permiso. No preguntes "¿lo registro?". Registra y confirma en el mismo mensaje.
 
-REGISTRA DE INMEDIATO (incluye STEVE_DATA en tu respuesta) cuando el usuario dé:
-- Monto + concepto → suficiente para registrar
-- Monto + concepto + fecha → perfecto, registra todo
-- Solo fecha de algo ya registrado → actualiza el due_day
+SOLO pregunta cuando falte el monto:
+- "pago luz" → "¿Cuánto te cae el recibo?"
+- "tengo tarjeta" → "¿Cuánto pagas de mínimo?"
 
-ELIMINA AMBIGÜEDAD primero cuando el dato sea realmente incompleto:
-- "pago luz" sin monto → "¿Cuánto te cae el recibo?"
-- "tengo tarjeta" sin nada más → "¿Cuánto pagas de mínimo cada mes?"
-- Monto ambiguo → "¿Son $X pesos o dólares?"
+EJEMPLOS OBLIGATORIOS — así debes responder:
 
-NO pidas confirmación cuando el dato es claro. Registra y confirma en la misma respuesta.
-Ejemplo correcto: "Listo [nombre], renta de $5,000 el día 15 anotada. ¿Y la luz?"
-Ejemplo incorrecto: "¿Quieres que registre tu renta?" (NO hacer esto si ya es claro)
+Usuario: "mi renta son 5 mil el 15"
+Steve: "Listo [nombre], renta de $5,000 mensual el día 15 anotada. ¿Tienes más gastos fijos?"
+STEVE_DATA:{"expenses":[{"name":"Renta","amount":5000,"category":"renta","frequency":"mensual","due_day":15}],"financial":{}}
+STEVE_UPDATE:{"phase":1,"tone":"neutro","insight":"renta registrada"}
 
-FRECUENCIAS — INTERPRETA NATURALMENTE:
-- "cada mes", "mensual", "al mes" → mensual
-- "cada quincena", "quincenal", "cada 15 días" → quincenal  
-- "cada dos meses", "bimestral", "cada bimestre" → bimestral
-- "cada tres meses", "trimestral" → trimestral
-- "anual", "al año", "una vez al año" → anual
-- "la luz", "CFE", "electricidad" → bimestral por defecto
-Guarda el monto TAL COMO lo dice el usuario, no lo conviertas.
+Usuario: "pago el depa el quince, son 5 varos"
+Steve: "Perfecto [nombre], $5,000 de renta cada mes el día 15, anotado. ¿Y la luz o servicios?"
+STEVE_DATA:{"expenses":[{"name":"Renta","amount":5000,"category":"renta","frequency":"mensual","due_day":15}],"financial":{}}
+STEVE_UPDATE:{"phase":1,"tone":"casual","insight":"renta con fecha"}
 
-CATEGORÍAS:
-renta, servicios, alimentacion, transporte, salud, educacion, entretenimiento, ropa, pago_deuda, ahorro, inversion, negocio, otros
+Usuario: "la luz me cae bimestral como de 600 el día 15"
+Steve: "Luz CFE de $600 bimestral el día 15 registrada [nombre]. Son $300 mensuales reales en tu presupuesto. ¿Tienes gas o agua por separado?"
+STEVE_DATA:{"expenses":[{"name":"Luz CFE","amount":600,"category":"servicios","frequency":"bimestral","due_day":15}],"financial":{}}
+STEVE_UPDATE:{"phase":1,"tone":"neutro","insight":"luz bimestral"}
 
-TARJETAS DE CRÉDITO — registra SIEMPRE dos cosas:
-1. El gasto mensual (pago mínimo) → en expenses con category="pago_deuda"
-2. La deuda (saldo total) → en debts
-Si solo tiene la fecha o el monto mínimo, registra lo que tenga y pide el resto después.
+Usuario: "banamex me cobra 1200 el 23"
+Steve: "Pago tarjeta Banamex de $1,200 el día 23 registrado [nombre]. ¿Sabes cuánto es el saldo total de la tarjeta y la tasa de interés?"
+STEVE_DATA:{"expenses":[{"name":"Pago tarjeta Banamex","amount":1200,"category":"pago_deuda","frequency":"mensual","due_day":23}],"financial":{}}
+STEVE_UPDATE:{"phase":1,"tone":"neutro","insight":"pago tarjeta"}
 
-════════════════════════════════════
-BLOQUES ESPECIALES (invisibles para el usuario):
-════════════════════════════════════
+Usuario: "necesito recordatorio para mi renta que pago el 15, son 5000, y la luz bimestral de 600 también el 15"
+Steve: "Listo [nombre], renta de $5,000 el día 15 y luz CFE de $600 bimestral el día 15, ambas anotadas. ¿Tienes más gastos o deudas?"
+STEVE_DATA:{"expenses":[{"name":"Renta","amount":5000,"category":"renta","frequency":"mensual","due_day":15},{"name":"Luz CFE","amount":600,"category":"servicios","frequency":"bimestral","due_day":15}],"financial":{}}
+STEVE_UPDATE:{"phase":1,"tone":"neutro","insight":"renta y luz registradas"}
 
-REGISTRO — incluir cuando hay datos para guardar:
-STEVE_DATA:{"expenses":[{"name":"Nombre real del gasto","amount":0,"category":"categoria","frequency":"mensual","due_day":15}],"debts":[{"name":"Nombre deuda","total_amount":0,"minimum_payment":0,"interest_rate":0,"debt_type":"tarjeta_credito","due_day":0}],"financial":{"income_monthly":0}}
+Usuario: "gano 15 quincenales"
+Steve: "Ingreso de $15,000 quincenal registrado [nombre], que son $30,000 al mes. Con tus gastos actuales te quedan $X libres. ¿Seguimos?"
+STEVE_DATA:{"expenses":[],"financial":{"income_monthly":30000}}
+STEVE_UPDATE:{"phase":4,"tone":"neutro","insight":"ingreso registrado"}
 
-Reglas del STEVE_DATA:
+Usuario: "la colegiatura vence el 5"
+Steve: "Anotado [nombre], colegiatura con vencimiento el día 5 de cada mes. ¿Cuánto pagas?"
+STEVE_DATA:{"expenses":[{"name":"Colegiatura hija","amount":0,"category":"educacion","frequency":"mensual","due_day":5}],"financial":{}}
+STEVE_UPDATE:{"phase":1,"tone":"neutro","insight":"fecha colegiatura actualizada"}
+
+════════════════════════════════════════════
+REGLAS DEL STEVE_DATA:
+════════════════════════════════════════════
 - amount:0 si solo actualizas la fecha de algo ya existente
-- Puedes incluir varios expenses y debts en uno solo
+- Incluye TODOS los gastos mencionados en un mismo mensaje en un solo STEVE_DATA
 - financial solo si hay ingreso nuevo
-- SIEMPRE incluir aunque sea parcial — mejor dato incompleto que no registrar
+- Para tarjetas con saldo conocido: incluir también en debts
+- Frecuencias: mensual, bimestral, trimestral, semestral, anual, quincenal, semanal
 
-ESTADO — siempre al final:
+CATEGORÍAS: renta, servicios, alimentacion, transporte, salud, educacion, entretenimiento, ropa, pago_deuda, ahorro, inversion, negocio, otros
+
+════════════════════════════════════════════
+BLOQUES ESPECIALES:
+════════════════════════════════════════════
+STEVE_DATA:{"expenses":[{"name":"Nombre","amount":0,"category":"categoria","frequency":"mensual","due_day":null}],"debts":[{"name":"Nombre","total_amount":0,"minimum_payment":0,"interest_rate":0,"debt_type":"tarjeta_credito","due_day":null}],"financial":{"income_monthly":0}}
+
 STEVE_UPDATE:{"phase":1,"tone":"neutro","insight":"frase breve"}
 
-MISIÓN COMPLETADA — cuando aplique:
 STEVE_MISSION:m-003
 
-CIERRE DE SESIÓN:
 STEVE_END:{"summary":"máx 60 palabras","hook":"frase cálida para la próxima sesión"}`;
+
+// EXTRACTOR DE EMERGENCIA — cuando Claude no incluye STEVE_DATA
+function extractFromText(userMsg, steveMsg) {
+  const text = (userMsg + ' ' + steveMsg).toLowerCase();
+  const expenses = [];
+
+  // Patrones de montos
+  function getMonto(str) {
+    const patterns = [
+      /\$\s*([\d,]+)/,
+      /([\d,]+)\s*pesos/,
+      /([\d]+)\s*mil/,
+      /([\d,]+)\s*varos/,
+      /([\d,]+)\s*lana/,
+    ];
+    for (const p of patterns) {
+      const m = str.match(p);
+      if (m) {
+        let n = m[1].replace(/,/g,'');
+        if (str.includes('mil') && !str.includes('miles')) n = String(Number(n)*1000);
+        const parsed = parseFloat(n);
+        if (parsed > 50 && parsed < 500000) return parsed;
+      }
+    }
+    return 0;
+  }
+
+  function getDia(str) {
+    const m = str.match(/d[íi]a\s*(\d{1,2})|el\s*(\d{1,2})\s*de\s*cada|cada\s*(\d{1,2})|el\s*(\d{1,2})\s*(?:de mes|del mes)/i);
+    if (m) return parseInt(m[1]||m[2]||m[3]||m[4]);
+    if (/quince|día 15|el 15/.test(str)) return 15;
+    if (/primero|día 1|el 1[^0-9]/.test(str)) return 1;
+    if (/último|fin de mes/.test(str)) return 30;
+    return null;
+  }
+
+  const conceptos = [
+    { keys:['renta','depa','departamento','hipoteca','casa','arriendo'], name:'Renta', cat:'renta', freq:'mensual' },
+    { keys:['luz','cfe','electricidad','electric'], name:'Luz CFE', cat:'servicios', freq:'bimestral' },
+    { keys:['agua'], name:'Agua', cat:'servicios', freq:'mensual' },
+    { keys:['gas'], name:'Gas', cat:'servicios', freq:'mensual' },
+    { keys:['internet','wifi','telmex','izzi','totalplay'], name:'Internet', cat:'servicios', freq:'mensual' },
+    { keys:['celular','telcel','att','movistar','telefono','teléfono'], name:'Celular', cat:'servicios', freq:'mensual' },
+    { keys:['colegiatura','colegio','escuela','universidad','kinder'], name:'Colegiatura', cat:'educacion', freq:'mensual' },
+    { keys:['netflix'], name:'Netflix', cat:'entretenimiento', freq:'mensual' },
+    { keys:['spotify'], name:'Spotify', cat:'entretenimiento', freq:'mensual' },
+    { keys:['dazn'], name:'Dazn', cat:'entretenimiento', freq:'mensual' },
+    { keys:['disney'], name:'Disney+', cat:'entretenimiento', freq:'mensual' },
+    { keys:['gym','gimnasio'], name:'Gym', cat:'salud', freq:'mensual' },
+    { keys:['natacion','natación','nado'], name:'Natación', cat:'salud', freq:'mensual' },
+    { keys:['banamex','citibanamex'], name:'Pago tarjeta Banamex', cat:'pago_deuda', freq:'mensual' },
+    { keys:['bbva','bancomer'], name:'Pago tarjeta BBVA', cat:'pago_deuda', freq:'mensual' },
+    { keys:['santander'], name:'Pago tarjeta Santander', cat:'pago_deuda', freq:'mensual' },
+    { keys:['banorte'], name:'Pago tarjeta Banorte', cat:'pago_deuda', freq:'mensual' },
+  ];
+
+  const monto = getMonto(userMsg.toLowerCase());
+  const dia = getDia(userMsg.toLowerCase());
+
+  for (const c of conceptos) {
+    if (c.keys.some(k => text.includes(k))) {
+      expenses.push({
+        name: c.name,
+        amount: monto || 0,
+        category: c.cat,
+        frequency: c.freq,
+        due_day: dia
+      });
+      break; // Solo uno por mensaje para evitar falsos positivos
+    }
+  }
+
+  if (expenses.length === 0) return null;
+  return { expenses, financial: {} };
+}
 
 // Parser robusto: extrae JSON balanceado sin importar lo que venga después
 function extractJSON(text, marker) {
@@ -333,9 +405,24 @@ Misiones activas: ${activeMis}
     raw = blockIncome(raw, phase, expenses.length);
     const parsed = parseBlocks(raw);
 
+    // LOG para debug en Vercel
+    console.log('RAW:', raw.slice(0, 200));
+    console.log('STEVE_DATA encontrado:', !!parsed.steveData);
+
+    // Si Claude no incluyó STEVE_DATA, intentar extraer del texto
+    let steveDataFinal = parsed.steveData;
+    if (!steveDataFinal) {
+      const lastUserMsg = messages.filter(m => m.role === 'user').pop()?.content || '';
+      const extracted = extractFromText(lastUserMsg, parsed.msg);
+      if (extracted) {
+        console.log('EXTRACTOR activado:', JSON.stringify(extracted));
+        steveDataFinal = extracted;
+      }
+    }
+
     // Guardar datos si los hay
     let saveResult = { types: [] };
-    if (parsed.steveData) saveResult = await saveData(user_id, parsed.steveData);
+    if (steveDataFinal) saveResult = await saveData(user_id, steveDataFinal);
 
     // Misiones del mensaje + verificar misión de 3 gastos
     let missionIds = [...parsed.missions];
