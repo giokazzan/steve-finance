@@ -39,6 +39,12 @@ La luz/CFE es BIMESTRAL por defecto. Si el usuario no especifica, pregunta.
 Frecuencias soportadas: mensual, bimestral, trimestral, semestral, anual, quincenal, semanal
 Guarda el monto REAL tal como lo dice el usuario (ej: $800 bimestral, NO lo conviertas).
 
+DÍA DE VENCIMIENTO — CRÍTICO:
+Cuando el usuario mencione una fecha de pago ("vence el 5", "pago el 15", "día 20"), 
+SIEMPRE incluye due_day en el STEVE_DATA aunque el gasto ya exista.
+Si el usuario da fecha de un gasto ya registrado, re-registra el gasto completo con la fecha.
+Ejemplo: usuario dice "la renta vence el día 5" → STEVE_DATA con name:"Renta", amount:[monto que ya tienes], due_day:5
+
 CATEGORÍAS DE GASTOS:
 renta, servicios, alimentacion, transporte, salud, educacion, entretenimiento, ropa, pago_deuda, ahorro, inversion, negocio, otros
 
@@ -90,8 +96,15 @@ function parseBlocks(text) {
   let msg = text;
   let steveData = null, update = null, end = null, missions = [];
 
-  const dm = text.match(/STEVE_DATA:(\{[\s\S]*?\})(?=\nSTEVE_|\n\n|$)/);
-  if (dm) { try { steveData = JSON.parse(dm[1]); } catch(e) {} msg = msg.replace(/STEVE_DATA:\{[\s\S]*?\}(?=\nSTEVE_|\n\n|$)/, '').trim(); }
+  // STEVE_DATA — regex más permisivo
+  const dm = text.match(/STEVE_DATA:(\{[\s\S]*?\})(?=\nSTEVE_|\n\n|$|\s*$)/);
+  if (dm) {
+    try { steveData = JSON.parse(dm[1]); } catch(e) {
+      // Intentar reparar JSON truncado
+      try { steveData = JSON.parse(dm[1] + '}}'); } catch(e2) {}
+    }
+    msg = msg.replace(/STEVE_DATA:\{[\s\S]*?\}(?=\nSTEVE_|\n\n|$|\s*$)/, '').trim();
+  }
 
   const um = text.match(/STEVE_UPDATE:(\{[^}]+\})/);
   if (um) { try { update = JSON.parse(um[1]); } catch(e) {} msg = msg.replace(/STEVE_UPDATE:\{[^}]+\}/, '').trim(); }
@@ -131,9 +144,20 @@ async function saveData(userId, steveData) {
 
   for (const e of (steveData.expenses || []).filter(x => x.name && x.amount > 0)) {
     const { data: ex } = await supabase.from('expenses').select('id').eq('user_id', userId).eq('name', e.name).maybeSingle();
-    const row = { name: e.name, amount: e.amount, category: e.category || 'otros', frequency: e.frequency || 'mensual', due_day: e.due_day || null, updated_at: new Date().toISOString() };
-    if (ex) saves.push(supabase.from('expenses').update(row).eq('id', ex.id));
-    else saves.push(supabase.from('expenses').insert({ user_id: userId, ...row }));
+    const row = {
+      name: e.name,
+      amount: e.amount,
+      category: e.category || 'otros',
+      frequency: e.frequency || 'mensual',
+      due_day: e.due_day !== undefined ? e.due_day : null,
+      updated_at: new Date().toISOString()
+    };
+    if (ex) {
+      // Actualizar TODOS los campos incluyendo due_day
+      saves.push(supabase.from('expenses').update(row).eq('id', ex.id));
+    } else {
+      saves.push(supabase.from('expenses').insert({ user_id: userId, ...row }));
+    }
     types.push('expense');
   }
 
