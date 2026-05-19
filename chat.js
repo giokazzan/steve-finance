@@ -40,10 +40,17 @@ Frecuencias soportadas: mensual, bimestral, trimestral, semestral, anual, quince
 Guarda el monto REAL tal como lo dice el usuario (ej: $800 bimestral, NO lo conviertas).
 
 DÍA DE VENCIMIENTO — CRÍTICO:
-Cuando el usuario mencione una fecha de pago ("vence el 5", "pago el 15", "día 20"), 
-SIEMPRE incluye due_day en el STEVE_DATA aunque el gasto ya exista.
-Si el usuario da fecha de un gasto ya registrado, re-registra el gasto completo con la fecha.
-Ejemplo: usuario dice "la renta vence el día 5" → STEVE_DATA con name:"Renta", amount:[monto que ya tienes], due_day:5
+Cuando el usuario mencione una fecha de pago ("vence el 5", "pago el 15", "día 20"),
+SIEMPRE incluye ese gasto en STEVE_DATA con due_day aunque no repita el monto.
+El sistema buscará el gasto existente y solo actualizará la fecha.
+Si el gasto ya existe, incluye solo name y due_day (amount puede ir en 0).
+Ejemplo: usuario dice "la colegiatura vence el día 5":
+STEVE_DATA:{"expenses":[{"name":"Colegiatura hija","amount":0,"category":"educacion","frequency":"mensual","due_day":5}],"financial":{}}
+
+PARA TARJETAS — mínimo necesitas: nombre + due_day para el recordatorio.
+Si el usuario solo da nombre y fecha, registra con datos básicos y pide el resto después como misión.
+Ejemplo: usuario dice "tengo tarjeta Banamex, pago el día 20":
+STEVE_DATA:{"expenses":[{"name":"Pago tarjeta Banamex","amount":0,"category":"pago_deuda","frequency":"mensual","due_day":20}],"debts":[],"financial":{}}
 
 CATEGORÍAS DE GASTOS:
 renta, servicios, alimentacion, transporte, salud, educacion, entretenimiento, ropa, pago_deuda, ahorro, inversion, negocio, otros
@@ -141,45 +148,88 @@ async function saveData(userId, steveData) {
   const saves = [], types = [];
 
   if (steveData.financial?.income_monthly > 0) {
-    saves.push(supabase.from('financial_data').update({ income_monthly: steveData.financial.income_monthly, updated_at: new Date().toISOString() }).eq('user_id', userId));
+    saves.push(supabase.from('financial_data').update({
+      income_monthly: steveData.financial.income_monthly,
+      updated_at: new Date().toISOString()
+    }).eq('user_id', userId));
     types.push('income');
   }
 
-  for (const e of (steveData.expenses || []).filter(x => x.name && x.amount > 0)) {
-    const { data: ex } = await supabase.from('expenses').select('id').eq('user_id', userId).eq('name', e.name).maybeSingle();
+  for (const e of (steveData.expenses || []).filter(x => x.name)) {
+    // Buscar por nombre exacto primero, luego fuzzy (contiene)
+    let { data: ex } = await supabase.from('expenses').select('id,name,amount')
+      .eq('user_id', userId).eq('name', e.name).maybeSingle();
+
+    if (!ex) {
+      // Buscar si existe con nombre similar (ej: "Colegiatura" vs "Colegiatura hija")
+      const { data: fuzzy } = await supabase.from('expenses').select('id,name,amount')
+        .eq('user_id', userId)
+        .ilike('name', '%' + e.name.split(' ')[0] + '%')
+        .maybeSingle();
+      if (fuzzy) ex = fuzzy;
+    }
+
     const row = {
       name: e.name,
-      amount: e.amount,
       category: e.category || 'otros',
       frequency: e.frequency || 'mensual',
-      due_day: e.due_day !== undefined ? e.due_day : null,
       updated_at: new Date().toISOString()
     };
+    // Solo actualizar amount si viene con valor > 0
+    if (e.amount > 0) row.amount = e.amount;
+    // Siempre actualizar due_day si viene definido (aunque sea null para borrarlo)
+    if (e.due_day !== undefined) row.due_day = e.due_day;
+
     if (ex) {
-      // Actualizar TODOS los campos incluyendo due_day
       saves.push(supabase.from('expenses').update(row).eq('id', ex.id));
     } else {
-      saves.push(supabase.from('expenses').insert({ user_id: userId, ...row }));
+      if (!e.amount || e.amount <= 0) continue; // No crear sin monto
+      saves.push(supabase.from('expenses').insert({ user_id: userId, ...row, amount: e.amount }));
     }
     types.push('expense');
   }
 
-  for (const d of (steveData.debts || []).filter(x => x.name && x.total_amount > 0)) {
-    const { data: ex } = await supabase.from('debts').select('id').eq('user_id', userId).eq('name', d.name).maybeSingle();
-    const row = { name: d.name, total_amount: d.total_amount, minimum_payment: d.minimum_payment || 0, interest_rate: d.interest_rate || 0, debt_type: d.debt_type || 'tarjeta_credito', due_day: d.due_day || null, is_active: true, updated_at: new Date().toISOString() };
-    if (ex) saves.push(supabase.from('debts').update(row).eq('id', ex.id));
-    else saves.push(supabase.from('debts').insert({ user_id: userId, ...row }));
+  for (const d of (steveData.debts || []).filter(x => x.name)) {
+    let { data: ex } = await supabase.from('debts').select('id')
+      .eq('user_id', userId).eq('name', d.name).eq('is_active', true).maybeSingle();
+
+    if (!ex) {
+      const { data: fuzzy } = await supabase.from('debts').select('id')
+        .eq('user_id', userId).eq('is_active', true)
+        .ilike('name', '%' + d.name.split(' ')[0] + '%').maybeSingle();
+      if (fuzzy) ex = fuzzy;
+    }
+
+    const row = {
+      name: d.name,
+      minimum_payment: d.minimum_payment || 0,
+      interest_rate: d.interest_rate || 0,
+      debt_type: d.debt_type || 'tarjeta_credito',
+      is_active: true,
+      updated_at: new Date().toISOString()
+    };
+    if (d.total_amount > 0) row.total_amount = d.total_amount;
+    if (d.due_day !== undefined) row.due_day = d.due_day;
+
+    if (ex) {
+      saves.push(supabase.from('debts').update(row).eq('id', ex.id));
+    } else {
+      if (!d.total_amount || d.total_amount <= 0) continue;
+      saves.push(supabase.from('debts').insert({ user_id: userId, ...row, total_amount: d.total_amount }));
+    }
     types.push('debt');
   }
 
   if (saves.length) {
     await Promise.allSettled(saves);
-    // Recalcular total_fixed_expenses normalizado a mensual
     const { data: allExp } = await supabase.from('expenses').select('amount,frequency').eq('user_id', userId);
     if (allExp) {
-      const mult = { bimestral:0.5, trimestral:0.333, semestral:0.167, anual:0.083, quincenal:2, semanal:4.3 };
+      const mult = { bimestral:.5, trimestral:.333, semestral:.167, anual:.083, quincenal:2, semanal:4.3 };
       const total = allExp.reduce((s,e) => s + (Number(e.amount)||0) * (mult[e.frequency]||1), 0);
-      await supabase.from('financial_data').update({ total_fixed_expenses: Math.round(total), updated_at: new Date().toISOString() }).eq('user_id', userId);
+      await supabase.from('financial_data').update({
+        total_fixed_expenses: Math.round(total),
+        updated_at: new Date().toISOString()
+      }).eq('user_id', userId);
     }
   }
   return { types };
@@ -299,18 +349,15 @@ Misiones activas: ${activeMis}
     }
     await Promise.allSettled(updates);
 
-    // Datos frescos para el frontend
-    let fresh = null;
-    if (saveResult.types.length > 0 || missionIds.length > 0) {
-      const [fR2, dR2, eR2, pR2, misR2] = await Promise.all([
-        supabase.from('financial_data').select('*').eq('user_id', user_id).maybeSingle(),
-        supabase.from('debts').select('*').eq('user_id', user_id).eq('is_active', true).order('interest_rate', { ascending: false }),
-        supabase.from('expenses').select('*').eq('user_id', user_id).order('created_at', { ascending: true }),
-        supabase.from('profiles').select('xp_total,level,streak_days,messages_this_month').eq('id', user_id).maybeSingle(),
-        supabase.from('user_missions').select('*, missions(*)').eq('user_id', user_id)
-      ]);
-      fresh = { financial: fR2.data, debts: dR2.data||[], expenses: eR2.data||[], profile: pR2.data, missions: misR2.data||[] };
-    }
+    // Siempre enviar datos frescos para mantener el panel sincronizado
+    const [fR2, dR2, eR2, pR2, misR2] = await Promise.all([
+      supabase.from('financial_data').select('*').eq('user_id', user_id).maybeSingle(),
+      supabase.from('debts').select('*').eq('user_id', user_id).eq('is_active', true).order('interest_rate', { ascending: false }),
+      supabase.from('expenses').select('*').eq('user_id', user_id).order('created_at', { ascending: true }),
+      supabase.from('profiles').select('xp_total,level,streak_days,messages_this_month').eq('id', user_id).maybeSingle(),
+      supabase.from('user_missions').select('*, missions(*)').eq('user_id', user_id)
+    ]);
+    const fresh = { financial: fR2.data, debts: dR2.data||[], expenses: eR2.data||[], profile: pR2.data, missions: misR2.data||[] };
 
     return res.status(200).json({
       message: parsed.msg,
