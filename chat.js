@@ -289,10 +289,13 @@ async function saveData(userId, steveData) {
       interest_rate: d.interest_rate || 0,
       debt_type: d.debt_type || 'tarjeta_credito',
       is_active: true,
+      priority: 1,
       updated_at: new Date().toISOString()
     };
     if (d.total_amount > 0) row.total_amount = d.total_amount;
-    if (d.due_day !== undefined) row.due_day = d.due_day;
+    // debts usa due_date (no due_day)
+    if (d.due_day !== undefined && d.due_day !== null) row.due_date = d.due_day;
+    if (d.due_date !== undefined && d.due_date !== null) row.due_date = d.due_date;
 
     if (ex) {
       saves.push(supabase.from('debts').update(row).eq('id', ex.id));
