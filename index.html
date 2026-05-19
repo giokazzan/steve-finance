@@ -544,28 +544,61 @@ ${h.factors.map(f=>{const p=f.pts/f.max;return`<div class="tf-item">
 // PAGOS — orden estratégico
 function renderPagos(){
   const el=$('home-pagos');if(!el)return;
-  const today=new Date().getDate(),pagos=[];
+  const today=new Date().getDate();
+  const pagos=[];
+
   S.expenses.forEach(e=>{
     const due=e.due_day||null;
-    const days=due?(due>=today?due-today:30-today+due):null;
-    pagos.push({name:e.name,amt:Number(e.amount),days,due,freq:e.frequency||'mensual',rate:0,urgency:days===null?0:days<=3?3:days<=7?2:1,hasDue:!!due});
+    let days=null,periodo='',urgency=0;
+    if(due){
+      if(due>=today){
+        days=due-today;
+        periodo=days<=3?'URGENTE':days<=7?'Esta semana':'Este mes';
+        urgency=days<=3?3:days<=7?2:1;
+      }else{
+        // Ya pasó este mes — es del mes que viene
+        const diasEnMes=new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate();
+        days=(diasEnMes-today)+due;
+        periodo='Próximo mes';
+        urgency=0;
+      }
+    }
+    pagos.push({name:e.name,amt:Number(e.amount),days,due,freq:e.frequency||'mensual',rate:0,urgency,periodo,hasDue:!!due});
   });
+
   S.debts.filter(d=>d.due_day).forEach(d=>{
-    const days=d.due_day>=today?d.due_day-today:30-today+d.due_day;
-    pagos.push({name:d.name+' (mín.)',amt:Number(d.minimum_payment),days,due:d.due_day,freq:'mensual',rate:Number(d.interest_rate)||0,urgency:days<=3?3:days<=7?2:1,hasDue:true});
+    const due=d.due_day;
+    let days,periodo,urgency;
+    if(due>=today){
+      days=due-today;
+      periodo=days<=3?'URGENTE':days<=7?'Esta semana':'Este mes';
+      urgency=days<=3?3:days<=7?2:1;
+    }else{
+      const diasEnMes=new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate();
+      days=(diasEnMes-today)+due;
+      periodo='Próximo mes';
+      urgency=0;
+    }
+    pagos.push({name:d.name+' (mín.)',amt:Number(d.minimum_payment),days,due,freq:'mensual',rate:Number(d.interest_rate)||0,urgency,periodo,hasDue:true});
   });
+
   if(!pagos.length){el.innerHTML='<div style="color:var(--txt2);font-size:13px;text-align:center;padding:16px">Cuéntale a Steve tus gastos con fecha de pago</div>';return;}
-  // Ordenar: con fecha primero (por urgencia y tasa), sin fecha al final
+
+  // Orden: urgentes primero, luego por días, sin fecha al final
   pagos.sort((a,b)=>{
-    if(a.hasDue&&!b.hasDue)return -1;if(!a.hasDue&&b.hasDue)return 1;
-    return b.urgency-a.urgency||b.rate-a.rate;
+    if(a.hasDue&&!b.hasDue)return -1;
+    if(!a.hasDue&&b.hasDue)return 1;
+    if(a.days!==null&&b.days!==null)return a.days-b.days;
+    return b.rate-a.rate;
   });
+
   el.innerHTML=pagos.map(p=>{
-    const color=!p.hasDue?'var(--txt2)':p.urgency===3?'var(--red)':p.urgency===2?'var(--am)':'var(--g)';
-    const lbl=!p.hasDue?'Sin fecha · dile a Steve el día':p.urgency===3?'URGENTE':p.urgency===2?'Esta semana':'Este mes';
+    const color=!p.hasDue?'var(--txt2)':p.urgency===3?'var(--red)':p.urgency===2?'var(--am)':p.urgency===1?'var(--g)':'#6E6E8A';
+    const lbl=!p.hasDue?'Sin fecha · dile a Steve el día':p.periodo+(p.due?' · Día '+p.due:'')+(p.freq?' · '+p.freq:'')+(p.rate?' · '+p.rate+'% anual':'');
+    const diasTxt=!p.hasDue?'—':p.days===0?'¡Hoy!':p.days===1?'Mañana':'en '+p.days+' días';
     return`<div class="pago-item" style="border-color:${color}">
-<div><div class="pago-name">${esc(p.name)}</div><div class="pago-meta" style="color:${color}">${lbl}${p.due?' · Día '+p.due:''}${p.freq?' · '+p.freq:''}${p.rate?' · '+p.rate+'% anual':''}</div></div>
-<div style="text-align:right;flex-shrink:0;margin-left:12px"><div style="font-size:15px;font-weight:800;color:var(--txt)">$${p.amt.toLocaleString()}</div><div style="font-size:11px;color:var(--txt2)">${p.hasDue?(p.days===0?'Hoy':'en '+p.days+' días'):'—'}</div></div>
+<div style="flex:1;min-width:0"><div class="pago-name">${esc(p.name)}</div><div class="pago-meta" style="color:${color}">${lbl}</div></div>
+<div style="text-align:right;flex-shrink:0;margin-left:12px"><div style="font-size:15px;font-weight:800;color:var(--txt)">$${p.amt.toLocaleString()}</div><div style="font-size:11px;color:var(--txt2)">${diasTxt}</div></div>
 </div>`;
   }).join('');
 }
@@ -778,12 +811,20 @@ function buildGastos(){
   const libre=inc>0?Math.max(0,inc-te-mp):0;
   const keys=Object.keys(ct);
   const sinIngreso=inc===0;
-  // Labels siempre con $ para claridad
-  const labels=[...keys,libre>0?'Libre':''].filter(Boolean);
-  const vals=sinIngreso
-    ? [...keys.map(k=>Math.round(ct[k].amt)),0].slice(0,labels.length)
-    : [...keys.map(k=>Math.round(ct[k].amt/inc*100)),libre>0?Math.round(libre/inc*100):0].slice(0,labels.length);
-  const colors=[...keys.map(k=>CAT_COL[ct[k].cat]||'#6E6E8A'),'#00C896'].slice(0,labels.length);
+  const labels=keys.slice(); // solo gastos, sin "Libre" si no hay ingreso
+  if(!sinIngreso){
+    const libre=Math.max(0,inc-te-mp);
+    if(libre>0){ labels.push('Libre'); }
+  }
+  const PALETTE=['#FF6B6B','#4ECDC4','#FFB347','#45B7D1','#C44D9B','#88D8B0','#F7DC6F','#FF8B94','#00C896','#7B6EF6','#F0A500','#96CEB4'];
+  const vals=labels.map((l,i)=>{
+    if(l==='Libre') return sinIngreso?0:Math.round(Math.max(0,inc-te-mp)/inc*100);
+    return sinIngreso?Math.round(ct[l].amt):Math.round(ct[l].amt/inc*100);
+  });
+  const colors=labels.map((l,i)=>{
+    if(l==='Libre') return '#00C896';
+    return CAT_COL[ct[l]?.cat]||PALETTE[i%PALETTE.length];
+  });
   S.charts['gastos']=new Chart(c,{
     type:'doughnut',
     data:{labels,datasets:[{data:vals,backgroundColor:colors,borderWidth:0,hoverOffset:8}]},
