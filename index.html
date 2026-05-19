@@ -458,7 +458,8 @@ async function loadData(){
 function showApp(){
   $('auth-screen').style.display='none';$('main-app').style.display='flex';
   $('loader').classList.add('fade');setTimeout(()=>$('loader').style.display='none',500);
-  renderAll();
+  // Siempre recargar datos frescos de Supabase al abrir
+  loadData().then(()=>renderAll());
   setTimeout(()=>sb.from('conversations').insert({user_id:S.user.id,messages:[]}).select().maybeSingle().then(r=>{if(r.data)S.convId=r.data.id;}).catch(()=>{}),1000);
 }
 function renderAll(){renderHome();renderMissions();renderProfile();}
