@@ -90,80 +90,6 @@ STEVE_MISSION:m-003
 
 STEVE_END:{"summary":"máx 60 palabras","hook":"frase cálida para la próxima sesión"}`;
 
-// EXTRACTOR DE EMERGENCIA — cuando Claude no incluye STEVE_DATA
-function extractFromText(userMsg, steveMsg) {
-  const text = (userMsg + ' ' + steveMsg).toLowerCase();
-  const expenses = [];
-
-  // Patrones de montos
-  function getMonto(str) {
-    const patterns = [
-      /\$\s*([\d,]+)/,
-      /([\d,]+)\s*pesos/,
-      /([\d]+)\s*mil/,
-      /([\d,]+)\s*varos/,
-      /([\d,]+)\s*lana/,
-    ];
-    for (const p of patterns) {
-      const m = str.match(p);
-      if (m) {
-        let n = m[1].replace(/,/g,'');
-        if (str.includes('mil') && !str.includes('miles')) n = String(Number(n)*1000);
-        const parsed = parseFloat(n);
-        if (parsed > 50 && parsed < 500000) return parsed;
-      }
-    }
-    return 0;
-  }
-
-  function getDia(str) {
-    const m = str.match(/d[íi]a\s*(\d{1,2})|el\s*(\d{1,2})\s*de\s*cada|cada\s*(\d{1,2})|el\s*(\d{1,2})\s*(?:de mes|del mes)/i);
-    if (m) return parseInt(m[1]||m[2]||m[3]||m[4]);
-    if (/quince|día 15|el 15/.test(str)) return 15;
-    if (/primero|día 1|el 1[^0-9]/.test(str)) return 1;
-    if (/último|fin de mes/.test(str)) return 30;
-    return null;
-  }
-
-  const conceptos = [
-    { keys:['renta','depa','departamento','hipoteca','casa','arriendo'], name:'Renta', cat:'renta', freq:'mensual' },
-    { keys:['luz','cfe','electricidad','electric'], name:'Luz CFE', cat:'servicios', freq:'bimestral' },
-    { keys:['agua'], name:'Agua', cat:'servicios', freq:'mensual' },
-    { keys:['gas'], name:'Gas', cat:'servicios', freq:'mensual' },
-    { keys:['internet','wifi','telmex','izzi','totalplay'], name:'Internet', cat:'servicios', freq:'mensual' },
-    { keys:['celular','telcel','att','movistar','telefono','teléfono'], name:'Celular', cat:'servicios', freq:'mensual' },
-    { keys:['colegiatura','colegio','escuela','universidad','kinder'], name:'Colegiatura', cat:'educacion', freq:'mensual' },
-    { keys:['netflix'], name:'Netflix', cat:'entretenimiento', freq:'mensual' },
-    { keys:['spotify'], name:'Spotify', cat:'entretenimiento', freq:'mensual' },
-    { keys:['dazn'], name:'Dazn', cat:'entretenimiento', freq:'mensual' },
-    { keys:['disney'], name:'Disney+', cat:'entretenimiento', freq:'mensual' },
-    { keys:['gym','gimnasio'], name:'Gym', cat:'salud', freq:'mensual' },
-    { keys:['natacion','natación','nado'], name:'Natación', cat:'salud', freq:'mensual' },
-    { keys:['banamex','citibanamex'], name:'Pago tarjeta Banamex', cat:'pago_deuda', freq:'mensual' },
-    { keys:['bbva','bancomer'], name:'Pago tarjeta BBVA', cat:'pago_deuda', freq:'mensual' },
-    { keys:['santander'], name:'Pago tarjeta Santander', cat:'pago_deuda', freq:'mensual' },
-    { keys:['banorte'], name:'Pago tarjeta Banorte', cat:'pago_deuda', freq:'mensual' },
-  ];
-
-  const monto = getMonto(userMsg.toLowerCase());
-  const dia = getDia(userMsg.toLowerCase());
-
-  for (const c of conceptos) {
-    if (c.keys.some(k => text.includes(k))) {
-      expenses.push({
-        name: c.name,
-        amount: monto || 0,
-        category: c.cat,
-        frequency: c.freq,
-        due_day: dia
-      });
-      break; // Solo uno por mensaje para evitar falsos positivos
-    }
-  }
-
-  if (expenses.length === 0) return null;
-  return { expenses, financial: {} };
-}
 
 // Parser robusto: extrae JSON balanceado sin importar lo que venga después
 function extractJSON(text, marker) {
@@ -412,16 +338,7 @@ Misiones activas: ${activeMis}
     console.log('RAW:', raw.slice(0, 200));
     console.log('STEVE_DATA encontrado:', !!parsed.steveData);
 
-    // Si Claude no incluyó STEVE_DATA, intentar extraer del texto
     let steveDataFinal = parsed.steveData;
-    if (!steveDataFinal) {
-      const lastUserMsg = messages.filter(m => m.role === 'user').pop()?.content || '';
-      const extracted = extractFromText(lastUserMsg, parsed.msg);
-      if (extracted) {
-        console.log('EXTRACTOR activado:', JSON.stringify(extracted));
-        steveDataFinal = extracted;
-      }
-    }
 
     // Guardar datos si los hay
     let saveResult = { types: [] };
