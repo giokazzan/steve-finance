@@ -1,258 +1,286 @@
 const { createClient } = require('@supabase/supabase-js');
 const Anthropic = require('@anthropic-ai/sdk');
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const anthropic = new Anthropic({ apiKey: process.env.CLAUDE_KEY });
 
-// ── SYSTEM PROMPT ──────────────────────────────────────────
-const BASE_PROMPT = [
-  "Eres Steve, asesor financiero personal con IA para Mexico. Eres ese amigo que sabe de finanzas: empatico, honesto, directo, nunca juzga.",
-  "",
-  "PRINCIPIOS (Dale Carnegie, Goleman, Duhigg, Kahneman, Sinek):",
-  "Siempre usa el nombre. Escucha antes de aconsejar. Celebra cada dato compartido. Valida emociones antes de dar numeros. Cambios graduales, no sacrificios. Una sola cosa a la vez. Siempre explica el POR QUE antes del QUE.",
-  "",
-  "FORMA: Natural, maximo 3 oraciones, UNA pregunta por mensaje. Sin listas ni markdown.",
-  "",
-  "OBJETIVO PRINCIPAL: Organizar los gastos fijos del usuario con sus fechas de pago. Esto le da control y permite recordatorios. Los ingresos vienen AL FINAL, solo despues de tener gastos y deudas organizados.",
-  "",
-  "FLUJO OBLIGATORIO:",
-  "TIEMPO 1 (primer mensaje del usuario): Responde el saludo con calidez. Explica que organizaran sus gastos fijos con fechas para tener todo visible y recibir recordatorios. Pide permiso para empezar.",
-  "TIEMPO 2 (usuario da permiso): Explica brevemente por que empiezas con gastos fijos. Pregunta por renta.",
-  "PASOS EN ORDEN (sin saltarse ninguno):",
-  "1. Gastos fijos esenciales: renta, luz/gas/agua, internet, telefono, seguros. Capturar monto Y dia de vencimiento de cada uno.",
-  "2. Gastos fijos no esenciales: suscripciones, membresias.",
-  "3. Deudas: tarjetas (saldo, minimo, tasa, dia de corte), creditos, INFONAVIT.",
-  "4. Ingresos: SOLO despues de completar pasos 1-3.",
-  "5. Analisis y estrategias con fundamentos y pasos concretos.",
-  "",
-  "PROHIBIDO: Preguntar ingresos antes de completar pasos 1, 2 y 3.",
-  "CONFIRMACION empatica despues de cada dato: Listo [nombre], [dato] anotado. Siguiente pregunta.",
-  "",
-  "DATOS al final cuando haya montos:",
-  'STEVE_DATA:{"action":"update","expenses":[{"name":"nombre","amount":0,"category":"fijo_esencial","priority":1,"due_date":null}],"debts":[{"name":"nombre","total_amount":0,"minimum_payment":0,"interest_rate":0,"debt_type":"tarjeta","priority":1,"due_date":null}],"financial":{"income_monthly":0,"rent":0}}',
-  "",
-  "Siempre al final:",
-  'STEVE_UPDATE:{"onboarding_phase":1,"tone_detected":"neutro","session_insight":"frase breve"}',
-  "",
-  "Si el usuario se despide:",
-  'STEVE_SESSION_SUMMARY:{"summary":"max 80 palabras","next_session_hook":"frase calida"}'
-].join("\n");
-
-// ── PARSEAR BLOQUES ────────────────────────────────────────
-function parseBlocks(text) {
-  let message = text;
-  let steveData = null, update = null, sessionSummary = null;
-
-  const dataMatch = text.match(/STEVE_DATA:(\{[\s\S]*?\})(?=\n|$)/);
-  if (dataMatch) {
-    try { steveData = JSON.parse(dataMatch[1]); } catch(e) {}
-    message = message.replace(/STEVE_DATA:\{[\s\S]*?\}(?=\n|$)/, '').trim();
+// ─── PARSER ───────────────────────────────────────────────
+function extractJSON(text, marker) {
+  const idx = text.indexOf(marker + ':{');
+  if (idx === -1) return null;
+  const start = idx + marker.length + 1;
+  let depth = 0, inStr = false, esc = false;
+  for (let i = start; i < text.length; i++) {
+    const c = text[i];
+    if (esc) { esc = false; continue; }
+    if (c === '\\' && inStr) { esc = true; continue; }
+    if (c === '"') { inStr = !inStr; continue; }
+    if (inStr) continue;
+    if (c === '{') depth++;
+    if (c === '}') { depth--; if (depth === 0) return text.slice(start, i + 1); }
   }
-
-  const updateMatch = text.match(/STEVE_UPDATE:(\{[^}]+\})/);
-  if (updateMatch) {
-    try { update = JSON.parse(updateMatch[1]); } catch(e) {}
-    message = message.replace(/STEVE_UPDATE:\{[^}]+\}/, '').trim();
-  }
-
-  const summaryMatch = text.match(/STEVE_SESSION_SUMMARY:(\{[\s\S]*?\})(?=\n|$)/);
-  if (summaryMatch) {
-    try { sessionSummary = JSON.parse(summaryMatch[1]); } catch(e) {}
-    message = message.replace(/STEVE_SESSION_SUMMARY:\{[\s\S]*?\}(?=\n|$)/, '').trim();
-  }
-
-  return { message: message.trim(), steveData, update, sessionSummary };
+  return null;
 }
 
-// ── GUARDIA DE INGRESOS ────────────────────────────────────
-function blockIncome(text, phase, expensesCount) {
-  if (phase > 3 && expensesCount >= 3) return text;
+function parseBlocks(text) {
+  let msg = text, steveData = null, update = null, missions = [];
+  const dj = extractJSON(text, 'STEVE_DATA');
+  if (dj) { try { steveData = JSON.parse(dj); } catch(e) {} msg = msg.replace('STEVE_DATA:' + dj, '').trim(); }
+  const uj = extractJSON(text, 'STEVE_UPDATE');
+  if (uj) { try { update = JSON.parse(uj); } catch(e) {} msg = msg.replace('STEVE_UPDATE:' + uj, '').trim(); }
+  const mr = /STEVE_MISSION:(m-\d+)/g; let mm;
+  while ((mm = mr.exec(text)) !== null) missions.push(mm[1]);
+  if (missions.length) msg = msg.replace(/STEVE_MISSION:m-\d+/g, '').trim();
+  return { msg: msg.trim(), steveData, update, missions };
+}
 
-  const triggers = [
-    'cuánto ganas', 'cuanto ganas',
-    'cuánto recibes', 'cuanto recibes',
-    'cuánto entra', 'cuanto entra',
-    'cuánto te pagan', 'cuanto te pagan',
-    'ingreso mensual', 'ingreso al mes',
-    'cuánto es tu ingreso', 'cuanto es tu ingreso',
-    'sueldo', 'salario mensual',
-    'cuánto recibes de ingreso', 'cuanto recibes de ingreso',
-    'para poder ayudarte', 'necesito conocer tu situaci',
-    'conocer un poco tu situaci'
+// ─── EXTRACTOR DIRECTO ────────────────────────────────────
+function extractFromUser(userMsg, existingExpenses) {
+  const text = userMsg.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const expenses = [];
+
+  function getMonto(str) {
+    const p = [/\$\s*([\d,]+)/, /([\d,]+)\s*(?:pesos|varos|lana)/, /([\d]+)\s*mil(?!\s*\d)/, /(?:^|[^\d])(\d{3,6})(?:[^\d]|$)/];
+    for (const rx of p) {
+      const m = str.match(rx);
+      if (m) {
+        let n = (m[1]||'').replace(/,/g,'');
+        if (rx.source.includes('mil')) n = String(parseFloat(n)*1000);
+        const v = parseFloat(n);
+        if (v >= 50 && v <= 500000) return v;
+      }
+    }
+    return 0;
+  }
+
+  function getDia(str) {
+    const m = str.match(/dia\s*(\d{1,2})|el\s+(\d{1,2})\s+de\s+cada|el\s+(\d{1,2})\s+(?:de\s+)?(?:cada\s+)?mes/i);
+    if (m) return parseInt(m[1]||m[2]||m[3]);
+    if (/quince|el 15/.test(str)) return 15;
+    if (/primero|el 1[^0-9]/.test(str)) return 1;
+    return null;
+  }
+
+  const conceptos = [
+    {keys:['renta','depa','departamento','hipoteca'], name:'Renta', cat:'renta', freq:'mensual'},
+    {keys:['luz','cfe','electricidad'], name:'Luz CFE', cat:'servicios', freq:'bimestral'},
+    {keys:['agua'], name:'Agua', cat:'servicios', freq:'mensual'},
+    {keys:['gas'], name:'Gas', cat:'servicios', freq:'mensual'},
+    {keys:['internet','wifi','telmex','izzi'], name:'Internet', cat:'servicios', freq:'mensual'},
+    {keys:['celular','telcel','att','movistar'], name:'Celular', cat:'servicios', freq:'mensual'},
+    {keys:['colegiatura','colegio','escuela'], name:'Colegiatura', cat:'educacion', freq:'mensual'},
+    {keys:['netflix'], name:'Netflix', cat:'entretenimiento', freq:'mensual'},
+    {keys:['spotify'], name:'Spotify', cat:'entretenimiento', freq:'mensual'},
+    {keys:['dazn'], name:'Dazn', cat:'entretenimiento', freq:'mensual'},
+    {keys:['disney'], name:'Disney+', cat:'entretenimiento', freq:'mensual'},
+    {keys:['gym','gimnasio'], name:'Gym', cat:'salud', freq:'mensual'},
+    {keys:['natacion','natación'], name:'Natación', cat:'salud', freq:'mensual'},
+    {keys:['banamex','citibanamex'], name:'Pago tarjeta Banamex', cat:'pago_deuda', freq:'mensual'},
+    {keys:['bbva','bancomer'], name:'Pago tarjeta BBVA', cat:'pago_deuda', freq:'mensual'},
+    {keys:['santander'], name:'Pago tarjeta Santander', cat:'pago_deuda', freq:'mensual'},
+    {keys:['banorte'], name:'Pago tarjeta Banorte', cat:'pago_deuda', freq:'mensual'},
+    {keys:['hsbc'], name:'Pago tarjeta HSBC', cat:'pago_deuda', freq:'mensual'},
+    {keys:['seguro'], name:'Seguro', cat:'salud', freq:'mensual'},
+    {keys:['gasolina'], name:'Gasolina', cat:'transporte', freq:'mensual'},
   ];
 
-  const lower = text.toLowerCase();
-  const found = triggers.find(t => lower.includes(t));
-
-  if (found) {
-    console.log('GUARDIA activada:', found);
-    const corrections = {
-      1: 'Para organizarte bien, empecemos por lo mas importante. Cuanto pagas de renta o hipoteca al mes y que dia del mes vence?',
-      2: 'Sigamos con tus gastos fijos. Tienes suscripciones como Netflix, Spotify u otros servicios mensuales?',
-      3: 'Hablemos de tus deudas. Tienes tarjetas de credito activas o algun credito que estes pagando?'
-    };
-    // Mantener primera oracion empatica si existe
-    const firstSentence = text.split(/[.!?]/)[0];
-    const isEmpathetic = firstSentence.length < 80 && !triggers.some(t => firstSentence.toLowerCase().includes(t));
-    const correction = corrections[Math.min(phase, 3)] || corrections[1];
-    return isEmpathetic ? firstSentence + '. ' + correction : correction;
+  for (const c of conceptos) {
+    const key = c.keys.find(k => text.includes(k));
+    if (!key) continue;
+    const keyIdx = text.indexOf(key);
+    const win = text.slice(Math.max(0, keyIdx-100), Math.min(text.length, keyIdx+100));
+    const monto = getMonto(win) || getMonto(text);
+    const dia = getDia(win) || getDia(text);
+    const freq = /bimestral|cada dos meses/.test(win) ? 'bimestral' : /quincenal/.test(win) ? 'quincenal' : c.freq;
+    const existing = (existingExpenses||[]).find(e => e.name.toLowerCase().includes(key));
+    expenses.push({
+      name: existing ? existing.name : c.name,
+      amount: monto || (existing ? existing.amount : 0),
+      category: c.cat,
+      frequency: freq,
+      due_day: dia
+    });
   }
 
-  return text;
+  if (!expenses.length) return null;
+  return { expenses, financial: {} };
 }
 
-// ── GUARDAR DATOS ──────────────────────────────────────────
-async function saveData(userId, steveData) {
-  if (!steveData) return;
-  const saves = [];
+// ─── GUARDAR DATOS ────────────────────────────────────────
+async function saveData(userId, data) {
+  if (!data) return [];
+  const saved = [];
 
-  if (steveData.financial) {
-    const f = steveData.financial;
-    const fields = {};
-    if (f.income_monthly > 0) fields.income_monthly = f.income_monthly;
-    if (f.rent > 0) fields.rent = f.rent;
-    if (Object.keys(fields).length > 0) {
-      fields.updated_at = new Date().toISOString();
-      saves.push(supabase.from('financial_data').update(fields).eq('user_id', userId));
-    }
+  // Ingreso
+  if (data.financial?.income_monthly > 0) {
+    await supabase.from('financial_data').update({ income_monthly: data.financial.income_monthly, updated_at: new Date().toISOString() }).eq('user_id', userId);
+    saved.push('income');
   }
 
-  if (steveData.expenses) {
-    for (const e of steveData.expenses.filter(e => e.name && e.amount > 0)) {
-      const ex = await supabase.from('expenses').select('id').eq('user_id', userId).eq('name', e.name).maybeSingle();
-      if (ex.data) {
-        saves.push(supabase.from('expenses').update({ amount: e.amount, category: e.category, priority: e.priority || 1, due_date: e.due_date }).eq('id', ex.data.id));
-      } else {
-        saves.push(supabase.from('expenses').insert({ user_id: userId, name: e.name, amount: e.amount, category: e.category || 'fijo_esencial', priority: e.priority || 1, due_date: e.due_date, is_fixed: true }));
-      }
+  // Gastos
+  for (const e of (data.expenses || []).filter(x => x.name)) {
+    // Buscar exacto
+    let { data: ex } = await supabase.from('expenses').select('id,amount').eq('user_id', userId).eq('name', e.name).maybeSingle();
+    // Buscar fuzzy
+    if (!ex) {
+      const { data: fz } = await supabase.from('expenses').select('id,amount').eq('user_id', userId).ilike('name', '%' + e.name.split(' ')[0] + '%').maybeSingle();
+      if (fz) ex = fz;
     }
+    const row = { name: e.name, category: e.category || 'otros', frequency: e.frequency || 'mensual', updated_at: new Date().toISOString() };
+    if (e.amount > 0) row.amount = e.amount;
+    if (e.due_day != null) row.due_day = e.due_day;
+
+    if (ex) {
+      await supabase.from('expenses').update(row).eq('id', ex.id);
+    } else {
+      if (!e.amount || e.amount <= 0) continue;
+      await supabase.from('expenses').insert({ user_id: userId, ...row, amount: e.amount });
+    }
+    saved.push('expense');
   }
 
-  if (steveData.debts) {
-    for (const d of steveData.debts.filter(d => d.name && d.total_amount > 0)) {
-      const ex = await supabase.from('debts').select('id').eq('user_id', userId).eq('name', d.name).maybeSingle();
-      if (ex.data) {
-        saves.push(supabase.from('debts').update({ total_amount: d.total_amount, minimum_payment: d.minimum_payment || 0, interest_rate: d.interest_rate || 0, due_date: d.due_date }).eq('id', ex.data.id));
-      } else {
-        saves.push(supabase.from('debts').insert({ user_id: userId, name: d.name, total_amount: d.total_amount, minimum_payment: d.minimum_payment || 0, interest_rate: d.interest_rate || 0, debt_type: d.debt_type || 'otro', priority: d.priority || 1, due_date: d.due_date, is_active: true }));
-      }
-    }
+  // Deudas
+  for (const d of (data.debts || []).filter(x => x.name && x.total_amount > 0)) {
+    let { data: ex } = await supabase.from('debts').select('id').eq('user_id', userId).eq('name', d.name).maybeSingle();
+    const row = { name: d.name, total_amount: d.total_amount, minimum_payment: d.minimum_payment || 0, interest_rate: d.interest_rate || 0, debt_type: d.debt_type || 'tarjeta_credito', is_active: true, priority: 1, updated_at: new Date().toISOString() };
+    if (d.due_day != null) row.due_date = d.due_day;
+    if (d.due_date != null) row.due_date = d.due_date;
+    if (ex) await supabase.from('debts').update(row).eq('id', ex.id);
+    else await supabase.from('debts').insert({ user_id: userId, ...row });
+    saved.push('debt');
   }
 
-  if (saves.length > 0) await Promise.allSettled(saves);
+  return saved;
 }
 
-// ── HANDLER PRINCIPAL ──────────────────────────────────────
+// ─── PROMPT ───────────────────────────────────────────────
+const PROMPT = `Eres Steve, asesor financiero personal para Latinoamérica. Empático, directo, nunca juzgas.
+
+FORMATO: Máximo 3 oraciones. UNA pregunta al final. Sin markdown. Usa el nombre del usuario.
+Entiende modismos: "varos", "lana", "el depa", "me cae", "quincena", "me cobran".
+
+REGLA MÁS IMPORTANTE:
+Cuando el usuario dé cualquier dato financiero con monto O fecha, incluye STEVE_DATA al final.
+NO pidas confirmación si el dato es claro. Registra y confirma en el mismo mensaje.
+
+EJEMPLOS DE RESPUESTA CORRECTA:
+
+Usuario: "mi renta son 5 mil el 15"
+Steve: Listo Giovanni, renta de $5,000 el día 15 anotada. ¿Tienes más gastos fijos?
+STEVE_DATA:{"expenses":[{"name":"Renta","amount":5000,"category":"renta","frequency":"mensual","due_day":15}],"financial":{}}
+STEVE_UPDATE:{"phase":1,"tone":"neutro","insight":"renta registrada"}
+
+Usuario: "banamex me cobra 1200 el 23"
+Steve: Pago tarjeta Banamex de $1,200 el día 23 registrado Giovanni. ¿Sabes el saldo total?
+STEVE_DATA:{"expenses":[{"name":"Pago tarjeta Banamex","amount":1200,"category":"pago_deuda","frequency":"mensual","due_day":23}],"debts":[],"financial":{}}
+STEVE_UPDATE:{"phase":1,"tone":"neutro","insight":"tarjeta registrada"}
+
+Usuario: "la natación vence el 13"
+Steve: Natación hija actualizada al día 13 Giovanni. ¿Cuánto pagas mensualmente?
+STEVE_DATA:{"expenses":[{"name":"Natación hija","amount":0,"category":"salud","frequency":"mensual","due_day":13}],"financial":{}}
+STEVE_UPDATE:{"phase":1,"tone":"neutro","insight":"fecha natación"}
+
+Usuario: "netflix spotify y dazn los pago el 1"
+Steve: Netflix, Spotify y Dazn actualizados al día 1 Giovanni. ¿Tienes más suscripciones?
+STEVE_DATA:{"expenses":[{"name":"Netflix","amount":0,"category":"entretenimiento","frequency":"mensual","due_day":1},{"name":"Spotify","amount":0,"category":"entretenimiento","frequency":"mensual","due_day":1},{"name":"Dazn","amount":0,"category":"entretenimiento","frequency":"mensual","due_day":1}],"financial":{}}
+STEVE_UPDATE:{"phase":1,"tone":"neutro","insight":"suscripciones con fecha"}
+
+CATEGORÍAS: renta, servicios, alimentacion, transporte, salud, educacion, entretenimiento, ropa, pago_deuda, ahorro, inversion, negocio, otros
+FRECUENCIAS: mensual, bimestral, trimestral, semestral, anual, quincenal. CFE/luz = bimestral siempre.
+
+BLOQUES AL FINAL DE CADA RESPUESTA CON DATOS:
+STEVE_DATA:{"expenses":[{"name":"...","amount":0,"category":"...","frequency":"mensual","due_day":null}],"debts":[],"financial":{}}
+STEVE_UPDATE:{"phase":1,"tone":"neutro","insight":"..."}`;
+
+// ─── HANDLER PRINCIPAL ────────────────────────────────────
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Content-Type', 'application/json');
-
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).end();
 
   try {
-    const { messages, user_id, conversation_id } = req.body;
+    const { messages, user_id } = req.body;
     if (!user_id || !messages?.length) return res.status(400).json({ error: 'Faltan datos' });
 
     // Cargar contexto
-    const [pR, fR, dR, mR, expR] = await Promise.all([
+    const [pR, fR, dR, eR] = await Promise.all([
       supabase.from('profiles').select('*').eq('id', user_id).maybeSingle(),
       supabase.from('financial_data').select('*').eq('user_id', user_id).maybeSingle(),
-      supabase.from('debts').select('*').eq('user_id', user_id).eq('is_active', true).order('priority'),
-      supabase.from('user_memory').select('*').eq('user_id', user_id).maybeSingle(),
-      supabase.from('expenses').select('*').eq('user_id', user_id).order('priority')
+      supabase.from('debts').select('*').eq('user_id', user_id).eq('is_active', true),
+      supabase.from('expenses').select('*').eq('user_id', user_id).order('due_day', { ascending: true, nullsFirst: false }),
     ]);
 
     const profile = pR.data || {};
     const financial = fR.data || {};
     const debts = dR.data || [];
-    const memory = mR.data || {};
-    const expenses = expR.data || [];
-    const phase = memory.onboarding_phase || 1;
+    const expenses = eR.data || [];
     const name = profile.full_name || 'amigo';
 
-    // Construir system prompt con contexto real
-    const expSummary = expenses.length > 0
-      ? expenses.map(e => `${e.name}:$${e.amount}(dia${e.due_date || '?'})`).join(', ')
-      : 'Ninguno aun';
-    const debtSummary = debts.length > 0
-      ? debts.map(d => `${d.name}:$${d.total_amount}@${d.interest_rate}%`).join(', ')
-      : 'Ninguna aun';
+    const expCtx = expenses.length
+      ? expenses.map(e => `${e.name}: $${e.amount} ${e.frequency||'mensual'}${e.due_day?' día '+e.due_day:' SIN FECHA'}`).join(' | ')
+      : 'Ninguno';
 
-    const phaseInstructions = {
-      1: 'PASO 1 ACTIVO: Organizar gastos fijos esenciales con fechas. Empezar por renta.',
-      2: 'PASO 2 ACTIVO: Organizar gastos fijos no esenciales (suscripciones, membresias).',
-      3: 'PASO 3 ACTIVO: Registrar deudas con saldo, minimo, tasa y dia de corte.',
-      4: 'PASO 4 ACTIVO: Preguntar ingresos para completar el panorama financiero.',
-      5: 'PASO 5 ACTIVO: Dar analisis completo con estrategias y pasos concretos.'
-    };
-
-    let systemPrompt = BASE_PROMPT + `\n\nCONTEXTO:\nNombre: ${name} | Fase: ${phase} | Sesiones: ${profile.sessions_count || 0}\n${phaseInstructions[phase] || phaseInstructions[5]}\nGastos registrados (${expenses.length}): ${expSummary}\nDeudas registradas (${debts.length}): ${debtSummary}\nUltima sesion: ${memory.last_session_summary || 'Primera vez'}`;
-
-    // Instruccion critica para primer mensaje
-    const isFirst = messages.filter(m => m.role === 'user').length === 1;
-    if (isFirst) {
-      systemPrompt += `\n\nINSTRUCCION CRITICA - PRIMER MENSAJE: Responde el saludo de ${name} con calidez genuina. Luego explica que van a organizar sus gastos fijos con fechas para tener todo visible y recibir recordatorios antes de cada vencimiento. Cierra preguntando si le parece bien empezar. ABSOLUTAMENTE PROHIBIDO mencionar ingresos, sueldo o dinero que gana.`;
-    }
+    const system = PROMPT + `\n\nCONTEXTO ACTUAL:
+Nombre: ${name}
+Gastos registrados (${expenses.length}): ${expCtx}
+Deudas (${debts.length}): ${debts.map(d=>`${d.name} $${d.total_amount}`).join(', ')||'Ninguna'}
+Ingreso mensual: $${financial.income_monthly||0}`;
 
     // Llamar a Claude
     const aiRes = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 600,
-      system: systemPrompt,
-      messages: messages.slice(-20)
+      system,
+      messages: messages.slice(-15)
     });
 
-    let rawText = aiRes.content[0].text;
+    const raw = aiRes.content[0].text;
+    const parsed = parseBlocks(raw);
 
-    // Aplicar guardia de ingresos
-    rawText = blockIncome(rawText, phase, expenses.length);
+    // Intentar guardar — primero con STEVE_DATA de Claude, sino con extractor
+    let toSave = parsed.steveData;
+    const debug = { claudeData: !!parsed.steveData, extractor: false };
 
-    const parsed = parseBlocks(rawText);
-
-    // Guardar datos si los hay
-    if (parsed.steveData) await saveData(user_id, parsed.steveData);
-
-    // Actualizar BD
-    const updates = [
-      supabase.from('profiles').update({
-        messages_this_month: (profile.messages_this_month || 0) + 1,
-        updated_at: new Date().toISOString()
-      }).eq('id', user_id)
-    ];
-
-    if (parsed.update?.onboarding_phase && parsed.update.onboarding_phase !== phase) {
-      updates.push(supabase.from('user_memory').update({
-        onboarding_phase: parsed.update.onboarding_phase,
-        updated_at: new Date().toISOString()
-      }).eq('user_id', user_id));
+    if (!toSave) {
+      const lastUser = messages.filter(m => m.role === 'user').pop()?.content || '';
+      const extracted = extractFromUser(lastUser, expenses);
+      if (extracted) { toSave = extracted; debug.extractor = true; }
     }
 
-    if (parsed.sessionSummary) {
-      updates.push(supabase.from('user_memory').update({
-        last_session_summary: parsed.sessionSummary.summary,
-        next_session_hook: parsed.sessionSummary.next_session_hook,
-        updated_at: new Date().toISOString()
-      }).eq('user_id', user_id));
-    }
+    const savedTypes = await saveData(user_id, toSave);
 
-    await Promise.allSettled(updates);
+    // Leer datos frescos
+    const [fR2, dR2, eR2, mR2] = await Promise.all([
+      supabase.from('financial_data').select('*').eq('user_id', user_id).maybeSingle(),
+      supabase.from('debts').select('*').eq('user_id', user_id).eq('is_active', true),
+      supabase.from('expenses').select('*').eq('user_id', user_id).order('due_day', { ascending: true, nullsFirst: false }),
+      supabase.from('user_missions').select('*,missions(*)').eq('user_id', user_id),
+    ]);
 
     return res.status(200).json({
-      message: parsed.message,
+      message: parsed.msg,
       update: parsed.update,
-      reload_data: !!parsed.steveData
+      saved_types: savedTypes,
+      fresh_data: {
+        financial: fR2.data,
+        debts: dR2.data || [],
+        expenses: eR2.data || [],
+        missions: mR2.data || [],
+      },
+      reload_data: savedTypes.length > 0,
+      _debug: debug
     });
 
   } catch (err) {
-    console.error('Steve error:', err);
-    return res.status(500).json({
-      error: 'Error interno',
-      message: 'Algo salio mal. Intenta de nuevo.'
+    console.error('Error:', err.message);
+    return res.status(200).json({
+      message: 'Algo salió mal, intenta de nuevo.',
+      saved_types: [],
+      fresh_data: null,
+      reload_data: false,
+      _debug: { error: err.message }
     });
   }
 };
