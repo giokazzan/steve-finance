@@ -548,6 +548,13 @@ Misiones activas: ${activeMis}
 
   } catch(err) {
     console.error('Steve error:', err);
-    return res.status(500).json({ error: 'Error interno', message: 'Algo salió mal. Intenta de nuevo.' });
+    return res.status(200).json({
+      error: 'Error interno',
+      message: 'Algo salió mal. Intenta de nuevo.',
+      _debug: { error: err.message, stack: err.stack?.slice(0,200) },
+      saved_types: [],
+      fresh_data: null,
+      reload_data: false
+    });
   }
 };
